@@ -1,0 +1,124 @@
+/* Twitter Feed Display Styles */
+.tfd-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.tfd-tweet {
+    background: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    padding: 12px;
+    transition: box-shadow 0.2s ease;
+}
+
+.tfd-tweet:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tfd-tweet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #666;
+}
+
+.tfd-username {
+    font-weight: 600;
+    color: #222;
+}
+
+.tfd-date a {
+    color: #666;
+    text-decoration: none;
+}
+
+.tfd-date a:hover {
+    text-decoration: underline;
+    color: #1da1f2;
+}
+
+.tfd-tweet-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #222;
+    margin-bottom: 10px;
+    word-break: break-word;
+}
+
+.tfd-tweet-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #666;
+}
+
+.tfd-stat {
+    display: flex;
+    gap: 4px;
+}
+
+.tfd-error {
+    background: #fff0f0;
+    color: #b00020;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.tfd-empty {
+    color: #666;
+    padding: 20px;
+    text-align: center;
+}
+
+.tfd-loadmore-wrap {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.tfd-loadmore {
+    background: #1da1f2;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.tfd-loadmore:hover:not(:disabled) {
+    background: #1a91da;
+}
+
+.tfd-loadmore:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .tfd-feed {
+        max-width: 100%;
+    }
+
+    .tfd-tweet {
+        padding: 10px;
+    }
+
+    .tfd-tweet-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tfd-tweet-text {
+        font-size: 13px;
+    }
+}

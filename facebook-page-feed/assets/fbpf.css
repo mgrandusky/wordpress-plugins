@@ -1,0 +1,14 @@
+/* Minimal styles for Facebook Page Feed */
+.fbpf-feed{ display:flex; flex-direction:column; gap:12px; }
+.fbpf-item{ display:flex; gap:12px; background:#fff; border:1px solid #eee; padding:10px; border-radius:6px; align-items:flex-start }
+.fbpf-thumb img{ width:120px; height:80px; object-fit:cover; border-radius:4px; display:block }
+.fbpf-body{ flex:1; min-width:0 }
+.fbpf-message{ color:#222; font-size:14px; margin-bottom:8px }
+.fbpf-time{ font-size:12px; color:#666 }
+.fbpf-error{ color:#b00020; padding:10px; background:#fff0f0; border:1px solid #f5c6cb; border-radius:4px }
+.fbpf-empty{ color:#666; padding:10px }
+
+@media (max-width:600px){
+    .fbpf-item{ flex-direction:column }
+    .fbpf-thumb img{ width:100%; height:auto }
+}

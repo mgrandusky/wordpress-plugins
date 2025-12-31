@@ -1,0 +1,296 @@
+/* Lightbox styles for YouTube Feed Display */
+#yfd-lightbox-overlay.yfd-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.yfd-lightbox-inner {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    max-height: 90vh;
+}
+
+.yfd-lightbox-main{ display:flex; gap:16px; align-items:flex-start; }
+.yfd-lightbox-iframe-wrap {
+    flex: 1 1 auto;
+    position: relative;
+    padding-top: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.yfd-lightbox-iframe-wrap iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.yfd-comments-sidebar{
+    width: 340px;
+    max-height: calc(90vh - 60px);
+    overflow: auto;
+    background: #fff;
+    color:#222;
+    border-radius:6px;
+    padding:12px;
+}
+
+.yfd-comments-header h3{ margin:0 0 12px 0; font-size:16px; font-weight:600 }
+.yfd-comments-list{ margin-bottom:0 }
+.yfd-comment{ border-bottom:1px solid #eee; padding:10px 0; margin-bottom:8px }
+.yfd-comment:last-child{ border-bottom:none }
+.yfd-comment-header{ display:flex; gap:8px; margin-bottom:6px }
+.yfd-comment-avatar{ width:32px; height:32px; border-radius:50%; flex-shrink:0 }
+.yfd-comment-author-info{ flex:1; display:flex; flex-direction:column; gap:2px }
+.yfd-comment-author-info strong{ font-size:13px; color:#111 }
+.yfd-comment-date{ font-size:11px; color:#666 }
+.yfd-comment-text{ font-size:13px; color:#222; margin-bottom:6px; line-height:1.4 }
+.yfd-comment-likes{ font-size:11px; color:#666 }
+.yfd-comments-empty{ color:#999; font-size:13px; padding:20px 0; text-align:center }
+
+.yfd-lightbox-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: #222;
+    color: #fff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 22px;
+    line-height: 36px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    z-index: 100001;
+}
+
+@media (max-width: 600px) {
+    .yfd-lightbox-inner { max-width: 100%; }
+    .yfd-lightbox-close { top: 8px; right: 8px; }
+    .yfd-lightbox-main{ flex-direction:column }
+    .yfd-comments-sidebar{ width:100%; max-height:none }
+}
+
+/* Playlist Lightbox Styles */
+.yfd-overlay-playlist .yfd-lightbox-main-playlist {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.yfd-overlay-playlist .yfd-lightbox-iframe-wrap {
+    flex: 1 1 auto;
+    width: auto;
+}
+
+.yfd-playlist-sidebar {
+    width: 280px;
+    max-height: calc(90vh - 60px);
+    overflow-y: auto;
+    background: #fff;
+    color: #222;
+    border-radius: 6px;
+    padding: 12px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.yfd-playlist-header h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.yfd-playlist-list {
+    margin-bottom: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.yfd-playlist-video {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    padding: 8px;
+    margin: -8px -8px 12px -8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.yfd-playlist-video:hover {
+    background-color: #f5f5f5;
+}
+
+.yfd-playlist-video.yfd-active {
+    background-color: #e3f2fd;
+    border-left: 3px solid #1f88e5;
+    padding-left: 5px;
+}
+
+.yfd-playlist-video:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.yfd-playlist-video-thumb {
+    width: 60px;
+    height: 45px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f0f0f0;
+    pointer-events: none;
+}
+
+.yfd-playlist-video-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.yfd-playlist-video-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.yfd-playlist-video-title {
+    font-size: 12px;
+    line-height: 1.3;
+    color: #222;
+    word-break: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.yfd-playlist-loading {
+    color: #666;
+    font-size: 13px;
+    padding: 20px 0;
+    text-align: center;
+}
+
+/* Pagination Styles */
+.yfd-playlist-pagination {
+    margin-top: 12px;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+}
+
+.yfd-playlist-pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.yfd-pagination-btn {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #222;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.yfd-pagination-btn:hover:not(:disabled) {
+    background: #e3f2fd;
+    border-color: #1f88e5;
+    color: #1f88e5;
+}
+
+.yfd-pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.yfd-pagination-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+.yfd-pagination-dot {
+    background: #ddd;
+    border: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.yfd-pagination-dot:hover {
+    background: #bbb;
+}
+
+.yfd-pagination-dot.yfd-active {
+    background: #1f88e5;
+    width: 10px;
+    height: 10px;
+}
+
+@media (max-width: 1024px) {
+    .yfd-overlay-playlist .yfd-lightbox-main-playlist {
+        flex-direction: column;
+    }
+
+    .yfd-playlist-sidebar {
+        width: 100%;
+        max-height: 200px;
+    }
+}
+
+@media (max-width: 600px) {
+    .yfd-overlay-playlist .yfd-lightbox-main-playlist {
+        flex-direction: column;
+    }
+
+    .yfd-playlist-sidebar {
+        width: 100%;
+        max-height: 200px;
+    }
+
+    .yfd-playlist-video-thumb {
+        width: 50px;
+        height: 37px;
+    }
+
+    .yfd-playlist-video-title {
+        font-size: 11px;
+    }
+}

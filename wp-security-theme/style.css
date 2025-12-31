@@ -1,0 +1,13 @@
+/*
+Theme Name: WP Security Kit
+Theme URI: https://example.com
+Author: Mason Grandusky
+Description: A lightweight security-focused WordPress theme with an admin panel to enable common hardening measures.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: wp-security-kit
+*/
+
+/* Minimal styles to satisfy theme requirements */
+body { font-family: sans-serif; color: #222; }

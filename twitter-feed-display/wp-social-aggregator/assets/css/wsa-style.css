@@ -1,0 +1,6 @@
+.wsa-aggregator{display:flex;flex-wrap:wrap;gap:12px}
+.wsa-item{border:1px solid #ddd;padding:8px;border-radius:6px;min-width:200px;max-width:480px}
+.wsa-twitter{background:#f5fbff}
+.wsa-instagram{background:#fff7f0}
+.wsa-facebook{background:#f1f5ff}
+.wsa-linkedin{background:#f7fafa}
