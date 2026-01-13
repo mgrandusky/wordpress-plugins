@@ -217,6 +217,9 @@ class Google_Drive_Gallery {
         add_option( 'gdrive_gallery_cache_duration', 3600 ); // 1 hour default
         add_option( 'gdrive_gallery_auth_type', 'oauth' ); // oauth or service_account
         
+        // Register rewrite rules for image proxy
+        GDrive_Image_Proxy::register_endpoint();
+        
         // Flush rewrite rules
         flush_rewrite_rules();
     }
