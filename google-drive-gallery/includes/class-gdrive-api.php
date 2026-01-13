@@ -37,7 +37,7 @@ class GDrive_API {
      *
      * @return string|WP_Error Access token or error
      */
-    private static function get_access_token() {
+    public static function get_access_token() {
         $auth_type = GDrive_Auth::get_auth_type();
 
         if ( 'oauth' === $auth_type ) {
@@ -249,13 +249,8 @@ class GDrive_API {
      * @return string Image URL
      */
     public static function get_image_url( $file ) {
-        if ( isset( $file['webContentLink'] ) ) {
-            return $file['webContentLink'];
-        }
-
-        // Generate direct link
         if ( isset( $file['id'] ) ) {
-            return 'https://drive.google.com/uc?export=view&id=' . $file['id'];
+            return home_url( '/gdrive-image/' . $file['id'] );
         }
 
         return '';
