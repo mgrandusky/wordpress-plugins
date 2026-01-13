@@ -1,0 +1,29 @@
+/**
+ * Google Drive Gallery Block - Editor Styles
+ */
+
+.gdrive-gallery-block-editor {
+    padding: 20px;
+    border: 2px dashed #ddd;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.gdrive-gallery-block-preview {
+    text-align: center;
+}
+
+.gdrive-gallery-icon {
+    margin-bottom: 15px;
+}
+
+.gdrive-gallery-block-preview h3 {
+    margin: 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.gdrive-gallery-block-preview p {
+    margin: 8px 0;
+    color: #666;
+}
