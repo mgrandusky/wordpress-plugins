@@ -65,6 +65,9 @@ class Google_Drive_Gallery {
         // Initialize components
         $this->admin = new GDrive_Admin();
         $this->gallery = new GDrive_Gallery();
+        
+        // Initialize image proxy
+        GDrive_Image_Proxy::init();
 
         // Register hooks
         $this->register_hooks();
@@ -79,6 +82,7 @@ class Google_Drive_Gallery {
         require_once GDRIVE_GALLERY_DIR . 'includes/class-gdrive-gallery.php';
         require_once GDRIVE_GALLERY_DIR . 'includes/class-gdrive-cache.php';
         require_once GDRIVE_GALLERY_DIR . 'includes/class-gdrive-admin.php';
+        require_once GDRIVE_GALLERY_DIR . 'includes/class-gdrive-image-proxy.php';
     }
 
     /**
@@ -212,6 +216,9 @@ class Google_Drive_Gallery {
         // Set default options
         add_option( 'gdrive_gallery_cache_duration', 3600 ); // 1 hour default
         add_option( 'gdrive_gallery_auth_type', 'oauth' ); // oauth or service_account
+        
+        // Register rewrite rules for image proxy
+        GDrive_Image_Proxy::register_endpoint();
         
         // Flush rewrite rules
         flush_rewrite_rules();
