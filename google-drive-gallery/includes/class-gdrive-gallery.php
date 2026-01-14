@@ -306,7 +306,7 @@ class GDrive_Gallery {
             $html .= '<div class="gdrive-folder-thumbnail" style="position: relative; overflow: hidden; cursor: pointer; border-radius: 8px;">';
             $html .= '<img src="' . esc_url( $thumbnail_url ) . '" alt="' . esc_attr( $folder_name ) . '" loading="lazy" style="width: 100%; height: 200px; object-fit: cover;" />';
             $html .= '<div class="gdrive-folder-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 15px;">';
-            $html .= '<div class="gdrive-folder-icon" style="font-size: 24px; margin-bottom: 5px;">📁</div>';
+            $html .= '<div class="gdrive-folder-icon" style="font-size: 24px; margin-bottom: 5px;" aria-hidden="true">📁</div>';
             $html .= '<h3 class="gdrive-folder-name" style="margin: 0 0 5px 0; font-size: 16px; font-weight: 600;">' . esc_html( $folder_name ) . '</h3>';
             $html .= '<p class="gdrive-folder-count" style="margin: 0; font-size: 14px; opacity: 0.9;">' . sprintf( _n( '%d photo', '%d photos', $image_count, 'google-drive-gallery' ), $image_count ) . '</p>';
             $html .= '</div>'; // overlay

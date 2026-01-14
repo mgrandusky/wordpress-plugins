@@ -265,6 +265,7 @@ function openFolderLightbox(galleryId, folderName, images) {
     if (!lightbox) return;
     
     let currentIndex = 0;
+    let keydownHandler = null; // Declare at function scope
     
     function getImageUrl(file) {
         if (file && file.id) {
@@ -304,8 +305,9 @@ function openFolderLightbox(galleryId, folderName, images) {
     function closeLightbox() {
         lightbox.style.display = 'none';
         // Clean up keyboard listener to prevent memory leak
-        if (typeof keydownHandler !== 'undefined') {
+        if (keydownHandler !== null) {
             document.removeEventListener('keydown', keydownHandler);
+            keydownHandler = null;
         }
     }
     closeBtn.addEventListener('click', closeLightbox);
@@ -329,7 +331,7 @@ function openFolderLightbox(galleryId, folderName, images) {
         });
         
         // Keyboard navigation with proper cleanup
-        var keydownHandler = function(e) {
+        keydownHandler = function(e) {
             if (lightbox.style.display === 'block') {
                 if (e.key === 'ArrowLeft') {
                     prevBtn.click();
