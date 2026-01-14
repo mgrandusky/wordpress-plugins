@@ -354,9 +354,11 @@ function openFolderLightbox(galleryId, folderName, images) {
         // Clean up image event listeners to prevent memory leak
         if (img && imageLoadHandler) {
             img.removeEventListener('load', imageLoadHandler);
+            imageLoadHandler = null;
         }
         if (img && imageErrorHandler) {
             img.removeEventListener('error', imageErrorHandler);
+            imageErrorHandler = null;
         }
     }
     closeBtn.addEventListener('click', function(e) {
@@ -377,8 +379,8 @@ function openFolderLightbox(galleryId, folderName, images) {
     function updateImage(index) {
         if (img && images[index]) {
             handleImageLoadStart();
-            // No need to set img.onload since we already have addEventListener('load')
-            // The existing handler will be called when src changes
+            // When img.src changes, the 'load' event listener will fire for the new image
+            // The existing addEventListener('load') handler will be called automatically
             img.src = getImageUrl(images[index]);
         }
     }
