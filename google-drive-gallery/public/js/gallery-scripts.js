@@ -284,14 +284,14 @@ function openFolderLightbox(galleryId, folderName, images) {
     let html = '<div class="gdrive-lightbox-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">';
     html += '<div class="gdrive-lightbox-content" style="max-width: 90%; max-height: 90%; position: relative; text-align: center;">';
     html += '<div class="gdrive-lightbox-header" style="color: white; margin-bottom: 20px;"><h2 style="margin: 0; font-size: 24px;">' + escapeHtml(folderName) + '</h2></div>';
-    html += '<button class="gdrive-lightbox-close" style="position: absolute; top: 10px; right: 10px; background: white; border: none; font-size: 30px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; z-index: 10000;">&times;</button>';
+    html += '<button class="gdrive-lightbox-close" style="position: absolute; top: 10px; right: 10px; background: white; border: none; font-size: 30px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; z-index: 10000; color: black;">&times;</button>';
     html += '<div class="gdrive-lightbox-image-container" style="position: relative;">';
     html += '<img id="gdrive-lightbox-current-image" src="' + getImageUrl(images[0]) + '" style="max-width: 100%; max-height: 80vh; display: block; margin: 0 auto;" />';
     html += '</div>';
     
     if (images.length > 1) {
-        html += '<button class="gdrive-lightbox-prev" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%;">&#8249;</button>';
-        html += '<button class="gdrive-lightbox-next" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%;">&#8250;</button>';
+        html += '<button class="gdrive-lightbox-prev" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; color: black;">&#8249;</button>';
+        html += '<button class="gdrive-lightbox-next" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; color: black;">&#8250;</button>';
         html += '<div class="gdrive-lightbox-counter" style="color: white; margin-top: 10px; font-size: 16px;">1 / ' + images.length + '</div>';
     }
     
