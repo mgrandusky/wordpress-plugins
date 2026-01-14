@@ -266,6 +266,16 @@ function openFolderLightbox(galleryId, folderName, images) {
     
     let currentIndex = 0;
     let keydownHandler = null; // Declare at function scope
+    let imageLoadHandler = null; // For cleanup
+    let imageErrorHandler = null; // For cleanup
+    
+    // Add CSS animation to head if not already present
+    if (!document.getElementById('gdrive-lightbox-spinner-style')) {
+        const style = document.createElement('style');
+        style.id = 'gdrive-lightbox-spinner-style';
+        style.textContent = '@keyframes gdrive-spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }';
+        document.head.appendChild(style);
+    }
     
     function getImageUrl(file) {
         if (file && file.id) {
@@ -283,9 +293,6 @@ function openFolderLightbox(galleryId, folderName, images) {
     
     // Loading spinner
     html += '<div class="gdrive-lightbox-loader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: gdrive-spin 1s linear infinite; z-index: 1;"></div>';
-    
-    // Add CSS animation for spinner
-    html += '<style>@keyframes gdrive-spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }</style>';
     
     // Image
     html += '<div class="gdrive-lightbox-image-container" style="position: relative;">';
@@ -326,12 +333,15 @@ function openFolderLightbox(galleryId, folderName, images) {
         if (img) img.style.opacity = '0';
     }
     
-    // Initial load
-    img.addEventListener('load', handleImageLoad);
-    img.addEventListener('error', function() {
+    // Initial load - store handlers for cleanup
+    imageLoadHandler = handleImageLoad;
+    imageErrorHandler = function() {
         if (loader) loader.style.display = 'none';
         console.error('Failed to load image');
-    });
+    };
+    
+    img.addEventListener('load', imageLoadHandler);
+    img.addEventListener('error', imageErrorHandler);
     
     // Close button
     function closeLightbox() {
@@ -340,6 +350,13 @@ function openFolderLightbox(galleryId, folderName, images) {
         if (keydownHandler !== null) {
             document.removeEventListener('keydown', keydownHandler);
             keydownHandler = null;
+        }
+        // Clean up image event listeners to prevent memory leak
+        if (img && imageLoadHandler) {
+            img.removeEventListener('load', imageLoadHandler);
+        }
+        if (img && imageErrorHandler) {
+            img.removeEventListener('error', imageErrorHandler);
         }
     }
     closeBtn.addEventListener('click', function(e) {
@@ -360,7 +377,8 @@ function openFolderLightbox(galleryId, folderName, images) {
     function updateImage(index) {
         if (img && images[index]) {
             handleImageLoadStart();
-            img.onload = handleImageLoad;
+            // No need to set img.onload since we already have addEventListener('load')
+            // The existing handler will be called when src changes
             img.src = getImageUrl(images[index]);
         }
     }
