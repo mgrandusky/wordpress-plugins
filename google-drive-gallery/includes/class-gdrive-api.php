@@ -222,6 +222,8 @@ class GDrive_API {
             $url = home_url( '/gdrive-image/' . $file['id'] . '?size=' . urlencode( $size ) );
             
             // TEMPORARY DEBUG - Remove after testing
+            // Uses error_log which is the standard PHP logging function
+            // that respects WP_DEBUG_LOG setting
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( 'GDrive Thumbnail URL generated: ' . $url );
             }

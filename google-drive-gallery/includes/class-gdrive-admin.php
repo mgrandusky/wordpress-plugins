@@ -480,7 +480,7 @@ class GDrive_Admin {
         if ( $screen && strpos( $screen->id, 'gdrive' ) !== false ) {
             echo '<div class="notice notice-info">';
             echo '<p><strong>Google Drive Gallery Version: ' . esc_html( GDRIVE_GALLERY_VERSION ) . '</strong></p>';
-            echo '<p>Proxy endpoint: ' . esc_html( home_url( '/gdrive-image/TEST_ID?size=medium' ) ) . '</p>';
+            echo '<p>Proxy endpoint example: ' . esc_html( home_url( '/gdrive-image/{FILE_ID}?size=medium' ) ) . '</p>';
             echo '</div>';
         }
     }
