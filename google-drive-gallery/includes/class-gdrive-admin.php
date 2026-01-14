@@ -26,6 +26,9 @@ class GDrive_Admin {
         add_action( 'admin_init', [ $this, 'handle_oauth_callback' ] );
         add_action( 'wp_ajax_gdrive_test_connection', [ $this, 'ajax_test_connection' ] );
         add_action( 'wp_ajax_gdrive_clear_cache', [ $this, 'ajax_clear_cache' ] );
+        
+        // Show version in admin
+        add_action( 'admin_notices', [ $this, 'show_version_notice' ] );
     }
 
     /**
@@ -467,5 +470,18 @@ class GDrive_Admin {
                 $count
             ),
         ] );
+    }
+
+    /**
+     * Show current plugin version in admin
+     */
+    public function show_version_notice() {
+        $screen = get_current_screen();
+        if ( $screen && strpos( $screen->id, 'gdrive' ) !== false ) {
+            echo '<div class="notice notice-info">';
+            echo '<p><strong>Google Drive Gallery Version: ' . esc_html( GDRIVE_GALLERY_VERSION ) . '</strong></p>';
+            echo '<p>Proxy endpoint example: ' . esc_html( home_url( '/gdrive-image/{FILE_ID}?size=medium' ) ) . '</p>';
+            echo '</div>';
+        }
     }
 }
