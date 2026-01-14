@@ -298,16 +298,16 @@ class GDrive_Gallery {
 
         foreach ( $subfolders as $folder ) {
             $thumbnail_url = GDrive_API::get_thumbnail_url( $folder['preview_image'], $atts['thumbnail_size'] );
-            $folder_name = esc_html( $folder['name'] );
+            $folder_name = $folder['name'];
             $image_count = absint( $folder['image_count'] );
-            $images_json = esc_attr( wp_json_encode( $folder['images'] ) );
+            $images_json = wp_json_encode( $folder['images'] );
             
-            $html .= '<div class="gdrive-folder-card" data-folder-id="' . esc_attr( $folder['id'] ) . '" data-folder-name="' . esc_attr( $folder_name ) . '" data-images=\'' . $images_json . '\'>';
+            $html .= '<div class="gdrive-folder-card" data-folder-id="' . esc_attr( $folder['id'] ) . '" data-folder-name="' . esc_attr( $folder_name ) . '" data-images="' . esc_attr( $images_json ) . '">';
             $html .= '<div class="gdrive-folder-thumbnail" style="position: relative; overflow: hidden; cursor: pointer; border-radius: 8px;">';
             $html .= '<img src="' . esc_url( $thumbnail_url ) . '" alt="' . esc_attr( $folder_name ) . '" loading="lazy" style="width: 100%; height: 200px; object-fit: cover;" />';
             $html .= '<div class="gdrive-folder-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 15px;">';
             $html .= '<div class="gdrive-folder-icon" style="font-size: 24px; margin-bottom: 5px;">📁</div>';
-            $html .= '<h3 class="gdrive-folder-name" style="margin: 0 0 5px 0; font-size: 16px; font-weight: 600;">' . $folder_name . '</h3>';
+            $html .= '<h3 class="gdrive-folder-name" style="margin: 0 0 5px 0; font-size: 16px; font-weight: 600;">' . esc_html( $folder_name ) . '</h3>';
             $html .= '<p class="gdrive-folder-count" style="margin: 0; font-size: 14px; opacity: 0.9;">' . sprintf( _n( '%d photo', '%d photos', $image_count, 'google-drive-gallery' ), $image_count ) . '</p>';
             $html .= '</div>'; // overlay
             $html .= '</div>'; // thumbnail

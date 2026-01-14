@@ -301,9 +301,14 @@ function openFolderLightbox(galleryId, folderName, images) {
     
     // Close button
     const closeBtn = lightbox.querySelector('.gdrive-lightbox-close');
-    closeBtn.addEventListener('click', function() {
+    function closeLightbox() {
         lightbox.style.display = 'none';
-    });
+        // Clean up keyboard listener to prevent memory leak
+        if (typeof keydownHandler !== 'undefined') {
+            document.removeEventListener('keydown', keydownHandler);
+        }
+    }
+    closeBtn.addEventListener('click', closeLightbox);
     
     // Navigation
     if (images.length > 1) {
@@ -323,33 +328,35 @@ function openFolderLightbox(galleryId, folderName, images) {
             if (counter) counter.textContent = (currentIndex + 1) + ' / ' + images.length;
         });
         
-        // Keyboard navigation
-        function handleKeydown(e) {
+        // Keyboard navigation with proper cleanup
+        var keydownHandler = function(e) {
             if (lightbox.style.display === 'block') {
                 if (e.key === 'ArrowLeft') {
                     prevBtn.click();
                 } else if (e.key === 'ArrowRight') {
                     nextBtn.click();
                 } else if (e.key === 'Escape') {
-                    closeBtn.click();
-                    document.removeEventListener('keydown', handleKeydown);
+                    closeLightbox();
                 }
             }
-        }
+        };
         
-        document.addEventListener('keydown', handleKeydown);
+        document.addEventListener('keydown', keydownHandler);
     }
     
     // Click overlay to close
     const overlay = lightbox.querySelector('.gdrive-lightbox-overlay');
     overlay.addEventListener('click', function(e) {
         if (e.target === this) {
-            closeBtn.click();
+            closeLightbox();
         }
     });
 }
 
 function escapeHtml(text) {
+    // Server-side escaping via esc_attr() in PHP already protects against XSS
+    // This function provides additional client-side protection for folder names
+    // displayed in dynamically generated lightbox HTML
     const map = {
         '&': '&amp;',
         '<': '&lt;',
