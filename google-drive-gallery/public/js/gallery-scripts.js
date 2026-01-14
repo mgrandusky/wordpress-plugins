@@ -266,6 +266,16 @@ function openFolderLightbox(galleryId, folderName, images) {
     
     let currentIndex = 0;
     let keydownHandler = null; // Declare at function scope
+    let imageLoadHandler = null; // For cleanup
+    let imageErrorHandler = null; // For cleanup
+    
+    // Add CSS animation to head if not already present
+    if (!document.getElementById('gdrive-lightbox-spinner-style')) {
+        const style = document.createElement('style');
+        style.id = 'gdrive-lightbox-spinner-style';
+        style.textContent = '@keyframes gdrive-spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }';
+        document.head.appendChild(style);
+    }
     
     function getImageUrl(file) {
         if (file && file.id) {
@@ -274,24 +284,29 @@ function openFolderLightbox(galleryId, folderName, images) {
         return '';
     }
     
-    function updateImage(index) {
-        const img = document.getElementById('gdrive-lightbox-current-image');
-        if (img && images[index]) {
-            img.src = getImageUrl(images[index]);
-        }
-    }
-    
     let html = '<div class="gdrive-lightbox-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">';
-    html += '<div class="gdrive-lightbox-content" style="max-width: 90%; max-height: 90%; position: relative; text-align: center;">';
+    html += '<div class="gdrive-lightbox-content" style="position: relative; max-width: 90%; max-height: 90%; text-align: center;">';
     html += '<div class="gdrive-lightbox-header" style="color: white; margin-bottom: 20px;"><h2 style="margin: 0; font-size: 24px;">' + escapeHtml(folderName) + '</h2></div>';
-    html += '<button class="gdrive-lightbox-close" style="position: absolute; top: 10px; right: 10px; background: white; border: none; font-size: 30px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; z-index: 10000; color: black;">&times;</button>';
+    
+    // Image container with loading spinner
+    html += '<div class="gdrive-lightbox-image-wrapper" style="position: relative; display: inline-block;">';
+    
+    // Loading spinner
+    html += '<div class="gdrive-lightbox-loader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: gdrive-spin 1s linear infinite; z-index: 1;"></div>';
+    
+    // Image
     html += '<div class="gdrive-lightbox-image-container" style="position: relative;">';
-    html += '<img id="gdrive-lightbox-current-image" src="' + getImageUrl(images[0]) + '" style="max-width: 100%; max-height: 80vh; display: block; margin: 0 auto;" />';
-    html += '</div>';
+    html += '<img id="gdrive-lightbox-current-image" src="' + getImageUrl(images[0]) + '" style="max-width: 90vw; max-height: 80vh; display: block; margin: 0 auto; opacity: 0; transition: opacity 0.3s ease;" />';
+    
+    // Close button on IMAGE (not screen corner)
+    html += '<button class="gdrive-lightbox-close" style="position: absolute; top: -15px; right: -15px; background: white; border: none; font-size: 24px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; z-index: 10000; color: black; box-shadow: 0 2px 10px rgba(0,0,0,0.5); line-height: 1; font-weight: bold;">&times;</button>';
+    
+    html += '</div>'; // image-container
+    html += '</div>'; // image-wrapper
     
     if (images.length > 1) {
-        html += '<button class="gdrive-lightbox-prev" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; color: black;">&#8249;</button>';
-        html += '<button class="gdrive-lightbox-next" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; color: black;">&#8250;</button>';
+        html += '<button class="gdrive-lightbox-prev" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; color: black; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">&#8249;</button>';
+        html += '<button class="gdrive-lightbox-next" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; border: none; font-size: 30px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; color: black; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">&#8250;</button>';
         html += '<div class="gdrive-lightbox-counter" style="color: white; margin-top: 10px; font-size: 16px;">1 / ' + images.length + '</div>';
     }
     
@@ -300,8 +315,35 @@ function openFolderLightbox(galleryId, folderName, images) {
     lightbox.innerHTML = html;
     lightbox.style.display = 'block';
     
-    // Close button
+    // Get elements
+    const img = document.getElementById('gdrive-lightbox-current-image');
+    const loader = lightbox.querySelector('.gdrive-lightbox-loader');
     const closeBtn = lightbox.querySelector('.gdrive-lightbox-close');
+    const overlay = lightbox.querySelector('.gdrive-lightbox-overlay');
+    
+    // Show image when loaded, hide spinner
+    function handleImageLoad() {
+        if (loader) loader.style.display = 'none';
+        if (img) img.style.opacity = '1';
+    }
+    
+    // Show spinner when loading new image
+    function handleImageLoadStart() {
+        if (loader) loader.style.display = 'block';
+        if (img) img.style.opacity = '0';
+    }
+    
+    // Initial load - store handlers for cleanup
+    imageLoadHandler = handleImageLoad;
+    imageErrorHandler = function() {
+        if (loader) loader.style.display = 'none';
+        console.error('Failed to load image');
+    };
+    
+    img.addEventListener('load', imageLoadHandler);
+    img.addEventListener('error', imageErrorHandler);
+    
+    // Close button
     function closeLightbox() {
         lightbox.style.display = 'none';
         // Clean up keyboard listener to prevent memory leak
@@ -309,8 +351,39 @@ function openFolderLightbox(galleryId, folderName, images) {
             document.removeEventListener('keydown', keydownHandler);
             keydownHandler = null;
         }
+        // Clean up image event listeners to prevent memory leak
+        if (img && imageLoadHandler) {
+            img.removeEventListener('load', imageLoadHandler);
+            imageLoadHandler = null;
+        }
+        if (img && imageErrorHandler) {
+            img.removeEventListener('error', imageErrorHandler);
+            imageErrorHandler = null;
+        }
     }
-    closeBtn.addEventListener('click', closeLightbox);
+    closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent event bubbling
+        closeLightbox();
+    });
+    
+    // Click anywhere outside image to close
+    overlay.addEventListener('click', function(e) {
+        // Only close if clicking the overlay itself (dark background)
+        // Not when clicking the content area
+        if (e.target === overlay) {
+            closeLightbox();
+        }
+    });
+    
+    // Update the updateImage function to show/hide loader
+    function updateImage(index) {
+        if (img && images[index]) {
+            handleImageLoadStart();
+            // When img.src changes, the 'load' event listener will fire for the new image
+            // The existing addEventListener('load') handler will be called automatically
+            img.src = getImageUrl(images[index]);
+        }
+    }
     
     // Navigation
     if (images.length > 1) {
@@ -338,21 +411,22 @@ function openFolderLightbox(galleryId, folderName, images) {
                 } else if (e.key === 'ArrowRight') {
                     nextBtn.click();
                 } else if (e.key === 'Escape') {
-                    closeLightbox();
+                    closeBtn.click();
                 }
             }
         };
         
         document.addEventListener('keydown', keydownHandler);
+    } else {
+        // Even with single image, need keyboard handler for Escape
+        keydownHandler = function(e) {
+            if (lightbox.style.display === 'block' && e.key === 'Escape') {
+                closeBtn.click();
+            }
+        };
+        
+        document.addEventListener('keydown', keydownHandler);
     }
-    
-    // Click overlay to close
-    const overlay = lightbox.querySelector('.gdrive-lightbox-overlay');
-    overlay.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeLightbox();
-        }
-    });
 }
 
 function escapeHtml(text) {
