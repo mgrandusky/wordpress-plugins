@@ -3,7 +3,7 @@
  * Plugin Name: Google Drive Photo Gallery
  * Plugin URI: https://example.com
  * Description: Integrate with Google Drive to create photo galleries from selected folders
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Mason Grandusky
  * Author URI: https://example.com
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'GDRIVE_GALLERY_VERSION', '1.0.0' );
+define( 'GDRIVE_GALLERY_VERSION', '1.0.1' );
 define( 'GDRIVE_GALLERY_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GDRIVE_GALLERY_URL', plugin_dir_url( __FILE__ ) );
 define( 'GDRIVE_GALLERY_BASENAME', plugin_basename( __FILE__ ) );
@@ -59,6 +59,14 @@ class Google_Drive_Gallery {
      * Constructor
      */
     private function __construct() {
+        // EMERGENCY: Force cache clear on every load until images work
+        // TODO: Remove this after confirming images load correctly
+        add_action( 'init', function() {
+            if ( defined( 'GDRIVE_FORCE_CACHE_CLEAR' ) && GDRIVE_FORCE_CACHE_CLEAR ) {
+                GDrive_Cache::clear_all();
+            }
+        }, 1 );
+        
         // Load dependencies
         $this->load_dependencies();
 

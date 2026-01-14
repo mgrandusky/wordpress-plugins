@@ -86,6 +86,27 @@ class GDrive_Cache {
     }
 
     /**
+     * Clear ALL caches (emergency use)
+     */
+    public static function clear_all() {
+        global $wpdb;
+        
+        // Clear all gdrive transients
+        $wpdb->query( 
+            "DELETE FROM {$wpdb->options} 
+             WHERE option_name LIKE '_transient_gdrive%' 
+                OR option_name LIKE '_transient_timeout_gdrive%'"
+        );
+        
+        // Clear object cache if available
+        if ( function_exists( 'wp_cache_flush' ) ) {
+            wp_cache_flush();
+        }
+        
+        return true;
+    }
+
+    /**
      * Get cache duration from settings
      *
      * @return int Cache duration in seconds

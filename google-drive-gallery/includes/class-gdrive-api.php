@@ -217,26 +217,16 @@ class GDrive_API {
      * @return string Thumbnail URL
      */
     public static function get_thumbnail_url( $file, $size = 'medium' ) {
-        $sizes = [
-            'small' => 200,
-            'medium' => 400,
-            'large' => 800,
-        ];
-
-        $dimension = $sizes[ $size ] ?? $sizes['medium'];
-
-        // Use thumbnailLink if available
-        if ( isset( $file['thumbnailLink'] ) ) {
-            // Modify thumbnail size in URL
-            return preg_replace( '/=s\d+/', "=s{$dimension}", $file['thumbnailLink'] );
-        }
-
-        // Fallback: generate thumbnail URL
         if ( isset( $file['id'] ) ) {
-            $access_token = self::get_access_token();
-            if ( ! is_wp_error( $access_token ) ) {
-                return self::API_BASE_URL . '/files/' . $file['id'] . "?alt=media&maxWidth={$dimension}&maxHeight={$dimension}";
+            // Use proxy endpoint with size parameter
+            $url = home_url( '/gdrive-image/' . $file['id'] . '?size=' . urlencode( $size ) );
+            
+            // TEMPORARY DEBUG - Remove after testing
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( 'GDrive Thumbnail URL generated: ' . $url );
             }
+            
+            return $url;
         }
 
         return '';
