@@ -34,6 +34,7 @@ class GDrive_Gallery {
             'thumbnail_size' => 'medium',
             'title' => '',
             'custom_class' => '',
+            'display_mode' => 'auto',
         ], $atts, 'gdrive_gallery' );
 
         // Convert string booleans to actual booleans
@@ -84,6 +85,33 @@ class GDrive_Gallery {
         if ( ! GDrive_Auth::is_authenticated() ) {
             return $this->render_error( __( 'Google Drive authentication not configured. Please configure in plugin settings.', 'google-drive-gallery' ) );
         }
+
+        $display_mode = sanitize_text_field( $atts['display_mode'] );
+        
+        // Auto-detect: Check if folder has subfolders
+        if ( 'auto' === $display_mode ) {
+            $subfolders = GDrive_API::get_subfolders_with_preview( $atts['folder_id'] );
+            
+            if ( ! is_wp_error( $subfolders ) && ! empty( $subfolders ) ) {
+                // Has subfolders, use folder view
+                return $this->render_folder_gallery( $atts, $subfolders );
+            }
+            // No subfolders, fall through to regular image gallery
+        } elseif ( 'folders' === $display_mode ) {
+            // Force folder view
+            $subfolders = GDrive_API::get_subfolders_with_preview( $atts['folder_id'] );
+            
+            if ( is_wp_error( $subfolders ) ) {
+                return $this->render_error( $subfolders->get_error_message() );
+            }
+            
+            if ( empty( $subfolders ) ) {
+                return $this->render_error( __( 'No subfolders found in this folder', 'google-drive-gallery' ) );
+            }
+            
+            return $this->render_folder_gallery( $atts, $subfolders );
+        }
+        // 'flat' mode or auto with no subfolders - use regular gallery
 
         // Get files from Google Drive
         $files = GDrive_API::get_folder_files( $atts['folder_id'], $atts['include_subfolders'] );
@@ -239,5 +267,62 @@ class GDrive_Gallery {
      */
     private function render_error( $message ) {
         return '<div class="gdrive-gallery-error"><p>' . esc_html( $message ) . '</p></div>';
+    }
+
+    /**
+     * Render folder card gallery
+     *
+     * @param array $atts Gallery attributes
+     * @param array $subfolders Array of subfolder data
+     * @return string Gallery HTML
+     */
+    private function render_folder_gallery( $atts, $subfolders ) {
+        $gallery_id = 'gdrive-folder-gallery-' . uniqid();
+        $columns = absint( $atts['columns'] );
+        $spacing = absint( $atts['spacing'] );
+        $custom_class = sanitize_html_class( $atts['custom_class'] );
+
+        $classes = [ 'gdrive-gallery', 'gdrive-folder-gallery' ];
+        if ( $custom_class ) {
+            $classes[] = $custom_class;
+        }
+
+        $html = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" id="' . esc_attr( $gallery_id ) . '" data-columns="' . esc_attr( $columns ) . '" data-spacing="' . esc_attr( $spacing ) . '">';
+
+        // Add title if specified
+        if ( ! empty( $atts['title'] ) ) {
+            $html .= '<h2 class="gdrive-gallery-title">' . esc_html( $atts['title'] ) . '</h2>';
+        }
+
+        $html .= '<div class="gdrive-folder-grid" style="display: grid; grid-template-columns: repeat(' . esc_attr( $columns ) . ', 1fr); gap: ' . esc_attr( $spacing ) . 'px;">';
+
+        foreach ( $subfolders as $folder ) {
+            $thumbnail_url = GDrive_API::get_thumbnail_url( $folder['preview_image'], $atts['thumbnail_size'] );
+            $folder_name = esc_html( $folder['name'] );
+            $image_count = absint( $folder['image_count'] );
+            $images_json = esc_attr( wp_json_encode( $folder['images'] ) );
+            
+            $html .= '<div class="gdrive-folder-card" data-folder-id="' . esc_attr( $folder['id'] ) . '" data-folder-name="' . esc_attr( $folder_name ) . '" data-images=\'' . $images_json . '\'>';
+            $html .= '<div class="gdrive-folder-thumbnail" style="position: relative; overflow: hidden; cursor: pointer; border-radius: 8px;">';
+            $html .= '<img src="' . esc_url( $thumbnail_url ) . '" alt="' . esc_attr( $folder_name ) . '" loading="lazy" style="width: 100%; height: 200px; object-fit: cover;" />';
+            $html .= '<div class="gdrive-folder-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 15px;">';
+            $html .= '<div class="gdrive-folder-icon" style="font-size: 24px; margin-bottom: 5px;">📁</div>';
+            $html .= '<h3 class="gdrive-folder-name" style="margin: 0 0 5px 0; font-size: 16px; font-weight: 600;">' . $folder_name . '</h3>';
+            $html .= '<p class="gdrive-folder-count" style="margin: 0; font-size: 14px; opacity: 0.9;">' . sprintf( _n( '%d photo', '%d photos', $image_count, 'google-drive-gallery' ), $image_count ) . '</p>';
+            $html .= '</div>'; // overlay
+            $html .= '</div>'; // thumbnail
+            $html .= '</div>'; // card
+        }
+
+        $html .= '</div>'; // grid
+        
+        // Add lightbox container
+        if ( $atts['lightbox'] ) {
+            $html .= '<div id="' . esc_attr( $gallery_id ) . '-lightbox" class="gdrive-lightbox" style="display:none;"></div>';
+        }
+        
+        $html .= '</div>'; // gallery
+
+        return $html;
     }
 }

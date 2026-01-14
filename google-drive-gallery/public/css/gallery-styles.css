@@ -244,3 +244,40 @@
         opacity: 0.6;
     }
 }
+
+/* Folder Card Styles */
+.gdrive-folder-gallery .gdrive-folder-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.gdrive-folder-gallery .gdrive-folder-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.gdrive-folder-thumbnail {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.gdrive-folder-overlay {
+    transition: background 0.2s ease;
+}
+
+.gdrive-folder-card:hover .gdrive-folder-overlay {
+    background: rgba(0,0,0,0.85) !important;
+}
+
+/* Responsive adjustments for folder cards */
+@media (max-width: 768px) {
+    .gdrive-folder-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .gdrive-folder-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

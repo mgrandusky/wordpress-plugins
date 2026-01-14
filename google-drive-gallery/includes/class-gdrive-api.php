@@ -148,7 +148,7 @@ class GDrive_API {
      * @param string $folder_id Folder ID
      * @return array|WP_Error Array of files or error
      */
-    private static function get_files_in_single_folder( $folder_id ) {
+    public static function get_files_in_single_folder( $folder_id ) {
         $mime_types = implode( ' or ', array_map( function( $type ) {
             return "mimeType='{$type}'";
         }, self::IMAGE_MIME_TYPES ) );
@@ -191,7 +191,7 @@ class GDrive_API {
      * @param string $folder_id Folder ID
      * @return array|WP_Error Array of subfolders or error
      */
-    private static function get_subfolders( $folder_id ) {
+    public static function get_subfolders( $folder_id ) {
         $query = "'{$folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
 
         $params = [
@@ -207,6 +207,53 @@ class GDrive_API {
         }
 
         return $response['files'] ?? [];
+    }
+
+    /**
+     * Get subfolders with preview data
+     *
+     * @param string $folder_id Parent folder ID
+     * @return array|WP_Error Array of subfolders with metadata
+     */
+    public static function get_subfolders_with_preview( $folder_id ) {
+        // Sanitize folder ID
+        $folder_id = sanitize_text_field( $folder_id );
+        
+        // Check cache first
+        $cache_key = 'gdrive_subfolders_preview_' . md5( $folder_id );
+        $cached = GDrive_Cache::get( $cache_key );
+        
+        if ( false !== $cached ) {
+            return $cached;
+        }
+        
+        $subfolders = self::get_subfolders( $folder_id );
+        
+        if ( is_wp_error( $subfolders ) ) {
+            return $subfolders;
+        }
+        
+        $result = [];
+        
+        foreach ( $subfolders as $folder ) {
+            // Get images in this subfolder
+            $files = self::get_files_in_single_folder( $folder['id'] );
+            
+            if ( ! is_wp_error( $files ) && ! empty( $files ) ) {
+                $result[] = [
+                    'id' => $folder['id'],
+                    'name' => $folder['name'],
+                    'preview_image' => $files[0], // First image
+                    'image_count' => count( $files ),
+                    'images' => $files, // All images for lightbox
+                ];
+            }
+        }
+        
+        // Cache the results
+        GDrive_Cache::set( $cache_key, $result );
+        
+        return $result;
     }
 
     /**
