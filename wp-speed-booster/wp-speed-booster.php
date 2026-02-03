@@ -82,6 +82,13 @@ class WP_Speed_Booster {
 	private $preload;
 
 	/**
+	 * Critical CSS instance
+	 *
+	 * @var WPSB_Critical_CSS
+	 */
+	private $critical_css;
+
+	/**
 	 * Admin instance
 	 *
 	 * @var WPSB_Admin
@@ -114,6 +121,7 @@ class WP_Speed_Booster {
 		$this->database  = new WPSB_Database();
 		$this->cdn       = new WPSB_CDN();
 		$this->preload   = new WPSB_Preload();
+		$this->critical_css = new WPSB_Critical_CSS();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -134,6 +142,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-database.php';
 		require_once WPSB_DIR . 'includes/class-cdn.php';
 		require_once WPSB_DIR . 'includes/class-preload.php';
+		require_once WPSB_DIR . 'includes/class-critical-css.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
@@ -211,6 +220,13 @@ class WP_Speed_Booster {
 			'disable_jquery_migrate'     => 0,
 			'remove_wp_version'          => 1,
 			'remove_rsd_links'           => 1,
+			'critical_css_enabled'       => 0,
+			'critical_css_mode'          => 'auto',
+			'critical_css_defer'         => 0,
+			'critical_css_desktop'       => 1,
+			'critical_css_mobile'        => 1,
+			'critical_css_exclude'       => '',
+			'critical_css_manual'        => '',
 		);
 
 		// Don't override existing options
