@@ -226,9 +226,11 @@ class WPSB_Critical_CSS {
 	 * @return string Critical CSS
 	 */
 	private function extract_above_fold_css( $html, $css, $viewport ) {
-		// Parse HTML into DOM
+		// Parse HTML into DOM with error handling
+		libxml_use_internal_errors( true );
 		$dom = new DOMDocument();
-		@$dom->loadHTML( $html );
+		$dom->loadHTML( $html );
+		libxml_clear_errors();
 		
 		// Get viewport dimensions
 		$viewport_height = ( $viewport === 'mobile' ) ? 667 : 1080;
@@ -255,9 +257,11 @@ class WPSB_Critical_CSS {
 	private function parse_html_for_selectors( $html, $viewport ) {
 		$selectors = array();
 		
-		// Get all elements using DOM
+		// Get all elements using DOM with error handling
+		libxml_use_internal_errors( true );
 		$dom = new DOMDocument();
-		@$dom->loadHTML( $html );
+		$dom->loadHTML( $html );
+		libxml_clear_errors();
 		
 		$xpath = new DOMXPath( $dom );
 		
@@ -399,8 +403,11 @@ class WPSB_Critical_CSS {
 	 */
 	public function clear_all_critical_css() {
 		global $wpdb;
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wpsb_critical_css_%'" );
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wpsb_critical_css_%'" );
+		$prefix = $wpdb->esc_like( '_transient_wpsb_critical_css_' ) . '%';
+		$timeout_prefix = $wpdb->esc_like( '_transient_timeout_wpsb_critical_css_' ) . '%';
+		
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $timeout_prefix ) );
 	}
 
 	/**
@@ -493,7 +500,7 @@ class WPSB_Critical_CSS {
 		
 		// Save critical CSS
 		if ( isset( $_POST['wpsb_critical_css'] ) ) {
-			$critical_css = wp_strip_all_tags( $_POST['wpsb_critical_css'] );
+			$critical_css = sanitize_textarea_field( $_POST['wpsb_critical_css'] );
 			update_post_meta( $post_id, '_wpsb_critical_css', $critical_css );
 		}
 	}

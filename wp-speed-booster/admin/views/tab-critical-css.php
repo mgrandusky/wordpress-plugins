@@ -178,7 +178,8 @@ $critical_css_manual = ! empty( $options['critical_css_manual'] ) ? $options['cr
 					
 					$has_css = ! empty( $manual_css ) || ! empty( $cached_css );
 					$css_size = $has_css ? strlen( $manual_css ? $manual_css : $cached_css ) : 0;
-					$status = $has_css ? '<span style="color:green;">✓</span>' : '<span style="color:gray;">—</span>';
+					$status_icon = $has_css ? '✓' : '—';
+					$status_color = $has_css ? 'green' : 'gray';
 					$date = $has_css ? get_the_modified_date() : '—';
 					?>
 					<tr>
@@ -186,7 +187,7 @@ $critical_css_manual = ! empty( $options['critical_css_manual'] ) ? $options['cr
 							<strong><a href="<?php echo esc_url( get_edit_post_link() ); ?>"><?php the_title(); ?></a></strong>
 							<br><small><?php echo esc_html( get_post_type() ); ?></small>
 						</td>
-						<td><?php echo $status; ?></td>
+						<td><span style="color:<?php echo esc_attr( $status_color ); ?>;"><?php echo esc_html( $status_icon ); ?></span></td>
 						<td><?php echo esc_html( $date ); ?></td>
 						<td><?php echo $css_size > 0 ? esc_html( size_format( $css_size ) ) : '—'; ?></td>
 						<td>

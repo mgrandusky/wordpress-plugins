@@ -103,7 +103,7 @@ class WPSB_Admin {
 		$sanitized['db_auto_optimize'] = ! empty( $input['db_auto_optimize'] ) ? sanitize_text_field( $input['db_auto_optimize'] ) : 'disabled';
 		$sanitized['critical_css_mode'] = ! empty( $input['critical_css_mode'] ) ? sanitize_text_field( $input['critical_css_mode'] ) : 'auto';
 		$sanitized['critical_css_exclude'] = ! empty( $input['critical_css_exclude'] ) ? sanitize_textarea_field( $input['critical_css_exclude'] ) : '';
-		$sanitized['critical_css_manual'] = ! empty( $input['critical_css_manual'] ) ? wp_strip_all_tags( $input['critical_css_manual'] ) : '';
+		$sanitized['critical_css_manual'] = ! empty( $input['critical_css_manual'] ) ? sanitize_textarea_field( $input['critical_css_manual'] ) : '';
 
 		return $sanitized;
 	}
