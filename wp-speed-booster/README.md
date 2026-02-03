@@ -25,16 +25,21 @@ A comprehensive WordPress page speed optimization plugin similar to WP Rocket, f
 - Defer/async JavaScript loading
 - Query string removal
 - WooCommerce compatible
+- **Font Optimization** - Local Google Fonts hosting, preloading, and font-display strategies
+- **WebP Images** - Automatic WebP conversion and serving
 
 ### 🎛️ Admin Interface
-7 comprehensive tabs for easy configuration:
+9 comprehensive tabs for easy configuration:
 1. **Dashboard** - Overview and quick actions
 2. **Cache** - Cache management and statistics
 3. **Optimization** - Minification settings
 4. **Media** - Lazy loading configuration
-5. **Critical CSS** - Critical CSS generation and management
-6. **Database** - Database optimization tools
-7. **Advanced** - CDN, DNS, and advanced features
+5. **WebP Images** - WebP conversion and optimization
+6. **Critical CSS** - Critical CSS generation and management
+7. **Fonts** - Font optimization and local Google Fonts hosting
+8. **Performance Metrics** - Performance monitoring and tracking
+9. **Database** - Database optimization tools
+10. **Advanced** - CDN, DNS, and advanced features
 
 ## Installation
 
@@ -67,13 +72,17 @@ wp-speed-booster/
 │   ├── class-database.php    # Database optimization
 │   ├── class-cdn.php         # CDN integration
 │   ├── class-preload.php     # Cache preloading
-│   └── class-critical-css.php # Critical CSS generation
+│   ├── class-critical-css.php # Critical CSS generation
+│   ├── class-webp.php        # WebP conversion
+│   └── class-font-optimizer.php # Font optimization
 ├── admin/
 │   ├── class-admin.php       # Admin interface
 │   ├── admin.css             # Admin styling
 │   ├── admin.js              # Admin JavaScript
 │   └── views/
-│       └── tab-critical-css.php # Critical CSS admin tab
+│       ├── tab-critical-css.php # Critical CSS admin tab
+│       ├── tab-webp.php         # WebP admin tab
+│       └── tab-fonts.php        # Fonts admin tab
 └── assets/
     ├── lazy-load.js          # Frontend lazy loading
     └── frontend.css          # Frontend styles
@@ -125,6 +134,58 @@ The Critical CSS feature automatically generates and inlines above-the-fold CSS 
 - 🎨 **No FOUC** - Prevents Flash of Unstyled Content
 - 📱 **Mobile Optimized** - Separate critical CSS for mobile devices
 - 🔄 **Auto-Regenerate** - Updates on theme/plugin changes
+
+## Font Optimization Feature
+
+The Font Optimization feature provides comprehensive font loading strategies, including local Google Fonts hosting, to improve page load times and eliminate render-blocking font requests.
+
+### Features
+
+1. **Local Google Fonts Hosting** - Download and serve Google Fonts from your server
+2. **Font-Display Strategies** - Choose between swap, block, fallback, optional, or auto
+3. **Auto-Detection** - Automatically detect Google Fonts used on your site
+4. **DNS Prefetch & Preconnect** - Establish early connections to font servers
+5. **Font Preloading** - Load critical fonts immediately
+6. **Bulk Download** - Download all detected fonts at once
+7. **GDPR Compliant** - No data sent to Google when using local fonts
+
+### How It Works
+
+1. **Enable Font Optimization:**
+   - Go to **Settings → WP Speed Booster → Fonts**
+   - Check "Enable Font Optimization"
+   - Select your preferred font-display strategy (recommended: swap)
+
+2. **Host Google Fonts Locally:**
+   - Check "Host Google Fonts Locally"
+   - Plugin automatically detects all Google Fonts in use
+   - Click "Download Locally" for each font or "Download All Fonts"
+   - Fonts are stored in `/wp-content/uploads/wpsb-fonts/`
+
+3. **Configure Resource Hints:**
+   - Enable DNS Prefetch for early DNS resolution
+   - Enable Preconnect for faster font loading
+   
+4. **Preload Critical Fonts:**
+   - Add font URLs (one per line) in the "Preload Fonts" field
+   - Example: `/wp-content/themes/your-theme/fonts/main.woff2`
+
+### Benefits
+
+- ⚡ **Eliminates External Requests** - No network latency to Google servers
+- 🚀 **Faster Font Loading** - Fonts load from your server with preload
+- ✅ **No FOIT** - Font-display:swap prevents invisible text
+- 📊 **Better Performance** - Reduces render-blocking resources
+- 🔒 **GDPR Compliant** - No user data sent to third parties
+- 💾 **Better Caching** - Full control over font cache headers
+
+### Font Display Strategies
+
+- **Swap (Recommended)** - Shows fallback font immediately, swaps when web font loads
+- **Block** - Brief invisible period while font loads
+- **Fallback** - Very brief invisible period, then fallback, then swap
+- **Optional** - Only use web font if already cached
+- **Auto** - Browser decides the strategy
 
 ## Requirements
 
