@@ -96,6 +96,13 @@ class WP_Speed_Booster {
 	private $admin;
 
 	/**
+	 * WebP instance
+	 *
+	 * @var WPSB_WebP
+	 */
+	private $webp;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -122,6 +129,7 @@ class WP_Speed_Booster {
 		$this->cdn       = new WPSB_CDN();
 		$this->preload   = new WPSB_Preload();
 		$this->critical_css = new WPSB_Critical_CSS();
+		$this->webp      = new WPSB_WebP();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -143,6 +151,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-cdn.php';
 		require_once WPSB_DIR . 'includes/class-preload.php';
 		require_once WPSB_DIR . 'includes/class-critical-css.php';
+		require_once WPSB_DIR . 'includes/class-webp.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
@@ -227,6 +236,8 @@ class WP_Speed_Booster {
 			'critical_css_mobile'        => 1,
 			'critical_css_exclude'       => '',
 			'critical_css_manual'        => '',
+			'webp_enabled'               => 0,
+			'webp_quality'               => 85,
 		);
 
 		// Don't override existing options
