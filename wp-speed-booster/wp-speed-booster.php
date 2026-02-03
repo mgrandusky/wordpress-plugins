@@ -152,6 +152,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-preload.php';
 		require_once WPSB_DIR . 'includes/class-critical-css.php';
 		require_once WPSB_DIR . 'includes/class-webp.php';
+		require_once WPSB_DIR . 'includes/class-performance-metrics.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
@@ -255,6 +256,9 @@ class WP_Speed_Booster {
 		if ( ! wp_next_scheduled( 'wpsb_auto_db_optimize' ) ) {
 			wp_schedule_event( time(), 'daily', 'wpsb_auto_db_optimize' );
 		}
+
+		// Setup performance metrics scheduled checks
+		WP_Speed_Booster_Performance_Metrics::activate();
 	}
 
 	/**
@@ -263,6 +267,7 @@ class WP_Speed_Booster {
 	public function deactivate() {
 		// Unschedule events
 		wp_clear_scheduled_hook( 'wpsb_auto_db_optimize' );
+		WP_Speed_Booster_Performance_Metrics::deactivate();
 	}
 
 	/**
