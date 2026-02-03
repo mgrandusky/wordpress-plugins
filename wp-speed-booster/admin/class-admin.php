@@ -82,6 +82,7 @@ class WPSB_Admin {
 			'db_optimize_tables', 'db_clean_transients', 'db_clean_spam',
 			'cdn_enabled', 'disable_emojis', 'disable_embeds', 'disable_jquery_migrate',
 			'remove_wp_version', 'remove_rsd_links',
+			'critical_css_enabled', 'critical_css_defer', 'critical_css_desktop', 'critical_css_mobile',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -100,6 +101,10 @@ class WPSB_Admin {
 		$sanitized['cdn_url'] = ! empty( $input['cdn_url'] ) ? esc_url_raw( $input['cdn_url'] ) : '';
 		$sanitized['dns_prefetch'] = ! empty( $input['dns_prefetch'] ) ? sanitize_textarea_field( $input['dns_prefetch'] ) : '';
 		$sanitized['db_auto_optimize'] = ! empty( $input['db_auto_optimize'] ) ? sanitize_text_field( $input['db_auto_optimize'] ) : 'disabled';
+		$sanitized['critical_css_mode'] = ! empty( $input['critical_css_mode'] ) ? sanitize_text_field( $input['critical_css_mode'] ) : 'auto';
+		$sanitized['critical_css_exclude'] = ! empty( $input['critical_css_exclude'] ) ? sanitize_textarea_field( $input['critical_css_exclude'] ) : '';
+		// Sanitize CSS while preserving newlines
+		$sanitized['critical_css_manual'] = ! empty( $input['critical_css_manual'] ) ? wp_kses( $input['critical_css_manual'], array() ) : '';
 
 		return $sanitized;
 	}
@@ -173,6 +178,9 @@ class WPSB_Admin {
 					<a href="#tab-media" class="nav-tab wpspeed-nav-tab" data-tab="media">
 						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Media', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-critical-css" class="nav-tab wpspeed-nav-tab" data-tab="critical-css">
+						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
 						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'wp-speed-booster' ); ?>
 					</a>
@@ -196,6 +204,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-media" class="wpspeed-tab-content">
 					<?php $this->render_media_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-critical-css" class="wpspeed-tab-content">
+					<?php $this->render_critical_css_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-database" class="wpspeed-tab-content">
@@ -482,6 +494,18 @@ class WPSB_Admin {
 			</tr>
 		</table>
 		<?php
+	}
+
+	/**
+	 * Render critical CSS tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_critical_css_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-critical-css.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-critical-css.php';
+		}
 	}
 
 	/**
