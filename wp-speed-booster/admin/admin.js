@@ -40,7 +40,13 @@
             var activeTab = hash || sessionTab || 'dashboard';
             
             // Trigger click on the active tab
-            $('.wpspeed-nav-tab[data-tab="' + activeTab + '"]').trigger('click');
+            var $tab = $('.wpspeed-nav-tab[data-tab="' + activeTab + '"]');
+            if ($tab.length) {
+                $tab.trigger('click');
+            } else {
+                // Fallback to dashboard if tab not found
+                $('.wpspeed-nav-tab[data-tab="dashboard"]').trigger('click');
+            }
         }
         
         // Handle browser back/forward buttons
@@ -53,10 +59,6 @@
         
         // Initialize on page load
         loadActiveTab();
-        
-        // Prevent tab content from showing before JS loads
-        $('.wpspeed-tab-content').hide();
-        $('.wpspeed-tab-content.active').show();
 
         // Clear Cache Button
         $('#wpsb-clear-cache-btn').on('click', function(e) {
@@ -214,7 +216,7 @@
 
         // Confirm before leaving page with unsaved changes
         var formChanged = false;
-        $('#wpspeed-settings-form, form').on('change', 'input, select, textarea', function() {
+        $('#wpspeed-settings-form').on('change', 'input, select, textarea', function() {
             formChanged = true;
             
             // Add indicator to tabs with changes
@@ -226,7 +228,7 @@
         });
 
         // Reset on form submit
-        $('#wpspeed-settings-form, form').on('submit', function() {
+        $('#wpspeed-settings-form').on('submit', function() {
             formChanged = false;
             $('.wpspeed-nav-tab').removeClass('has-changes');
         });
