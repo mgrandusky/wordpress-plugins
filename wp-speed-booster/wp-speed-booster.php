@@ -240,6 +240,11 @@ class WP_Speed_Booster {
 			'critical_css_manual'        => '',
 			'webp_enabled'               => 0,
 			'webp_quality'               => 85,
+			'js_delay_enabled'           => 0,
+			'js_defer_enabled'           => 0,
+			'js_delay_timeout'           => 5,
+			'js_delay_exclude'           => '',
+			'js_delay_events'            => 'mousemove,scroll,touchstart,click,keydown',
 		);
 
 		// Don't override existing options

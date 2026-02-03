@@ -28,7 +28,7 @@ class WP_Speed_Booster_JS_Delay {
      * Check if JS delay is enabled
      */
     public function is_enabled() {
-        return !empty($this->settings['js_delay_enabled']);
+        return !empty($this->settings['js_delay_enabled']) || !empty($this->settings['js_defer_enabled']);
     }
     
     /**
