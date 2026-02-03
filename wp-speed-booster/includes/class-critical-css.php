@@ -179,9 +179,14 @@ class WPSB_Critical_CSS {
 	 * @return string|false Critical CSS or false on failure
 	 */
 	public function generate_critical_css( $url, $viewport = 'desktop' ) {
+		// Use current user agent strings
+		$user_agent = $viewport === 'mobile' 
+			? 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1'
+			: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+		
 		$response = wp_remote_get( $url, array( 
 			'timeout' => 30,
-			'user-agent' => $viewport === 'mobile' ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+			'user-agent' => $user_agent
 		) );
 		
 		if ( is_wp_error( $response ) ) {
@@ -332,6 +337,15 @@ class WPSB_Critical_CSS {
 	/**
 	 * Filter CSS by selectors
 	 *
+	 * Note: This is a simplified CSS parser that may not handle all edge cases.
+	 * Known limitations:
+	 * - Nested braces (media queries with complex rules)
+	 * - Advanced selectors with special characters
+	 * - Multi-line CSS rules with complex formatting
+	 * 
+	 * For production use with complex stylesheets, consider using a dedicated
+	 * CSS parser library or external critical CSS generation service.
+	 *
 	 * @param string $css CSS content.
 	 * @param array  $selectors Array of selectors.
 	 * @return string Filtered CSS
@@ -403,11 +417,11 @@ class WPSB_Critical_CSS {
 	 */
 	public function clear_all_critical_css() {
 		global $wpdb;
-		$prefix = $wpdb->esc_like( '_transient_wpsb_critical_css_' ) . '%';
-		$timeout_prefix = $wpdb->esc_like( '_transient_timeout_wpsb_critical_css_' ) . '%';
+		$prefix = $wpdb->esc_like( '_transient_wpsb_critical_css_' );
+		$timeout_prefix = $wpdb->esc_like( '_transient_timeout_wpsb_critical_css_' );
 		
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix ) );
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $timeout_prefix ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix . '%' ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $timeout_prefix . '%' ) );
 	}
 
 	/**
@@ -500,7 +514,8 @@ class WPSB_Critical_CSS {
 		
 		// Save critical CSS
 		if ( isset( $_POST['wpsb_critical_css'] ) ) {
-			$critical_css = sanitize_textarea_field( $_POST['wpsb_critical_css'] );
+			// Sanitize CSS while preserving newlines
+			$critical_css = wp_kses( $_POST['wpsb_critical_css'], array() );
 			update_post_meta( $post_id, '_wpsb_critical_css', $critical_css );
 		}
 	}
