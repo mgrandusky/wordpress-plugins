@@ -83,6 +83,7 @@ class WPSB_Admin {
 			'cdn_enabled', 'disable_emojis', 'disable_embeds', 'disable_jquery_migrate',
 			'remove_wp_version', 'remove_rsd_links',
 			'critical_css_enabled', 'critical_css_defer', 'critical_css_desktop', 'critical_css_mobile',
+			'webp_enabled',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -93,6 +94,7 @@ class WPSB_Admin {
 		$sanitized['cache_lifespan'] = ! empty( $input['cache_lifespan'] ) ? absint( $input['cache_lifespan'] ) : 36000;
 		$sanitized['db_revisions_to_keep'] = ! empty( $input['db_revisions_to_keep'] ) ? absint( $input['db_revisions_to_keep'] ) : 3;
 		$sanitized['lazy_load_skip_images'] = ! empty( $input['lazy_load_skip_images'] ) ? absint( $input['lazy_load_skip_images'] ) : 0;
+		$sanitized['webp_quality'] = ! empty( $input['webp_quality'] ) ? absint( $input['webp_quality'] ) : 85;
 
 		// Text options
 		$sanitized['cache_exclude_urls'] = ! empty( $input['cache_exclude_urls'] ) ? sanitize_textarea_field( $input['cache_exclude_urls'] ) : '';
@@ -178,6 +180,9 @@ class WPSB_Admin {
 					<a href="#tab-media" class="nav-tab wpspeed-nav-tab" data-tab="media">
 						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Media', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-webp" class="nav-tab wpspeed-nav-tab" data-tab="webp">
+						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'WebP Images', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-critical-css" class="nav-tab wpspeed-nav-tab" data-tab="critical-css">
 						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'wp-speed-booster' ); ?>
 					</a>
@@ -204,6 +209,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-media" class="wpspeed-tab-content">
 					<?php $this->render_media_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-webp" class="wpspeed-tab-content">
+					<?php $this->render_webp_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-critical-css" class="wpspeed-tab-content">
@@ -494,6 +503,18 @@ class WPSB_Admin {
 			</tr>
 		</table>
 		<?php
+	}
+
+	/**
+	 * Render WebP tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_webp_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-webp.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-webp.php';
+		}
 	}
 
 	/**
