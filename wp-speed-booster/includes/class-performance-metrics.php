@@ -4,7 +4,9 @@
  * Integrates with Google PageSpeed Insights API and tracks Core Web Vitals
  */
 
-if (!defined('ABSPATH')) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class WP_Speed_Booster_Performance_Metrics {
     
@@ -20,12 +22,6 @@ class WP_Speed_Booster_Performance_Metrics {
         
         // Scheduled checks
         add_action('wpspeed_scheduled_performance_check', array($this, 'scheduled_check'));
-        
-        // Activation hook for scheduling
-        if (!wp_next_scheduled('wpspeed_scheduled_performance_check')) {
-            $frequency = !empty($this->settings['performance_check_frequency']) ? $this->settings['performance_check_frequency'] : 'weekly';
-            wp_schedule_event(time(), $frequency, 'wpspeed_scheduled_performance_check');
-        }
     }
     
     /**
@@ -329,7 +325,34 @@ class WP_Speed_Booster_Performance_Metrics {
         
         wp_send_json_success(array('history' => $history));
     }
+
+    /**
+     * Setup scheduled events on activation
+     */
+    public static function activate() {
+        $options = get_option('wpsb_options', array());
+        if ( ! wp_next_scheduled('wpspeed_scheduled_performance_check') ) {
+            $frequency = ! empty( $options['performance_check_frequency'] ) ? $options['performance_check_frequency'] : 'weekly';
+            wp_schedule_event( time(), $frequency, 'wpspeed_scheduled_performance_check' );
+        }
+    }
+
+    /**
+     * Clear scheduled events on deactivation
+     */
+    public static function deactivate() {
+        wp_clear_scheduled_hook('wpspeed_scheduled_performance_check');
+    }
 }
 
-// Initialize
-new WP_Speed_Booster_Performance_Metrics();
+// Initialize singleton
+if ( ! function_exists( 'wpsb_performance_metrics' ) ) {
+    function wpsb_performance_metrics() {
+        static $instance = null;
+        if ( null === $instance ) {
+            $instance = new WP_Speed_Booster_Performance_Metrics();
+        }
+        return $instance;
+    }
+    wpsb_performance_metrics();
+}

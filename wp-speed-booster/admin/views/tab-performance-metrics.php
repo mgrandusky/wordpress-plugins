@@ -1,5 +1,7 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $metrics = new WP_Speed_Booster_Performance_Metrics();
 $history = $metrics->get_history(30);
@@ -179,7 +181,6 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
 .wpspeed-score-poor { color:#d63638; }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 jQuery(document).ready(function($) {
     // Run performance test
@@ -196,7 +197,7 @@ jQuery(document).ready(function($) {
         
         $.post(ajaxurl, {
             action: 'wpspeed_run_pagespeed',
-            nonce: '<?php echo wp_create_nonce('wpspeed_performance'); ?>',
+            nonce: wpsbAdmin.performance_nonce,
             url: url,
             strategy: strategy
         }, function(response) {

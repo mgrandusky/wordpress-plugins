@@ -142,9 +142,19 @@ class WPSB_Admin {
 			true
 		);
 
+		// Enqueue Chart.js for performance metrics dashboard
+		wp_enqueue_script(
+			'chartjs',
+			'https://cdn.jsdelivr.net/npm/chart.js',
+			array(),
+			'3.9.1',
+			true
+		);
+
 		wp_localize_script( 'wpsb-admin', 'wpsbAdmin', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'wpsb_admin_nonce' ),
+			'performance_nonce' => wp_create_nonce( 'wpspeed_performance' ),
 			'strings'  => array(
 				'clearing'   => __( 'Clearing cache...', 'wp-speed-booster' ),
 				'optimizing' => __( 'Optimizing database...', 'wp-speed-booster' ),

@@ -256,6 +256,9 @@ class WP_Speed_Booster {
 		if ( ! wp_next_scheduled( 'wpsb_auto_db_optimize' ) ) {
 			wp_schedule_event( time(), 'daily', 'wpsb_auto_db_optimize' );
 		}
+
+		// Setup performance metrics scheduled checks
+		WP_Speed_Booster_Performance_Metrics::activate();
 	}
 
 	/**
@@ -264,6 +267,7 @@ class WP_Speed_Booster {
 	public function deactivate() {
 		// Unschedule events
 		wp_clear_scheduled_hook( 'wpsb_auto_db_optimize' );
+		WP_Speed_Booster_Performance_Metrics::deactivate();
 	}
 
 	/**
