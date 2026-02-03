@@ -1,0 +1,87 @@
+/**
+ * WP Speed Booster Frontend Styles
+ */
+
+/* Lazy loading images */
+img.wpsb-lazy {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+img.wpsb-lazy.wpsb-loaded {
+    opacity: 1;
+}
+
+img.wpsb-lazy.wpsb-loading {
+    opacity: 0.5;
+}
+
+/* Lazy loading iframes */
+iframe.wpsb-lazy-iframe {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+iframe.wpsb-lazy-iframe.wpsb-loaded {
+    opacity: 1;
+}
+
+iframe.wpsb-lazy-iframe.wpsb-loading {
+    opacity: 0.5;
+}
+
+/* Blur effect while loading (optional) */
+img.wpsb-lazy:not(.wpsb-loaded) {
+    filter: blur(5px);
+}
+
+img.wpsb-lazy.wpsb-loaded {
+    filter: none;
+}
+
+/* Loading placeholder animation */
+@keyframes wpsb-pulse {
+    0%, 100% {
+        background-color: #f0f0f0;
+    }
+    50% {
+        background-color: #e0e0e0;
+    }
+}
+
+img.wpsb-lazy.wpsb-loading {
+    animation: wpsb-pulse 1.5s ease-in-out infinite;
+}
+
+/* Ensure images don't jump during loading */
+img.wpsb-lazy {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Error state */
+img.wpsb-lazy.wpsb-error {
+    opacity: 1;
+    filter: grayscale(100%);
+}
+
+/* Responsive images */
+@media (prefers-reduced-motion: reduce) {
+    img.wpsb-lazy,
+    iframe.wpsb-lazy-iframe {
+        transition: none;
+    }
+    
+    img.wpsb-lazy.wpsb-loading {
+        animation: none;
+    }
+}
+
+/* Print styles - ensure all images are visible when printing */
+@media print {
+    img.wpsb-lazy {
+        opacity: 1 !important;
+        filter: none !important;
+    }
+}
