@@ -85,6 +85,7 @@ class WPSB_Admin {
 			'critical_css_enabled', 'critical_css_defer', 'critical_css_desktop', 'critical_css_mobile',
 			'webp_enabled',
 			'js_delay_enabled', 'js_defer_enabled',
+			'font_optimization_enabled', 'local_google_fonts', 'font_preconnect', 'font_dns_prefetch',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -119,6 +120,10 @@ class WPSB_Admin {
 		$sanitized['performance_monitor_urls'] = ! empty( $input['performance_monitor_urls'] ) ? sanitize_textarea_field( $input['performance_monitor_urls'] ) : '';
 		$sanitized['performance_check_frequency'] = ! empty( $input['performance_check_frequency'] ) ? sanitize_text_field( $input['performance_check_frequency'] ) : 'weekly';
 		$sanitized['performance_alert_threshold'] = ! empty( $input['performance_alert_threshold'] ) ? absint( $input['performance_alert_threshold'] ) : 70;
+
+		// Font optimization options
+		$sanitized['font_display'] = ! empty( $input['font_display'] ) ? sanitize_text_field( $input['font_display'] ) : 'swap';
+		$sanitized['font_preload_urls'] = ! empty( $input['font_preload_urls'] ) ? sanitize_textarea_field( $input['font_preload_urls'] ) : '';
 
 		return $sanitized;
 	}
@@ -208,6 +213,9 @@ class WPSB_Admin {
 					<a href="#tab-critical-css" class="nav-tab wpspeed-nav-tab" data-tab="critical-css">
 						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-fonts" class="nav-tab wpspeed-nav-tab" data-tab="fonts">
+						<span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Fonts', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-performance-metrics" class="nav-tab wpspeed-nav-tab" data-tab="performance-metrics">
 						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'wp-speed-booster' ); ?>
 					</a>
@@ -242,6 +250,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-critical-css" class="wpspeed-tab-content">
 					<?php $this->render_critical_css_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-fonts" class="wpspeed-tab-content">
+					<?php $this->render_fonts_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-javascript" class="wpspeed-tab-content">
@@ -559,6 +571,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-critical-css.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-critical-css.php';
+		}
+	}
+
+	/**
+	 * Render fonts tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_fonts_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-fonts.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-fonts.php';
 		}
 	}
 
