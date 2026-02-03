@@ -6,6 +6,60 @@
     'use strict';
 
     $(document).ready(function() {
+        // Tab switching without page reload
+        $('.wpspeed-nav-tab').on('click', function(e) {
+            e.preventDefault();
+            
+            var targetTab = $(this).data('tab');
+            
+            // Update active tab styling
+            $('.wpspeed-nav-tab').removeClass('nav-tab-active');
+            $(this).addClass('nav-tab-active');
+            
+            // Hide all tab contents
+            $('.wpspeed-tab-content').removeClass('active').hide();
+            
+            // Show target tab with fade effect
+            $('#wpspeed-tab-' + targetTab).addClass('active').fadeIn(200);
+            
+            // Update URL hash without page reload
+            if (history.pushState) {
+                history.pushState(null, null, '#tab-' + targetTab);
+            } else {
+                window.location.hash = '#tab-' + targetTab;
+            }
+            
+            // Store active tab in session storage
+            sessionStorage.setItem('wpspeed_active_tab', targetTab);
+        });
+        
+        // Load tab from URL hash or session storage on page load
+        function loadActiveTab() {
+            var hash = window.location.hash.replace('#tab-', '');
+            var sessionTab = sessionStorage.getItem('wpspeed_active_tab');
+            var activeTab = hash || sessionTab || 'dashboard';
+            
+            // Trigger click on the active tab
+            var $tab = $('.wpspeed-nav-tab[data-tab="' + activeTab + '"]');
+            if ($tab.length) {
+                $tab.trigger('click');
+            } else {
+                // Fallback to dashboard if tab not found
+                $('.wpspeed-nav-tab[data-tab="dashboard"]').trigger('click');
+            }
+        }
+        
+        // Handle browser back/forward buttons
+        $(window).on('hashchange', function() {
+            var hash = window.location.hash.replace('#tab-', '');
+            if (hash) {
+                $('.wpspeed-nav-tab[data-tab="' + hash + '"]').trigger('click');
+            }
+        });
+        
+        // Initialize on page load
+        loadActiveTab();
+
         // Clear Cache Button
         $('#wpsb-clear-cache-btn').on('click', function(e) {
             e.preventDefault();
@@ -162,14 +216,24 @@
 
         // Confirm before leaving page with unsaved changes
         var formChanged = false;
-        $('form input, form textarea, form select').on('change', function() {
+        $('#wpspeed-settings-form').on('change', 'input, select, textarea', function() {
             formChanged = true;
+            
+            // Add indicator to tabs with changes
+            var tabId = $(this).closest('.wpspeed-tab-content').attr('id');
+            if (tabId) {
+                var tabName = tabId.replace('wpspeed-tab-', '');
+                $('.wpspeed-nav-tab[data-tab="' + tabName + '"]').addClass('has-changes');
+            }
         });
 
-        $('form').on('submit', function() {
+        // Reset on form submit
+        $('#wpspeed-settings-form').on('submit', function() {
             formChanged = false;
+            $('.wpspeed-nav-tab').removeClass('has-changes');
         });
 
+        // Warn before leaving with unsaved changes
         $(window).on('beforeunload', function() {
             if (formChanged) {
                 return 'You have unsaved changes. Are you sure you want to leave?';

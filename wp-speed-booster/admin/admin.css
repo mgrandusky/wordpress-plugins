@@ -4,8 +4,75 @@
     margin-right: 20px;
 }
 
-.wpsb-admin .nav-tab-wrapper {
+/* Tab navigation */
+.wpsb-admin .nav-tab-wrapper,
+.wpspeed-nav-tab-wrapper {
     margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+.wpspeed-nav-tab,
+.wpsb-admin .nav-tab {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wpspeed-nav-tab:hover,
+.wpsb-admin .nav-tab:hover {
+    background-color: #f0f0f1;
+}
+
+.wpspeed-nav-tab.nav-tab-active,
+.wpsb-admin .nav-tab.nav-tab-active {
+    border-bottom-color: #f0f0f1;
+}
+
+/* Visual indicator for tabs with unsaved changes */
+.wpspeed-nav-tab.has-changes::after {
+    content: ' •';
+    color: #d63638;
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Tab content */
+.wpspeed-tab-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    border-top: 0;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.wpspeed-tab-content.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Smooth fade effect */
+.wpspeed-tab-content {
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Settings form styling */
+.wpspeed-settings-form {
+    max-width: 1200px;
+}
+
+/* Save button always visible */
+.wpspeed-save-settings {
+    position: sticky;
+    bottom: 20px;
+    z-index: 100;
+    margin-top: 30px;
 }
 
 .wpsb-tab-content {
