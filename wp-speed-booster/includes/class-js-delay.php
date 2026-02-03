@@ -1,251 +1,280 @@
 <?php
 /**
- * JavaScript Delay Class
- *
- * Smart JavaScript delay/defer with user interaction triggers
- *
- * @package WP_Speed_Booster
+ * JavaScript Delay Intelligence Class
+ * Smart defer/delay for JavaScript with user interaction detection
  */
 
-// Prevent direct access
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+if (!defined('ABSPATH')) exit;
+
+class WP_Speed_Booster_JS_Delay {
+    
+    private $settings;
+    private $excluded_scripts = array();
+    private $delay_timeout = 5000; // 5 seconds default
+    
+    public function __construct() {
+        $this->settings = get_option('wpsb_options', array());
+        
+        if ($this->is_enabled()) {
+            add_filter('script_loader_tag', array($this, 'add_defer_attribute'), 10, 3);
+            add_action('wp_footer', array($this, 'inject_delay_script'), 999);
+            
+            // Load excluded scripts list
+            $this->load_excluded_scripts();
+        }
+    }
+    
+    /**
+     * Check if JS delay is enabled
+     */
+    public function is_enabled() {
+        return !empty($this->settings['js_delay_enabled']);
+    }
+    
+    /**
+     * Load excluded scripts from settings
+     */
+    private function load_excluded_scripts() {
+        // Default excluded scripts
+        $default_excluded = array(
+            'jquery-core',
+            'jquery',
+            'wpspeed-', // Our own scripts
+        );
+        
+        // User-defined excluded scripts
+        $user_excluded = !empty($this->settings['js_delay_exclude']) ? 
+            explode("\n", $this->settings['js_delay_exclude']) : array();
+        
+        $user_excluded = array_map('trim', $user_excluded);
+        
+        $this->excluded_scripts = array_merge($default_excluded, $user_excluded);
+        $this->delay_timeout = !empty($this->settings['js_delay_timeout']) ? 
+            intval($this->settings['js_delay_timeout']) * 1000 : 5000;
+    }
+    
+    /**
+     * Check if script should be excluded from delay
+     */
+    private function is_excluded($handle, $src) {
+        // Check by handle
+        foreach ($this->excluded_scripts as $excluded) {
+            if (empty($excluded)) continue;
+            
+            // Wildcard matching
+            if (strpos($excluded, '*') !== false) {
+                $pattern = '/' . str_replace('*', '.*', preg_quote($excluded, '/')) . '/i';
+                if (preg_match($pattern, $handle) || preg_match($pattern, $src)) {
+                    return true;
+                }
+            } else {
+                if (stripos($handle, $excluded) !== false || stripos($src, $excluded) !== false) {
+                    return true;
+                }
+            }
+        }
+        
+        // Always exclude admin scripts
+        if (strpos($src, '/wp-admin/') !== false || strpos($src, '/wp-includes/') !== false) {
+            return false; // Don't exclude WP core scripts unless specified
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Add defer attribute to scripts
+     */
+    public function add_defer_attribute($tag, $handle, $src) {
+        // Skip if already has defer or async
+        if (strpos($tag, 'defer') !== false || strpos($tag, 'async') !== false) {
+            return $tag;
+        }
+        
+        // Skip excluded scripts
+        if ($this->is_excluded($handle, $src)) {
+            return $tag;
+        }
+        
+        // Defer mode
+        if (!empty($this->settings['js_defer_enabled'])) {
+            return str_replace('<script ', '<script defer ', $tag);
+        }
+        
+        // Delay mode - add special data attribute
+        if (!empty($this->settings['js_delay_enabled'])) {
+            // Replace src with data-wpspeed-src for delayed loading
+            $tag = str_replace(' src=', ' data-wpspeed-src=', $tag);
+            $tag = str_replace('<script ', '<script type="wpspeed-delayed" ', $tag);
+        }
+        
+        return $tag;
+    }
+    
+    /**
+     * Inject delay script in footer
+     */
+    public function inject_delay_script() {
+        $delay_timeout = $this->delay_timeout;
+        $trigger_events = $this->get_trigger_events();
+        
+        ?>
+        <script id="wpspeed-delay-script">
+        (function() {
+            'use strict';
+            
+            // Configuration
+            var delayTimeout = <?php echo $delay_timeout; ?>;
+            var triggered = false;
+            var delayedScripts = {
+                normal: [],
+                async: [],
+                defer: []
+            };
+            
+            // Collect all delayed scripts
+            function collectDelayedScripts() {
+                var scripts = document.querySelectorAll('script[type="wpspeed-delayed"]');
+                scripts.forEach(function(script) {
+                    var copy = {
+                        src: script.getAttribute('data-wpspeed-src'),
+                        code: script.textContent,
+                        async: script.hasAttribute('async'),
+                        defer: script.hasAttribute('defer')
+                    };
+                    
+                    if (copy.async) {
+                        delayedScripts.async.push(copy);
+                    } else if (copy.defer) {
+                        delayedScripts.defer.push(copy);
+                    } else {
+                        delayedScripts.normal.push(copy);
+                    }
+                });
+            }
+            
+            // Load a script
+            function loadScript(scriptData, callback) {
+                var script = document.createElement('script');
+                
+                if (scriptData.src) {
+                    script.src = scriptData.src;
+                } else if (scriptData.code) {
+                    script.textContent = scriptData.code;
+                }
+                
+                if (scriptData.async) script.async = true;
+                if (scriptData.defer) script.defer = true;
+                
+                if (callback) {
+                    script.onload = callback;
+                    script.onerror = callback;
+                }
+                
+                document.body.appendChild(script);
+            }
+            
+            // Load all delayed scripts
+            function loadDelayedScripts() {
+                if (triggered) return;
+                triggered = true;
+                
+                console.log('[WP Speed Booster] Loading delayed scripts...');
+                
+                // Load normal scripts sequentially
+                var normalIndex = 0;
+                function loadNextNormal() {
+                    if (normalIndex >= delayedScripts.normal.length) {
+                        // After normal scripts, load async/defer
+                        delayedScripts.async.forEach(function(script) {
+                            loadScript(script);
+                        });
+                        delayedScripts.defer.forEach(function(script) {
+                            loadScript(script);
+                        });
+                        return;
+                    }
+                    
+                    loadScript(delayedScripts.normal[normalIndex], function() {
+                        normalIndex++;
+                        loadNextNormal();
+                    });
+                }
+                
+                loadNextNormal();
+            }
+            
+            // User interaction events
+            var events = [<?php echo implode(',', array_map(function($e) { return "'" . $e . "'"; }, $trigger_events)); ?>];
+            
+            events.forEach(function(event) {
+                window.addEventListener(event, function() {
+                    loadDelayedScripts();
+                }, { passive: true, once: true });
+            });
+            
+            // Fallback timeout
+            setTimeout(function() {
+                if (!triggered) {
+                    console.log('[WP Speed Booster] Loading scripts after timeout');
+                    loadDelayedScripts();
+                }
+            }, delayTimeout);
+            
+            // Page load
+            if (document.readyState === 'complete') {
+                collectDelayedScripts();
+            } else {
+                window.addEventListener('load', collectDelayedScripts);
+            }
+        })();
+        </script>
+        <?php
+    }
+    
+    /**
+     * Get trigger events
+     */
+    private function get_trigger_events() {
+        $default_events = array('mousemove', 'scroll', 'touchstart', 'click', 'keydown');
+        
+        if (!empty($this->settings['js_delay_events'])) {
+            $custom_events = explode(',', $this->settings['js_delay_events']);
+            return array_map('trim', $custom_events);
+        }
+        
+        return $default_events;
+    }
+    
+    /**
+     * Get statistics
+     */
+    public function get_stats() {
+        global $wp_scripts;
+        
+        if (!is_object($wp_scripts)) {
+            return array('total' => 0, 'delayed' => 0, 'excluded' => 0);
+        }
+        
+        $total = count($wp_scripts->queue);
+        $excluded = 0;
+        
+        foreach ($wp_scripts->queue as $handle) {
+            if (isset($wp_scripts->registered[$handle])) {
+                $src = $wp_scripts->registered[$handle]->src;
+                if ($this->is_excluded($handle, $src)) {
+                    $excluded++;
+                }
+            }
+        }
+        
+        return array(
+            'total' => $total,
+            'delayed' => $total - $excluded,
+            'excluded' => $excluded
+        );
+    }
 }
 
-/**
- * WPSB_JS_Delay class
- */
-class WPSB_JS_Delay {
-
-	/**
-	 * Delayed scripts
-	 *
-	 * @var array
-	 */
-	private $delayed_scripts = array();
-
-	/**
-	 * User interaction events
-	 *
-	 * @var array
-	 */
-	private $interaction_events = array( 'mouseover', 'keydown', 'touchstart', 'touchmove', 'wheel' );
-
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		add_action( 'init', array( $this, 'init' ) );
-	}
-
-	/**
-	 * Initialize JS delay
-	 */
-	public function init() {
-		$options = get_option( 'wpsb_options', array() );
-
-		if ( empty( $options['js_delay_enable'] ) || is_admin() ) {
-			return;
-		}
-
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 999 );
-		add_filter( 'script_loader_tag', array( $this, 'delay_scripts' ), 10, 3 );
-		add_action( 'wp_footer', array( $this, 'output_delay_handler' ), 999 );
-	}
-
-	/**
-	 * Enqueue delay handler script
-	 */
-	public function enqueue_scripts() {
-		wp_register_script(
-			'wpsb-js-delay',
-			'',
-			array(),
-			WPSB_VERSION,
-			true
-		);
-	}
-
-	/**
-	 * Delay scripts based on configuration
-	 *
-	 * @param string $tag    Script tag.
-	 * @param string $handle Script handle.
-	 * @param string $src    Script source URL.
-	 * @return string Modified script tag.
-	 */
-	public function delay_scripts( $tag, $handle, $src ) {
-		$options = get_option( 'wpsb_options', array() );
-
-		// Skip if already deferred/async or excluded
-		if ( strpos( $tag, 'defer' ) !== false || strpos( $tag, 'async' ) !== false ) {
-			return $tag;
-		}
-
-		// Get exclusions
-		$exclusions = $this->get_exclusions( $options );
-		foreach ( $exclusions as $exclusion ) {
-			if ( strpos( $handle, $exclusion ) !== false || strpos( $src, $exclusion ) !== false ) {
-				return $tag;
-			}
-		}
-
-		// Check for critical scripts that should not be delayed
-		$critical_scripts = $this->get_critical_scripts();
-		foreach ( $critical_scripts as $critical ) {
-			if ( strpos( $handle, $critical ) !== false || strpos( $src, $critical ) !== false ) {
-				return $tag;
-			}
-		}
-
-		// Delay the script
-		$delayed_tag = str_replace( ' src=', ' data-wpsb-delay-src=', $tag );
-		$delayed_tag = str_replace( '<script', '<script type="wpsb-delayed"', $delayed_tag );
-
-		$this->delayed_scripts[] = $handle;
-
-		return apply_filters( 'wpsb_delayed_script_tag', $delayed_tag, $tag, $handle, $src );
-	}
-
-	/**
-	 * Output JavaScript delay handler
-	 */
-	public function output_delay_handler() {
-		if ( empty( $this->delayed_scripts ) ) {
-			return;
-		}
-
-		$options = get_option( 'wpsb_options', array() );
-		$delay_timeout = ! empty( $options['js_delay_timeout'] ) ? intval( $options['js_delay_timeout'] ) : 5000;
-		$events = apply_filters( 'wpsb_js_delay_events', $this->interaction_events );
-
-		?>
-		<script id="wpsb-js-delay-handler">
-		(function() {
-			'use strict';
-			
-			var wpsbDelayedScripts = [];
-			var wpsbUserInteracted = false;
-			var wpsbTimeout;
-			
-			// Get all delayed scripts
-			var delayedScripts = document.querySelectorAll('script[type="wpsb-delayed"]');
-			
-			// Function to load all delayed scripts
-			function wpsbLoadDelayedScripts() {
-				if (wpsbUserInteracted) {
-					return;
-				}
-				
-				wpsbUserInteracted = true;
-				
-				// Clear timeout
-				if (wpsbTimeout) {
-					clearTimeout(wpsbTimeout);
-				}
-				
-				// Remove event listeners
-				wpsbEvents.forEach(function(event) {
-					window.removeEventListener(event, wpsbLoadDelayedScripts, {passive: true});
-				});
-				
-				// Load scripts in order
-				delayedScripts.forEach(function(script) {
-					wpsbLoadScript(script);
-				});
-			}
-			
-			// Function to load individual script
-			function wpsbLoadScript(script) {
-				var newScript = document.createElement('script');
-				
-				// Copy attributes
-				Array.from(script.attributes).forEach(function(attr) {
-					if (attr.name === 'type') {
-						newScript.type = 'text/javascript';
-					} else if (attr.name === 'data-wpsb-delay-src') {
-						newScript.src = attr.value;
-					} else if (attr.name !== 'data-wpsb-delay-src') {
-						newScript.setAttribute(attr.name, attr.value);
-					}
-				});
-				
-				// Copy inline content if no src
-				if (!newScript.src && script.textContent) {
-					newScript.textContent = script.textContent;
-				}
-				
-				// Replace old script with new one
-				script.parentNode.replaceChild(newScript, script);
-			}
-			
-			// User interaction events
-			var wpsbEvents = <?php echo wp_json_encode( $events ); ?>;
-			
-			// Add event listeners
-			wpsbEvents.forEach(function(event) {
-				window.addEventListener(event, wpsbLoadDelayedScripts, {passive: true});
-			});
-			
-			// Fallback timeout
-			wpsbTimeout = setTimeout(wpsbLoadDelayedScripts, <?php echo esc_js( $delay_timeout ); ?>);
-			
-			// Load on page show (back/forward cache)
-			window.addEventListener('pageshow', function(event) {
-				if (event.persisted) {
-					wpsbLoadDelayedScripts();
-				}
-			});
-		})();
-		</script>
-		<?php
-	}
-
-	/**
-	 * Get script exclusions
-	 *
-	 * @param array $options Plugin options.
-	 * @return array Exclusions.
-	 */
-	private function get_exclusions( $options ) {
-		$exclusions = array();
-
-		if ( ! empty( $options['js_delay_exclusions'] ) ) {
-			$exclusions = array_map( 'trim', explode( "\n", $options['js_delay_exclusions'] ) );
-			$exclusions = array_filter( $exclusions );
-		}
-
-		return apply_filters( 'wpsb_js_delay_exclusions', $exclusions );
-	}
-
-	/**
-	 * Get critical scripts that should never be delayed
-	 *
-	 * @return array Critical script identifiers.
-	 */
-	private function get_critical_scripts() {
-		$critical = array(
-			'jquery-core',
-			'jquery-migrate',
-			'wp-polyfill',
-			'regenerator-runtime',
-			'wp-i18n',
-		);
-
-		return apply_filters( 'wpsb_js_delay_critical_scripts', $critical );
-	}
-
-	/**
-	 * Check if delay is enabled for current page
-	 *
-	 * @return bool Whether delay is enabled.
-	 */
-	private function is_delay_enabled() {
-		// Skip for admin, login, and customizer
-		if ( is_admin() || is_user_logged_in() || is_customize_preview() ) {
-			return false;
-		}
-
-		return apply_filters( 'wpsb_js_delay_enabled', true );
-	}
-}
+// Initialize
+new WP_Speed_Booster_JS_Delay();

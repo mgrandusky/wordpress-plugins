@@ -84,6 +84,7 @@ class WPSB_Admin {
 			'remove_wp_version', 'remove_rsd_links',
 			'critical_css_enabled', 'critical_css_defer', 'critical_css_desktop', 'critical_css_mobile',
 			'webp_enabled',
+			'js_delay_enabled', 'js_defer_enabled',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -95,6 +96,7 @@ class WPSB_Admin {
 		$sanitized['db_revisions_to_keep'] = ! empty( $input['db_revisions_to_keep'] ) ? absint( $input['db_revisions_to_keep'] ) : 3;
 		$sanitized['lazy_load_skip_images'] = ! empty( $input['lazy_load_skip_images'] ) ? absint( $input['lazy_load_skip_images'] ) : 0;
 		$sanitized['webp_quality'] = ! empty( $input['webp_quality'] ) ? absint( $input['webp_quality'] ) : 85;
+		$sanitized['js_delay_timeout'] = ! empty( $input['js_delay_timeout'] ) ? absint( $input['js_delay_timeout'] ) : 5;
 
 		// Text options
 		$sanitized['cache_exclude_urls'] = ! empty( $input['cache_exclude_urls'] ) ? sanitize_textarea_field( $input['cache_exclude_urls'] ) : '';
@@ -107,6 +109,10 @@ class WPSB_Admin {
 		$sanitized['critical_css_exclude'] = ! empty( $input['critical_css_exclude'] ) ? sanitize_textarea_field( $input['critical_css_exclude'] ) : '';
 		// Sanitize CSS while preserving newlines
 		$sanitized['critical_css_manual'] = ! empty( $input['critical_css_manual'] ) ? wp_kses( $input['critical_css_manual'], array() ) : '';
+
+		// JavaScript Delay options
+		$sanitized['js_delay_exclude'] = ! empty( $input['js_delay_exclude'] ) ? sanitize_textarea_field( $input['js_delay_exclude'] ) : '';
+		$sanitized['js_delay_events'] = ! empty( $input['js_delay_events'] ) ? sanitize_text_field( $input['js_delay_events'] ) : 'mousemove,scroll,touchstart,click,keydown';
 
 		// Performance Metrics options
 		$sanitized['pagespeed_api_key'] = ! empty( $input['pagespeed_api_key'] ) ? sanitize_text_field( $input['pagespeed_api_key'] ) : '';
@@ -236,6 +242,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-critical-css" class="wpspeed-tab-content">
 					<?php $this->render_critical_css_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-javascript" class="wpspeed-tab-content">
+					<?php $this->render_javascript_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-performance-metrics" class="wpspeed-tab-content">
@@ -549,6 +559,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-critical-css.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-critical-css.php';
+		}
+	}
+
+	/**
+	 * Render JavaScript tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_javascript_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-javascript.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-javascript.php';
 		}
 	}
 
