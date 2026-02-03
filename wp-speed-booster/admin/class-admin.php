@@ -108,6 +108,12 @@ class WPSB_Admin {
 		// Sanitize CSS while preserving newlines
 		$sanitized['critical_css_manual'] = ! empty( $input['critical_css_manual'] ) ? wp_kses( $input['critical_css_manual'], array() ) : '';
 
+		// Performance Metrics options
+		$sanitized['pagespeed_api_key'] = ! empty( $input['pagespeed_api_key'] ) ? sanitize_text_field( $input['pagespeed_api_key'] ) : '';
+		$sanitized['performance_monitor_urls'] = ! empty( $input['performance_monitor_urls'] ) ? sanitize_textarea_field( $input['performance_monitor_urls'] ) : '';
+		$sanitized['performance_check_frequency'] = ! empty( $input['performance_check_frequency'] ) ? sanitize_text_field( $input['performance_check_frequency'] ) : 'weekly';
+		$sanitized['performance_alert_threshold'] = ! empty( $input['performance_alert_threshold'] ) ? absint( $input['performance_alert_threshold'] ) : 70;
+
 		return $sanitized;
 	}
 
@@ -186,6 +192,9 @@ class WPSB_Admin {
 					<a href="#tab-critical-css" class="nav-tab wpspeed-nav-tab" data-tab="critical-css">
 						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-performance-metrics" class="nav-tab wpspeed-nav-tab" data-tab="performance-metrics">
+						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
 						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'wp-speed-booster' ); ?>
 					</a>
@@ -217,6 +226,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-critical-css" class="wpspeed-tab-content">
 					<?php $this->render_critical_css_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-performance-metrics" class="wpspeed-tab-content">
+					<?php $this->render_performance_metrics_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-database" class="wpspeed-tab-content">
@@ -526,6 +539,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-critical-css.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-critical-css.php';
+		}
+	}
+
+	/**
+	 * Render performance metrics tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_performance_metrics_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-performance-metrics.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-performance-metrics.php';
 		}
 	}
 

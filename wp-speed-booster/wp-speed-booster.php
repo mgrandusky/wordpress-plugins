@@ -152,6 +152,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-preload.php';
 		require_once WPSB_DIR . 'includes/class-critical-css.php';
 		require_once WPSB_DIR . 'includes/class-webp.php';
+		require_once WPSB_DIR . 'includes/class-performance-metrics.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
