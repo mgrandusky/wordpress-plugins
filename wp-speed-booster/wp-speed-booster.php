@@ -236,6 +236,8 @@ class WP_Speed_Booster {
 			'critical_css_mobile'        => 1,
 			'critical_css_exclude'       => '',
 			'critical_css_manual'        => '',
+			'webp_enabled'               => 0,
+			'webp_quality'               => 85,
 		);
 
 		// Don't override existing options
