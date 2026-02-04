@@ -74,7 +74,7 @@ class VelocityWP_White_Label {
 	 * @return array Modified plugins.
 	 */
 	public function modify_plugin_info( $plugins ) {
-		$plugin_file = plugin_basename( VelocityWP_FILE );
+		$plugin_file = plugin_basename( VELOCITYWP_PLUGIN_FILE );
 
 		if ( isset( $plugins[ $plugin_file ] ) ) {
 			$plugins[ $plugin_file ]['Name'] = $this->plugin_name;

@@ -33,7 +33,7 @@ define( 'WPSB_VERSION', VELOCITYWP_VERSION );
 define( 'WPSB_DIR', VELOCITYWP_PLUGIN_DIR );
 define( 'WPSB_URL', VELOCITYWP_PLUGIN_URL );
 define( 'WPSB_BASENAME', VELOCITYWP_PLUGIN_BASENAME );
-define( 'VELOCITYWP_CACHE_DIR', VELOCITYWP_CACHE_DIR );
+define( 'WPSB_CACHE_DIR', VELOCITYWP_CACHE_DIR );
 
 /**
  * Main VelocityWP Plugin Class
@@ -540,29 +540,29 @@ class VelocityWP {
  */
 function velocitywp_migrate_options() {
 	// Migrate main settings option
-	$old_settings = get_option( 'velocitywp_options' );
+	$old_settings = get_option( 'wpsb_options' );
 	if ( $old_settings && ! get_option( 'velocitywp_options' ) ) {
 		update_option( 'velocitywp_options', $old_settings );
 	}
 	
 	// Migrate other old options
 	$options_map = array(
-		'velocitywp_critical_css' => 'velocitywp_critical_css',
-		'velocitywp_heartbeat_stats' => 'velocitywp_heartbeat_stats',
-		'velocitywp_performance_history' => 'velocitywp_performance_history',
-		'velocitywp_fragment_stats' => 'velocitywp_fragment_stats',
-		'velocitywp_geo_stats' => 'velocitywp_geo_stats',
-		'velocitywp_slow_queries' => 'velocitywp_slow_queries',
-		'velocitywp_duplicate_queries' => 'velocitywp_duplicate_queries',
-		'velocitywp_missing_indexes' => 'velocitywp_missing_indexes',
-		'velocitywp_query_history' => 'velocitywp_query_history',
-		'velocitywp_preload_progress' => 'velocitywp_preload_progress',
-		'velocitywp_ab_results' => 'velocitywp_ab_results',
-		'velocitywp_ab_tests' => 'velocitywp_ab_tests',
-		'velocitywp_exclusion_stats' => 'velocitywp_exclusion_stats',
-		'velocitywp_cache_analytics' => 'velocitywp_cache_analytics',
-		'velocitywp_mobile_stats' => 'velocitywp_mobile_stats',
-		'velocitywp_cf_last_purge' => 'velocitywp_cf_last_purge',
+		'wpspeed_critical_css' => 'velocitywp_critical_css',
+		'wpspeed_heartbeat_stats' => 'velocitywp_heartbeat_stats',
+		'wpspeed_performance_history' => 'velocitywp_performance_history',
+		'wpsb_fragment_stats' => 'velocitywp_fragment_stats',
+		'wpsb_geo_stats' => 'velocitywp_geo_stats',
+		'wpsb_slow_queries' => 'velocitywp_slow_queries',
+		'wpsb_duplicate_queries' => 'velocitywp_duplicate_queries',
+		'wpsb_missing_indexes' => 'velocitywp_missing_indexes',
+		'wpsb_query_history' => 'velocitywp_query_history',
+		'wpsb_preload_progress' => 'velocitywp_preload_progress',
+		'wpsb_ab_results' => 'velocitywp_ab_results',
+		'wpsb_ab_tests' => 'velocitywp_ab_tests',
+		'wpsb_exclusion_stats' => 'velocitywp_exclusion_stats',
+		'wpsb_cache_analytics' => 'velocitywp_cache_analytics',
+		'wpsb_mobile_stats' => 'velocitywp_mobile_stats',
+		'wpsb_cf_last_purge' => 'velocitywp_cf_last_purge',
 	);
 	
 	foreach ( $options_map as $old_key => $new_key ) {
@@ -579,8 +579,8 @@ function velocitywp_migrate_options() {
 function velocitywp_migrate_tables() {
 	global $wpdb;
 	
-	// Migrate performance table
-	$old_table = $wpdb->prefix . 'velocitywp_performance';
+	// Migrate performance table from old wpspeed_ prefix
+	$old_table = $wpdb->prefix . 'wpspeed_performance';
 	$new_table = $wpdb->prefix . 'velocitywp_performance';
 	
 	// Check if old table exists and new doesn't
@@ -590,7 +590,7 @@ function velocitywp_migrate_tables() {
 		$new_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $new_table ) );
 		if ( ! $new_exists ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-			$wpdb->query( $wpdb->prepare( 'RENAME TABLE %i TO %i', $old_table, $new_table ) );
+			$wpdb->query( "RENAME TABLE `$old_table` TO `$new_table`" );
 		}
 	}
 }
