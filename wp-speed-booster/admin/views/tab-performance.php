@@ -591,11 +591,11 @@ jQuery(document).ready(function($) {
 		button.prop('disabled', true).text('<?php esc_html_e( 'Cleaning up...', 'wp-speed-booster' ); ?>');
 		
 		$.ajax({
-			url: '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+			url: <?php echo wp_json_encode( esc_url( admin_url( 'admin-ajax.php' ) ) ); ?>,
 			type: 'POST',
 			data: {
 				action: 'wpspeed_cleanup_data',
-				nonce: '<?php echo wp_create_nonce( 'wpspeed_admin' ); ?>'
+				nonce: <?php echo wp_json_encode( wp_create_nonce( 'wpspeed_admin' ) ); ?>
 			},
 			success: function(response) {
 				if (response.success) {

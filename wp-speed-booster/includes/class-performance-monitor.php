@@ -371,7 +371,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from  = gmgmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from  = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		// Average metrics
 		$averages = $wpdb->get_row(
@@ -719,7 +719,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from  = gmgmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from  = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		$data = $wpdb->get_results(
 			$wpdb->prepare(
