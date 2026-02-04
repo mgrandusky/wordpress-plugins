@@ -77,7 +77,9 @@ class WPSB_Admin {
 		$boolean_options = array(
 			'cache_enabled', 'mobile_cache', 'html_minify', 'css_minify', 'css_combine',
 			'js_minify', 'js_combine', 'js_defer', 'remove_query_strings',
-			'lazy_load_images', 'lazy_load_iframes',
+			'lazy_load_enabled', 'lazy_load_native', 'lazy_load_images', 'lazy_load_iframes',
+			'lazy_load_videos', 'lazy_load_backgrounds', 'lazy_load_youtube', 'lazy_load_vimeo',
+			'lazy_load_maps', 'lazy_load_fade_in',
 			'db_clean_revisions', 'db_clean_autodrafts', 'db_clean_trash',
 			'db_optimize_tables', 'db_clean_transients', 'db_clean_spam',
 			'db_optimization_enabled', 'db_optimize_email_report',
@@ -103,6 +105,9 @@ class WPSB_Admin {
 		$sanitized['db_revisions_to_keep'] = ! empty( $input['db_revisions_to_keep'] ) ? absint( $input['db_revisions_to_keep'] ) : 3;
 		$sanitized['keep_revisions'] = ! empty( $input['keep_revisions'] ) ? absint( $input['keep_revisions'] ) : 0;
 		$sanitized['lazy_load_skip_images'] = ! empty( $input['lazy_load_skip_images'] ) ? absint( $input['lazy_load_skip_images'] ) : 0;
+		$sanitized['lazy_load_skip_first'] = ! empty( $input['lazy_load_skip_first'] ) ? absint( $input['lazy_load_skip_first'] ) : 0;
+		$sanitized['lazy_load_threshold'] = ! empty( $input['lazy_load_threshold'] ) ? absint( $input['lazy_load_threshold'] ) : 200;
+		$sanitized['lazy_load_fade_duration'] = ! empty( $input['lazy_load_fade_duration'] ) ? absint( $input['lazy_load_fade_duration'] ) : 300;
 		$sanitized['webp_quality'] = ! empty( $input['webp_quality'] ) ? absint( $input['webp_quality'] ) : 85;
 		$sanitized['js_delay_timeout'] = ! empty( $input['js_delay_timeout'] ) ? absint( $input['js_delay_timeout'] ) : 5;
 		$sanitized['heartbeat_frontend_frequency'] = ! empty( $input['heartbeat_frontend_frequency'] ) ? absint( $input['heartbeat_frontend_frequency'] ) : 60;
@@ -113,6 +118,8 @@ class WPSB_Admin {
 		$sanitized['cache_exclude_urls'] = ! empty( $input['cache_exclude_urls'] ) ? sanitize_textarea_field( $input['cache_exclude_urls'] ) : '';
 		$sanitized['minify_exclude_files'] = ! empty( $input['minify_exclude_files'] ) ? sanitize_textarea_field( $input['minify_exclude_files'] ) : '';
 		$sanitized['lazy_load_exclude_class'] = ! empty( $input['lazy_load_exclude_class'] ) ? sanitize_text_field( $input['lazy_load_exclude_class'] ) : '';
+		$sanitized['lazy_load_exclude_classes'] = ! empty( $input['lazy_load_exclude_classes'] ) ? sanitize_textarea_field( $input['lazy_load_exclude_classes'] ) : '';
+		$sanitized['lazy_load_placeholder'] = ! empty( $input['lazy_load_placeholder'] ) ? sanitize_text_field( $input['lazy_load_placeholder'] ) : 'transparent';
 		$sanitized['cdn_url'] = ! empty( $input['cdn_url'] ) ? esc_url_raw( $input['cdn_url'] ) : '';
 		$sanitized['dns_prefetch'] = ! empty( $input['dns_prefetch'] ) ? sanitize_textarea_field( $input['dns_prefetch'] ) : '';
 		$sanitized['db_auto_optimize'] = ! empty( $input['db_auto_optimize'] ) ? sanitize_text_field( $input['db_auto_optimize'] ) : 'disabled';
@@ -284,6 +291,9 @@ class WPSB_Admin {
 					<a href="#tab-media" class="nav-tab wpspeed-nav-tab" data-tab="media">
 						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Media', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-lazy-load" class="nav-tab wpspeed-nav-tab" data-tab="lazy-load">
+						<span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Lazy Loading', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-webp" class="nav-tab wpspeed-nav-tab" data-tab="webp">
 						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'WebP Images', 'wp-speed-booster' ); ?>
 					</a>
@@ -334,6 +344,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-media" class="wpspeed-tab-content">
 					<?php $this->render_media_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-lazy-load" class="wpspeed-tab-content">
+					<?php $this->render_lazy_load_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-webp" class="wpspeed-tab-content">
@@ -671,6 +685,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-webp.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-webp.php';
+		}
+	}
+
+	/**
+	 * Render Lazy Load tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_lazy_load_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-lazy-load.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-lazy-load.php';
 		}
 	}
 
