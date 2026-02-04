@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$metrics = new WP_Speed_Booster_Performance_Metrics();
+$metrics = new VelocityWP_Performance_Metrics();
 $history = $metrics->get_history(30);
 $latest_mobile = null;
 $latest_desktop = null;
@@ -24,7 +24,7 @@ $check_frequency = !empty($options['performance_check_frequency']) ? $options['p
 $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['performance_alert_threshold'] : 70;
 ?>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Performance Metrics Dashboard</h2>
     
     <?php if (empty($api_key)): ?>
@@ -35,14 +35,14 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
     <?php endif; ?>
 </div>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Settings</h2>
     
     <table class="form-table">
         <tr>
             <th scope="row">PageSpeed API Key</th>
             <td>
-                <input type="text" name="wpsb_options[pagespeed_api_key]" value="<?php echo esc_attr($api_key); ?>" 
+                <input type="text" name="velocitywp_options[pagespeed_api_key]" value="<?php echo esc_attr($api_key); ?>" 
                     class="regular-text" placeholder="AIzaSy...">
                 <p class="description">Get your free API key from 
                     <a href="https://developers.google.com/speed/docs/insights/v5/get-started" target="_blank">Google Cloud Console</a>
@@ -53,7 +53,7 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
         <tr>
             <th scope="row">URLs to Monitor</th>
             <td>
-                <textarea name="wpsb_options[performance_monitor_urls]" rows="5" class="large-text"><?php echo esc_textarea($monitor_urls); ?></textarea>
+                <textarea name="velocitywp_options[performance_monitor_urls]" rows="5" class="large-text"><?php echo esc_textarea($monitor_urls); ?></textarea>
                 <p class="description">One URL per line. These will be checked automatically.</p>
             </td>
         </tr>
@@ -61,7 +61,7 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
         <tr>
             <th scope="row">Check Frequency</th>
             <td>
-                <select name="wpsb_options[performance_check_frequency]">
+                <select name="velocitywp_options[performance_check_frequency]">
                     <option value="daily" <?php selected($check_frequency, 'daily'); ?>>Daily</option>
                     <option value="weekly" <?php selected($check_frequency, 'weekly'); ?>>Weekly</option>
                     <option value="monthly" <?php selected($check_frequency, 'monthly'); ?>>Monthly</option>
@@ -72,7 +72,7 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
         <tr>
             <th scope="row">Alert Threshold</th>
             <td>
-                <input type="number" name="wpsb_options[performance_alert_threshold]" 
+                <input type="number" name="velocitywp_options[performance_alert_threshold]" 
                     value="<?php echo esc_attr($alert_threshold); ?>" min="0" max="100" step="1">
                 <p class="description">Send email alert if score drops below this value</p>
             </td>
@@ -80,22 +80,22 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
     </table>
 </div>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Run Performance Test</h2>
     
     <table class="form-table">
         <tr>
             <th scope="row">Test URL</th>
             <td>
-                <input type="url" id="wpspeed-test-url" value="<?php echo esc_url(home_url()); ?>" class="regular-text">
-                <select id="wpspeed-test-strategy">
+                <input type="url" id="velocitywp-test-url" value="<?php echo esc_url(home_url()); ?>" class="regular-text">
+                <select id="velocitywp-test-strategy">
                     <option value="mobile">Mobile</option>
                     <option value="desktop">Desktop</option>
                 </select>
-                <button type="button" class="button button-primary" id="wpspeed-run-test" <?php disabled(empty($api_key)); ?>>
+                <button type="button" class="button button-primary" id="velocitywp-run-test" <?php disabled(empty($api_key)); ?>>
                     <span class="dashicons dashicons-chart-line"></span> Run Test
                 </button>
-                <span id="wpspeed-test-loading" style="display:none;">
+                <span id="velocitywp-test-loading" style="display:none;">
                     <span class="spinner is-active" style="float:none;"></span> Running test...
                 </span>
             </td>
@@ -103,70 +103,70 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
     </table>
 </div>
 
-<div id="wpspeed-performance-results" style="display:none;">
-    <div class="wpspeed-tab-section">
+<div id="velocitywp-performance-results" style="display:none;">
+    <div class="velocitywp-tab-section">
         <h2>Performance Score</h2>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;margin-bottom:20px;">
-            <div class="wpspeed-metric-box" style="text-align:center;padding:20px;background:#fff;border:2px solid #ddd;border-radius:8px;">
-                <div id="wpspeed-score-circle" style="font-size:48px;font-weight:bold;margin-bottom:10px;">--</div>
+            <div class="velocitywp-metric-box" style="text-align:center;padding:20px;background:#fff;border:2px solid #ddd;border-radius:8px;">
+                <div id="velocitywp-score-circle" style="font-size:48px;font-weight:bold;margin-bottom:10px;">--</div>
                 <div style="color:#646970;">Overall Score</div>
             </div>
         </div>
     </div>
     
-    <div class="wpspeed-tab-section">
+    <div class="velocitywp-tab-section">
         <h2>Core Web Vitals</h2>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;">
-            <div class="wpspeed-cwv-box">
+            <div class="velocitywp-cwv-box">
                 <strong>LCP</strong> (Largest Contentful Paint)
-                <div id="wpspeed-lcp-value" style="font-size:24px;margin:10px 0;">--</div>
-                <div id="wpspeed-lcp-rating" class="wpspeed-rating"></div>
+                <div id="velocitywp-lcp-value" style="font-size:24px;margin:10px 0;">--</div>
+                <div id="velocitywp-lcp-rating" class="velocitywp-rating"></div>
                 <p class="description">Good: ≤ 2.5s</p>
             </div>
             
-            <div class="wpspeed-cwv-box">
+            <div class="velocitywp-cwv-box">
                 <strong>FID</strong> (First Input Delay)
-                <div id="wpspeed-fid-value" style="font-size:24px;margin:10px 0;">--</div>
-                <div id="wpspeed-fid-rating" class="wpspeed-rating"></div>
+                <div id="velocitywp-fid-value" style="font-size:24px;margin:10px 0;">--</div>
+                <div id="velocitywp-fid-rating" class="velocitywp-rating"></div>
                 <p class="description">Good: ≤ 100ms</p>
             </div>
             
-            <div class="wpspeed-cwv-box">
+            <div class="velocitywp-cwv-box">
                 <strong>CLS</strong> (Cumulative Layout Shift)
-                <div id="wpspeed-cls-value" style="font-size:24px;margin:10px 0;">--</div>
-                <div id="wpspeed-cls-rating" class="wpspeed-rating"></div>
+                <div id="velocitywp-cls-value" style="font-size:24px;margin:10px 0;">--</div>
+                <div id="velocitywp-cls-rating" class="velocitywp-rating"></div>
                 <p class="description">Good: ≤ 0.1</p>
             </div>
             
-            <div class="wpspeed-cwv-box">
+            <div class="velocitywp-cwv-box">
                 <strong>FCP</strong> (First Contentful Paint)
-                <div id="wpspeed-fcp-value" style="font-size:24px;margin:10px 0;">--</div>
+                <div id="velocitywp-fcp-value" style="font-size:24px;margin:10px 0;">--</div>
                 <p class="description">Good: ≤ 1.8s</p>
             </div>
             
-            <div class="wpspeed-cwv-box">
+            <div class="velocitywp-cwv-box">
                 <strong>TTFB</strong> (Time to First Byte)
-                <div id="wpspeed-ttfb-value" style="font-size:24px;margin:10px 0;">--</div>
+                <div id="velocitywp-ttfb-value" style="font-size:24px;margin:10px 0;">--</div>
                 <p class="description">Good: ≤ 600ms</p>
             </div>
             
-            <div class="wpspeed-cwv-box">
+            <div class="velocitywp-cwv-box">
                 <strong>TTI</strong> (Time to Interactive)
-                <div id="wpspeed-tti-value" style="font-size:24px;margin:10px 0;">--</div>
+                <div id="velocitywp-tti-value" style="font-size:24px;margin:10px 0;">--</div>
                 <p class="description">Good: ≤ 3.8s</p>
             </div>
         </div>
     </div>
     
-    <div class="wpspeed-tab-section">
+    <div class="velocitywp-tab-section">
         <h2>Opportunities</h2>
-        <div id="wpspeed-opportunities"></div>
+        <div id="velocitywp-opportunities"></div>
     </div>
 </div>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Performance History (Last 30 Days)</h2>
-    <canvas id="wpspeed-performance-chart" width="400" height="100"></canvas>
+    <canvas id="velocitywp-performance-chart" width="400" height="100"></canvas>
 </div>
 
 <style>
@@ -184,19 +184,19 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
 <script>
 jQuery(document).ready(function($) {
     // Run performance test
-    $('#wpspeed-run-test').on('click', function() {
-        var url = $('#wpspeed-test-url').val();
-        var strategy = $('#wpspeed-test-strategy').val();
+    $('#velocitywp-run-test').on('click', function() {
+        var url = $('#velocitywp-test-url').val();
+        var strategy = $('#velocitywp-test-strategy').val();
         var $btn = $(this);
-        var $loading = $('#wpspeed-test-loading');
-        var $results = $('#wpspeed-performance-results');
+        var $loading = $('#velocitywp-test-loading');
+        var $results = $('#velocitywp-performance-results');
         
         $btn.prop('disabled', true);
         $loading.show();
         $results.hide();
         
         $.post(ajaxurl, {
-            action: 'wpspeed_run_pagespeed',
+            action: 'velocitywp_run_pagespeed',
             nonce: wpsbAdmin.performance_nonce,
             url: url,
             strategy: strategy
@@ -221,23 +221,23 @@ jQuery(document).ready(function($) {
         // Score
         var score = data.score;
         var scoreClass = score >= 90 ? 'wpspeed-score-good' : (score >= 50 ? 'wpspeed-score-average' : 'wpspeed-score-poor');
-        $('#wpspeed-score-circle').text(score).attr('class', scoreClass);
+        $('#velocitywp-score-circle').text(score).attr('class', scoreClass);
         
         // Core Web Vitals
         var cwv = data.core_web_vitals;
         
-        $('#wpspeed-lcp-value').text(cwv.lcp.displayValue);
-        $('#wpspeed-lcp-rating').text(cwv.lcp.rating).attr('class', 'wpspeed-rating ' + cwv.lcp.rating);
+        $('#velocitywp-lcp-value').text(cwv.lcp.displayValue);
+        $('#velocitywp-lcp-rating').text(cwv.lcp.rating).attr('class', 'wpspeed-rating ' + cwv.lcp.rating);
         
-        $('#wpspeed-fid-value').text(cwv.fid.displayValue);
-        $('#wpspeed-fid-rating').text(cwv.fid.rating).attr('class', 'wpspeed-rating ' + cwv.fid.rating);
+        $('#velocitywp-fid-value').text(cwv.fid.displayValue);
+        $('#velocitywp-fid-rating').text(cwv.fid.rating).attr('class', 'wpspeed-rating ' + cwv.fid.rating);
         
-        $('#wpspeed-cls-value').text(cwv.cls.displayValue);
-        $('#wpspeed-cls-rating').text(cwv.cls.rating).attr('class', 'wpspeed-rating ' + cwv.cls.rating);
+        $('#velocitywp-cls-value').text(cwv.cls.displayValue);
+        $('#velocitywp-cls-rating').text(cwv.cls.rating).attr('class', 'wpspeed-rating ' + cwv.cls.rating);
         
-        $('#wpspeed-fcp-value').text(cwv.fcp.displayValue);
-        $('#wpspeed-ttfb-value').text(cwv.ttfb.displayValue);
-        $('#wpspeed-tti-value').text(cwv.tti.displayValue);
+        $('#velocitywp-fcp-value').text(cwv.fcp.displayValue);
+        $('#velocitywp-ttfb-value').text(cwv.ttfb.displayValue);
+        $('#velocitywp-tti-value').text(cwv.tti.displayValue);
         
         // Opportunities
         var oppHtml = '<ul>';
@@ -245,7 +245,7 @@ jQuery(document).ready(function($) {
             oppHtml += '<li><strong>' + opp.title + '</strong> - ' + opp.displayValue + '<br><small>' + opp.description + '</small></li>';
         });
         oppHtml += '</ul>';
-        $('#wpspeed-opportunities').html(oppHtml);
+        $('#velocitywp-opportunities').html(oppHtml);
     }
     
     // Load history chart

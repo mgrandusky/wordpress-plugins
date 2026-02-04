@@ -4,7 +4,7 @@
  *
  * Role/cookie/user-agent based cache exclusions
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,23 +13,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Advanced_Exclusions class
+ * VelocityWP_Advanced_Exclusions class
  */
-class WPSB_Advanced_Exclusions {
+class VelocityWP_Advanced_Exclusions {
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_filter( 'wpsb_should_cache', array( $this, 'check_exclusions' ), 10, 1 );
+		add_filter( 'velocitywp_should_cache', array( $this, 'check_exclusions' ), 10, 1 );
 	}
 
 	/**
 	 * Initialize advanced exclusions
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['advanced_exclusions'] ) ) {
 			return;
@@ -45,9 +45,9 @@ class WPSB_Advanced_Exclusions {
 	public function apply_exclusions() {
 		if ( ! $this->should_apply_optimizations() ) {
 			// Disable cache and optimizations
-			add_filter( 'wpsb_cache_enabled', '__return_false' );
-			add_filter( 'wpsb_minify_enabled', '__return_false' );
-			add_filter( 'wpsb_lazy_load_enabled', '__return_false' );
+			add_filter( 'velocitywp_cache_enabled', '__return_false' );
+			add_filter( 'velocitywp_minify_enabled', '__return_false' );
+			add_filter( 'velocitywp_lazy_load_enabled', '__return_false' );
 		}
 	}
 
@@ -57,7 +57,7 @@ class WPSB_Advanced_Exclusions {
 	 * @return bool Whether to apply optimizations.
 	 */
 	private function should_apply_optimizations() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Check user role exclusions
 		if ( ! empty( $options['exclude_roles'] ) && $this->is_excluded_role() ) {
@@ -89,7 +89,7 @@ class WPSB_Advanced_Exclusions {
 			return false;
 		}
 
-		return apply_filters( 'wpsb_should_apply_optimizations', true );
+		return apply_filters( 'velocitywp_should_apply_optimizations', true );
 	}
 
 	/**
@@ -102,7 +102,7 @@ class WPSB_Advanced_Exclusions {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$excluded_roles = array();
 
 		if ( ! empty( $options['excluded_roles_list'] ) ) {
@@ -132,7 +132,7 @@ class WPSB_Advanced_Exclusions {
 	 * @return bool Whether cookie is excluded.
 	 */
 	private function has_excluded_cookie() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$excluded_cookies = array();
 
 		if ( ! empty( $options['excluded_cookies_list'] ) ) {
@@ -181,7 +181,7 @@ class WPSB_Advanced_Exclusions {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$excluded_agents = array();
 
 		if ( ! empty( $options['excluded_user_agents_list'] ) ) {
@@ -220,7 +220,7 @@ class WPSB_Advanced_Exclusions {
 	 * @return bool Whether parameter is excluded.
 	 */
 	private function has_excluded_param() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$excluded_params = array();
 
 		if ( ! empty( $options['excluded_params_list'] ) ) {
@@ -262,7 +262,7 @@ class WPSB_Advanced_Exclusions {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$excluded_ips = array();
 
 		if ( ! empty( $options['excluded_ips_list'] ) ) {
@@ -299,7 +299,7 @@ class WPSB_Advanced_Exclusions {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$excluded_referrers = array();
 
 		if ( ! empty( $options['excluded_referrers_list'] ) ) {
@@ -387,7 +387,7 @@ class WPSB_Advanced_Exclusions {
 	 * @return array Statistics.
 	 */
 	public function get_statistics() {
-		$stats = get_option( 'wpsb_exclusion_stats', array(
+		$stats = get_option( 'velocitywp_exclusion_stats', array(
 			'role_exclusions'       => 0,
 			'cookie_exclusions'     => 0,
 			'user_agent_exclusions' => 0,
@@ -410,7 +410,7 @@ class WPSB_Advanced_Exclusions {
 		$key = $type . '_exclusions';
 		if ( isset( $stats[ $key ] ) ) {
 			$stats[ $key ]++;
-			update_option( 'wpsb_exclusion_stats', $stats, false );
+			update_option( 'velocitywp_exclusion_stats', $stats, false );
 		}
 	}
 }

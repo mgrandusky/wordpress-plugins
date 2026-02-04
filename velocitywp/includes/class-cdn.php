@@ -4,7 +4,7 @@
  *
  * Handles CDN URL replacement for static assets
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_CDN class
+ * VelocityWP_CDN class
  */
-class WPSB_CDN {
+class VelocityWP_CDN {
 
 	/**
 	 * Constructor
@@ -29,7 +29,7 @@ class WPSB_CDN {
 	 * Initialize CDN rewriting
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( is_admin() || empty( $options['cdn_enabled'] ) || empty( $options['cdn_url'] ) ) {
 			return;
@@ -46,7 +46,7 @@ class WPSB_CDN {
 	 * @return string Modified content.
 	 */
 	public function rewrite_urls( $content ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$cdn_url = rtrim( $options['cdn_url'], '/' );
 		$site_url = rtrim( site_url(), '/' );
 
@@ -73,7 +73,7 @@ class WPSB_CDN {
 	 * @return string CDN URL.
 	 */
 	public function get_cdn_url( $url ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['cdn_enabled'] ) || empty( $options['cdn_url'] ) ) {
 			return $url;

@@ -4,7 +4,7 @@
  *
  * Resource loading waterfall and performance timeline
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Asset_Timeline class
+ * VelocityWP_Asset_Timeline class
  */
-class WPSB_Asset_Timeline {
+class VelocityWP_Asset_Timeline {
 
 	/**
 	 * Assets data
@@ -29,14 +29,14 @@ class WPSB_Asset_Timeline {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_get_asset_timeline', array( $this, 'ajax_get_timeline' ) );
+		add_action( 'wp_ajax_velocitywp_get_asset_timeline', array( $this, 'ajax_get_timeline' ) );
 	}
 
 	/**
 	 * Initialize asset timeline
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['asset_timeline'] ) ) {
 			return;
@@ -157,7 +157,7 @@ class WPSB_Asset_Timeline {
 	 */
 	public function output_timing_script() {
 		?>
-		<script id="wpsb-asset-timeline">
+		<script id="velocitywp-asset-timeline">
 		(function() {
 			if (!window.performance || !window.performance.getEntriesByType) {
 				return;
@@ -241,7 +241,7 @@ class WPSB_Asset_Timeline {
 
 					// Store in sessionStorage for admin panel
 					try {
-						sessionStorage.setItem('wpsb_asset_timeline', JSON.stringify(timeline));
+						sessionStorage.setItem('velocitywp_asset_timeline', JSON.stringify(timeline));
 					} catch(e) {}
 
 					// Log to console for debugging
@@ -398,7 +398,7 @@ class WPSB_Asset_Timeline {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$this->capture_assets();

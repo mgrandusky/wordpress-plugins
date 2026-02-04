@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-$js_delay = new WP_Speed_Booster_JS_Delay();
+$js_delay = new VelocityWP_JS_Delay();
 $stats = $js_delay->get_stats();
 
 $js_delay_enabled = !empty($options['js_delay_enabled']);
@@ -11,7 +11,7 @@ $js_delay_exclude = !empty($options['js_delay_exclude']) ? $options['js_delay_ex
 $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_events'] : 'mousemove,scroll,touchstart,click,keydown';
 ?>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>JavaScript Optimization</h2>
     
     <div class="notice notice-info">
@@ -19,7 +19,7 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
     </div>
 </div>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Optimization Mode</h2>
     
     <table class="form-table">
@@ -27,7 +27,7 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
             <th scope="row">Defer JavaScript</th>
             <td>
                 <label>
-                    <input type="checkbox" name="wpsb_options[js_defer_enabled]" value="1" 
+                    <input type="checkbox" name="velocitywp_options[js_defer_enabled]" value="1" 
                         <?php checked($js_defer_enabled, 1); ?>
                         onchange="document.getElementById('defer-info').style.display = this.checked ? 'block' : 'none'">
                     Add defer attribute to all scripts
@@ -43,7 +43,7 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
             <th scope="row">Delay JavaScript (Recommended)</th>
             <td>
                 <label>
-                    <input type="checkbox" name="wpsb_options[js_delay_enabled]" value="1" 
+                    <input type="checkbox" name="velocitywp_options[js_delay_enabled]" value="1" 
                         <?php checked($js_delay_enabled, 1); ?>
                         onchange="document.getElementById('delay-options').style.display = this.checked ? 'table-row-group' : 'none'">
                     Delay JavaScript execution until user interaction
@@ -61,14 +61,14 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
 <tbody id="delay-options" style="<?php echo $js_delay_enabled ? '' : 'display:none;'; ?>">
     <tr>
         <td colspan="2">
-            <div class="wpspeed-tab-section" style="margin:0;padding-top:0;">
+            <div class="velocitywp-tab-section" style="margin:0;padding-top:0;">
                 <h3>Delay Settings</h3>
                 
                 <table class="form-table">
                     <tr>
                         <th scope="row">Delay Timeout</th>
                         <td>
-                            <input type="number" name="wpsb_options[js_delay_timeout]" 
+                            <input type="number" name="velocitywp_options[js_delay_timeout]" 
                                 value="<?php echo esc_attr($js_delay_timeout); ?>" 
                                 min="0" max="30" step="1" style="width:80px;"> seconds
                             <p class="description">Maximum time to wait before loading scripts (even without user interaction). Set to 0 to wait indefinitely.</p>
@@ -78,7 +78,7 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
                     <tr>
                         <th scope="row">Trigger Events</th>
                         <td>
-                            <input type="text" name="wpsb_options[js_delay_events]" 
+                            <input type="text" name="velocitywp_options[js_delay_events]" 
                                 value="<?php echo esc_attr($js_delay_events); ?>" 
                                 class="regular-text">
                             <p class="description">Comma-separated list of events that trigger script loading. Default: mousemove,scroll,touchstart,click,keydown</p>
@@ -88,7 +88,7 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
                     <tr>
                         <th scope="row">Excluded Scripts</th>
                         <td>
-                            <textarea name="wpsb_options[js_delay_exclude]" rows="10" class="large-text code"><?php echo esc_textarea($js_delay_exclude); ?></textarea>
+                            <textarea name="velocitywp_options[js_delay_exclude]" rows="10" class="large-text code"><?php echo esc_textarea($js_delay_exclude); ?></textarea>
                             <p class="description">
                                 One script handle or URL pattern per line. Use * as wildcard.<br>
                                 <strong>Examples:</strong><br>
@@ -106,7 +106,7 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
     </tr>
 </tbody>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Common Scripts to Exclude</h2>
     
     <div style="background:#f9f9f9;padding:15px;border:1px solid #ddd;border-radius:4px;">
@@ -145,28 +145,28 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
     </div>
 </div>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Current Statistics</h2>
     
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;">
-        <div class="wpspeed-stat-box" style="background:#f9f9f9;padding:20px;border:1px solid #ddd;border-radius:4px;text-align:center;">
+        <div class="velocitywp-stat-box" style="background:#f9f9f9;padding:20px;border:1px solid #ddd;border-radius:4px;text-align:center;">
             <div style="font-size:36px;font-weight:bold;color:#2271b1;"><?php echo $stats['total']; ?></div>
             <div>Total Scripts</div>
         </div>
         
-        <div class="wpspeed-stat-box" style="background:#f9f9f9;padding:20px;border:1px solid #ddd;border-radius:4px;text-align:center;">
+        <div class="velocitywp-stat-box" style="background:#f9f9f9;padding:20px;border:1px solid #ddd;border-radius:4px;text-align:center;">
             <div style="font-size:36px;font-weight:bold;color:#00a32a;"><?php echo $stats['delayed']; ?></div>
             <div>Will Be Delayed</div>
         </div>
         
-        <div class="wpspeed-stat-box" style="background:#f9f9f9;padding:20px;border:1px solid #ddd;border-radius:4px;text-align:center;">
+        <div class="velocitywp-stat-box" style="background:#f9f9f9;padding:20px;border:1px solid #ddd;border-radius:4px;text-align:center;">
             <div style="font-size:36px;font-weight:bold;color:#646970;"><?php echo $stats['excluded']; ?></div>
             <div>Excluded</div>
         </div>
     </div>
 </div>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Testing & Debugging</h2>
     
     <table class="form-table">
@@ -175,8 +175,8 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
             <td>
                 <p>Open your browser's Developer Console (F12) and look for these messages:</p>
                 <ul style="margin-left:20px;">
-                    <li><code>[WP Speed Booster] Loading delayed scripts...</code> - Scripts triggered</li>
-                    <li><code>[WP Speed Booster] Loading scripts after timeout</code> - Timeout reached</li>
+                    <li><code>[VelocityWP] Loading delayed scripts...</code> - Scripts triggered</li>
+                    <li><code>[VelocityWP] Loading scripts after timeout</code> - Timeout reached</li>
                 </ul>
                 <p>This helps you verify when scripts are loading.</p>
             </td>
@@ -198,7 +198,7 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
     </table>
 </div>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
     <h2>Expected Results</h2>
     
     <div style="background:#f0f6fc;padding:15px;border-left:4px solid #2271b1;border-radius:4px;">
@@ -216,9 +216,9 @@ $js_delay_events = !empty($options['js_delay_events']) ? $options['js_delay_even
 <script>
 jQuery(document).ready(function($) {
     // Toggle defer/delay mutual exclusivity warning
-    $('input[name="wpsb_options[js_defer_enabled]"], input[name="wpsb_options[js_delay_enabled]"]').on('change', function() {
-        var defer = $('input[name="wpsb_options[js_defer_enabled]"]').is(':checked');
-        var delay = $('input[name="wpsb_options[js_delay_enabled]"]').is(':checked');
+    $('input[name="velocitywp_options[js_defer_enabled]"], input[name="velocitywp_options[js_delay_enabled]"]').on('change', function() {
+        var defer = $('input[name="velocitywp_options[js_defer_enabled]"]').is(':checked');
+        var delay = $('input[name="velocitywp_options[js_delay_enabled]"]').is(':checked');
         
         if (defer && delay) {
             if (!$('#js-mode-warning').length) {

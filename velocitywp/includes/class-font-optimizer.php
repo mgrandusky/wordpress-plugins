@@ -4,7 +4,7 @@
  *
  * Font optimization and local Google Fonts hosting
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Font_Optimizer class
+ * VelocityWP_Font_Optimizer class
  */
-class WPSB_Font_Optimizer {
+class VelocityWP_Font_Optimizer {
 
 	/**
 	 * Fonts directory path
@@ -42,7 +42,7 @@ class WPSB_Font_Optimizer {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->settings = get_option( 'wpsb_options', array() );
+		$this->settings = get_option( 'velocitywp_options', array() );
 
 		$upload_dir = wp_upload_dir();
 		$this->fonts_dir = $upload_dir['basedir'] . '/wpsb-fonts/';
@@ -66,9 +66,9 @@ class WPSB_Font_Optimizer {
 		}
 
 		// AJAX handlers
-		add_action( 'wp_ajax_wpsb_download_google_fonts', array( $this, 'ajax_download_google_fonts' ) );
-		add_action( 'wp_ajax_wpsb_detect_google_fonts', array( $this, 'ajax_detect_google_fonts' ) );
-		add_action( 'wp_ajax_wpsb_clear_local_fonts', array( $this, 'ajax_clear_local_fonts' ) );
+		add_action( 'wp_ajax_velocitywp_download_google_fonts', array( $this, 'ajax_download_google_fonts' ) );
+		add_action( 'wp_ajax_velocitywp_detect_google_fonts', array( $this, 'ajax_detect_google_fonts' ) );
+		add_action( 'wp_ajax_velocitywp_clear_local_fonts', array( $this, 'ajax_clear_local_fonts' ) );
 	}
 
 	/**
@@ -148,7 +148,7 @@ class WPSB_Font_Optimizer {
 		}
 
 		?>
-		<style id="wpsb-font-display">
+		<style id="velocitywp-font-display">
 		@font-face {
 			font-display: <?php echo esc_attr( $font_display ); ?>;
 		}
@@ -370,7 +370,7 @@ class WPSB_Font_Optimizer {
 	 * AJAX: Download Google Fonts
 	 */
 	public function ajax_download_google_fonts() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Permission denied' ) );
@@ -401,7 +401,7 @@ class WPSB_Font_Optimizer {
 	 * AJAX: Detect Google Fonts
 	 */
 	public function ajax_detect_google_fonts() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Permission denied' ) );
@@ -416,7 +416,7 @@ class WPSB_Font_Optimizer {
 	 * AJAX: Clear local fonts
 	 */
 	public function ajax_clear_local_fonts() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Permission denied' ) );

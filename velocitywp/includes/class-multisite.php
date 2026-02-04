@@ -4,7 +4,7 @@
  *
  * WordPress Multisite network support and management
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Multisite class
+ * VelocityWP_Multisite class
  */
-class WPSB_Multisite {
+class VelocityWP_Multisite {
 
 	/**
 	 * Constructor
@@ -27,14 +27,14 @@ class WPSB_Multisite {
 
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'network_admin_menu', array( $this, 'add_network_admin_menu' ) );
-		add_action( 'wp_ajax_wpsb_network_purge_cache', array( $this, 'ajax_network_purge_cache' ) );
+		add_action( 'wp_ajax_velocitywp_network_purge_cache', array( $this, 'ajax_network_purge_cache' ) );
 	}
 
 	/**
 	 * Initialize multisite support
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['multisite_support'] ) ) {
 			return;
@@ -42,12 +42,12 @@ class WPSB_Multisite {
 
 		// Network-wide cache management
 		if ( ! empty( $options['network_cache'] ) ) {
-			add_action( 'wpsb_clear_cache', array( $this, 'clear_network_cache' ) );
+			add_action( 'velocitywp_clear_cache', array( $this, 'clear_network_cache' ) );
 		}
 
 		// Sync settings across network
 		if ( ! empty( $options['sync_network_settings'] ) ) {
-			add_action( 'update_option_wpsb_options', array( $this, 'sync_to_network' ), 10, 2 );
+			add_action( 'update_option_velocitywp_options', array( $this, 'sync_to_network' ), 10, 2 );
 		}
 	}
 
@@ -56,8 +56,8 @@ class WPSB_Multisite {
 	 */
 	public function add_network_admin_menu() {
 		add_menu_page(
-			__( 'WP Speed Booster Network', 'wp-speed-booster' ),
-			__( 'Speed Booster', 'wp-speed-booster' ),
+			__( 'VelocityWP Network', 'velocitywp' ),
+			__( 'Speed Booster', 'velocitywp' ),
 			'manage_network_options',
 			'wpsb-network',
 			array( $this, 'render_network_page' ),
@@ -72,18 +72,18 @@ class WPSB_Multisite {
 	public function render_network_page() {
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'WP Speed Booster - Network Settings', 'wp-speed-booster' ); ?></h1>
+			<h1><?php esc_html_e( 'VelocityWP - Network Settings', 'velocitywp' ); ?></h1>
 			
-			<div class="wpsb-network-dashboard">
-				<h2><?php esc_html_e( 'Network Overview', 'wp-speed-booster' ); ?></h2>
+			<div class="velocitywp-network-dashboard">
+				<h2><?php esc_html_e( 'Network Overview', 'velocitywp' ); ?></h2>
 				<?php $this->display_network_stats(); ?>
 
-				<h2><?php esc_html_e( 'Network Actions', 'wp-speed-booster' ); ?></h2>
-				<button type="button" class="button button-primary" id="wpsb-network-purge-cache">
-					<?php esc_html_e( 'Purge All Site Caches', 'wp-speed-booster' ); ?>
+				<h2><?php esc_html_e( 'Network Actions', 'velocitywp' ); ?></h2>
+				<button type="button" class="button button-primary" id="velocitywp-network-purge-cache">
+					<?php esc_html_e( 'Purge All Site Caches', 'velocitywp' ); ?>
 				</button>
 
-				<h2><?php esc_html_e( 'Site Status', 'wp-speed-booster' ); ?></h2>
+				<h2><?php esc_html_e( 'Site Status', 'velocitywp' ); ?></h2>
 				<?php $this->display_sites_table(); ?>
 			</div>
 		</div>
@@ -101,7 +101,7 @@ class WPSB_Multisite {
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			
-			$options = get_option( 'wpsb_options', array() );
+			$options = get_option( 'velocitywp_options', array() );
 			if ( ! empty( $options['cache_enable'] ) ) {
 				$active_sites++;
 			}
@@ -117,15 +117,15 @@ class WPSB_Multisite {
 		?>
 		<table class="widefat">
 			<tr>
-				<th><?php esc_html_e( 'Total Sites', 'wp-speed-booster' ); ?></th>
+				<th><?php esc_html_e( 'Total Sites', 'velocitywp' ); ?></th>
 				<td><?php echo esc_html( count( $sites ) ); ?></td>
 			</tr>
 			<tr>
-				<th><?php esc_html_e( 'Sites with Cache Enabled', 'wp-speed-booster' ); ?></th>
+				<th><?php esc_html_e( 'Sites with Cache Enabled', 'velocitywp' ); ?></th>
 				<td><?php echo esc_html( $active_sites ); ?></td>
 			</tr>
 			<tr>
-				<th><?php esc_html_e( 'Total Cache Size', 'wp-speed-booster' ); ?></th>
+				<th><?php esc_html_e( 'Total Cache Size', 'velocitywp' ); ?></th>
 				<td><?php echo size_format( $total_cache_size ); ?></td>
 			</tr>
 		</table>
@@ -142,17 +142,17 @@ class WPSB_Multisite {
 		<table class="widefat striped">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Site', 'wp-speed-booster' ); ?></th>
-					<th><?php esc_html_e( 'Cache Status', 'wp-speed-booster' ); ?></th>
-					<th><?php esc_html_e( 'Cache Size', 'wp-speed-booster' ); ?></th>
-					<th><?php esc_html_e( 'Actions', 'wp-speed-booster' ); ?></th>
+					<th><?php esc_html_e( 'Site', 'velocitywp' ); ?></th>
+					<th><?php esc_html_e( 'Cache Status', 'velocitywp' ); ?></th>
+					<th><?php esc_html_e( 'Cache Size', 'velocitywp' ); ?></th>
+					<th><?php esc_html_e( 'Actions', 'velocitywp' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php foreach ( $sites as $site ) : ?>
 				<?php
 					switch_to_blog( $site->blog_id );
-					$options = get_option( 'wpsb_options', array() );
+					$options = get_option( 'velocitywp_options', array() );
 					$cache_enabled = ! empty( $options['cache_enable'] );
 					
 					$cache_dir = WP_CONTENT_DIR . '/cache/wpsb/';
@@ -166,14 +166,14 @@ class WPSB_Multisite {
 						<small><?php echo esc_url( get_site_url( $site->blog_id ) ); ?></small>
 					</td>
 					<td>
-						<span class="wpsb-status <?php echo $cache_enabled ? 'enabled' : 'disabled'; ?>">
-							<?php echo $cache_enabled ? esc_html__( 'Enabled', 'wp-speed-booster' ) : esc_html__( 'Disabled', 'wp-speed-booster' ); ?>
+						<span class="velocitywp-status <?php echo $cache_enabled ? 'enabled' : 'disabled'; ?>">
+							<?php echo $cache_enabled ? esc_html__( 'Enabled', 'velocitywp' ) : esc_html__( 'Disabled', 'velocitywp' ); ?>
 						</span>
 					</td>
 					<td><?php echo size_format( $cache_size ); ?></td>
 					<td>
 						<button type="button" class="button button-small wpsb-purge-site-cache" data-site-id="<?php echo esc_attr( $site->blog_id ); ?>">
-							<?php esc_html_e( 'Purge Cache', 'wp-speed-booster' ); ?>
+							<?php esc_html_e( 'Purge Cache', 'velocitywp' ); ?>
 						</button>
 					</td>
 				</tr>
@@ -191,7 +191,7 @@ class WPSB_Multisite {
 
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
-			do_action( 'wpsb_clear_cache' );
+			do_action( 'velocitywp_clear_cache' );
 			restore_current_blog();
 		}
 	}
@@ -215,7 +215,7 @@ class WPSB_Multisite {
 			}
 
 			switch_to_blog( $site->blog_id );
-			update_option( 'wpsb_options', $value );
+			update_option( 'velocitywp_options', $value );
 			restore_current_blog();
 		}
 	}
@@ -253,11 +253,11 @@ class WPSB_Multisite {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_network_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$this->clear_network_cache();
 
-		wp_send_json_success( array( 'message' => __( 'Network cache cleared', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Network cache cleared', 'velocitywp' ) ) );
 	}
 }

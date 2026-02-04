@@ -4,7 +4,7 @@
  *
  * Brotli and advanced compression handling
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Compression class
+ * VelocityWP_Compression class
  */
-class WPSB_Compression {
+class VelocityWP_Compression {
 
 	/**
 	 * Constructor
@@ -28,7 +28,7 @@ class WPSB_Compression {
 	 * Initialize compression
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['compression'] ) ) {
 			return;
@@ -46,7 +46,7 @@ class WPSB_Compression {
 
 		// Pre-compress static files
 		if ( ! empty( $options['precompress_static'] ) ) {
-			add_action( 'wpsb_precompress_files', array( $this, 'precompress_static_files' ) );
+			add_action( 'velocitywp_precompress_files', array( $this, 'precompress_static_files' ) );
 		}
 	}
 
@@ -70,7 +70,7 @@ class WPSB_Compression {
 			return;
 		}
 
-		add_filter( 'wpsb_cache_file_content', array( $this, 'compress_with_brotli' ), 10, 1 );
+		add_filter( 'velocitywp_cache_file_content', array( $this, 'compress_with_brotli' ), 10, 1 );
 	}
 
 	/**
@@ -93,7 +93,7 @@ class WPSB_Compression {
 			return $content;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$quality = ! empty( $options['brotli_quality'] ) ? intval( $options['brotli_quality'] ) : 4;
 
 		$compressed = brotli_compress( $content, $quality );
@@ -110,7 +110,7 @@ class WPSB_Compression {
 	 * Precompress static files
 	 */
 	public function precompress_static_files() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		$directories = array(
 			get_template_directory(),

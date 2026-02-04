@@ -5,7 +5,7 @@
  * Comprehensive lazy loading system for images, iframes, and videos with native browser support,
  * fallback, and advanced configuration options.
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -14,9 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Lazy_Load class
+ * VelocityWP_Lazy_Load class
  */
-class WPSB_Lazy_Load {
+class VelocityWP_Lazy_Load {
 
 	/**
 	 * Plugin settings
@@ -36,7 +36,7 @@ class WPSB_Lazy_Load {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->settings = get_option( 'wpsb_options', array() );
+		$this->settings = get_option( 'velocitywp_options', array() );
 
 		// Only initialize if lazy loading is enabled
 		if ( ! $this->is_enabled() ) {
@@ -60,8 +60,8 @@ class WPSB_Lazy_Load {
 		}
 
 		// AJAX handler for blur placeholder
-		add_action( 'wp_ajax_wpspeed_blur_placeholder', array( $this, 'ajax_blur_placeholder' ) );
-		add_action( 'wp_ajax_nopriv_wpspeed_blur_placeholder', array( $this, 'ajax_blur_placeholder' ) );
+		add_action( 'wp_ajax_velocitywp_blur_placeholder', array( $this, 'ajax_blur_placeholder' ) );
+		add_action( 'wp_ajax_nopriv_velocitywp_blur_placeholder', array( $this, 'ajax_blur_placeholder' ) );
 	}
 
 	/**
@@ -220,7 +220,7 @@ class WPSB_Lazy_Load {
 		if ( strpos( $after_src, 'class=' ) !== false ) {
 			$after_src = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 wpspeed-lazy"', $after_src );
 		} else {
-			$new_img .= ' class="wpspeed-lazy"';
+			$new_img .= ' class="velocitywp-lazy"';
 		}
 		
 		$new_img .= $after_src . '>';
@@ -275,7 +275,7 @@ class WPSB_Lazy_Load {
 		if ( strpos( $after_srcset, 'class=' ) !== false ) {
 			$after_srcset = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 wpspeed-lazy"', $after_srcset );
 		} else {
-			$new_img .= ' class="wpspeed-lazy"';
+			$new_img .= ' class="velocitywp-lazy"';
 		}
 		
 		$new_img .= $after_srcset . '>';
@@ -394,9 +394,9 @@ class WPSB_Lazy_Load {
 		// Create thumbnail preview with play button
 		$thumbnail = 'https://img.youtube.com/vi/' . $video_id . '/maxresdefault.jpg';
 
-		$html = '<div class="wpspeed-lazy-youtube" data-id="' . esc_attr( $video_id ) . '" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;">';
+		$html = '<div class="velocitywp-lazy-youtube" data-id="' . esc_attr( $video_id ) . '" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;">';
 		$html .= '<img src="' . esc_url( $thumbnail ) . '" alt="YouTube video" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">';
-		$html .= '<button class="wpspeed-play-button" aria-label="Play video" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:0;background:transparent;cursor:pointer;padding:0;">';
+		$html .= '<button class="velocitywp-play-button" aria-label="Play video" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:0;background:transparent;cursor:pointer;padding:0;">';
 		$html .= '<svg width="68" height="48" viewBox="0 0 68 48"><path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#f00"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>';
 		$html .= '</button>';
 		$html .= '</div>';
@@ -420,8 +420,8 @@ class WPSB_Lazy_Load {
 
 		$video_id = $video_id[1];
 
-		$html = '<div class="wpspeed-lazy-vimeo" data-id="' . esc_attr( $video_id ) . '" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;">';
-		$html .= '<button class="wpspeed-play-button" aria-label="Play video" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:0;background:#00adef;color:#fff;font-size:16px;padding:10px 20px;border-radius:3px;cursor:pointer;">Play Vimeo Video</button>';
+		$html = '<div class="velocitywp-lazy-vimeo" data-id="' . esc_attr( $video_id ) . '" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;">';
+		$html .= '<button class="velocitywp-play-button" aria-label="Play video" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:0;background:#00adef;color:#fff;font-size:16px;padding:10px 20px;border-radius:3px;cursor:pointer;">Play Vimeo Video</button>';
 		$html .= '</div>';
 
 		return $html;
@@ -436,8 +436,8 @@ class WPSB_Lazy_Load {
 	public function replace_maps_iframe( $matches ) {
 		$src = $matches[2];
 
-		$html = '<div class="wpspeed-lazy-maps" data-src="' . esc_attr( $src ) . '" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#f0f0f0;">';
-		$html .= '<button class="wpspeed-load-map" aria-label="Load map" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:0;background:#4285f4;color:#fff;font-size:16px;padding:10px 20px;border-radius:3px;cursor:pointer;">Load Google Map</button>';
+		$html = '<div class="velocitywp-lazy-maps" data-src="' . esc_attr( $src ) . '" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#f0f0f0;">';
+		$html .= '<button class="velocitywp-load-map" aria-label="Load map" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:0;background:#4285f4;color:#fff;font-size:16px;padding:10px 20px;border-radius:3px;cursor:pointer;">Load Google Map</button>';
 		$html .= '</div>';
 
 		return $html;
@@ -474,7 +474,7 @@ class WPSB_Lazy_Load {
 		if ( strpos( $matches[3], 'class=' ) !== false ) {
 			$matches[3] = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 wpspeed-lazy-iframe"', $matches[3] );
 		} else {
-			$new_iframe .= ' class="wpspeed-lazy-iframe"';
+			$new_iframe .= ' class="velocitywp-lazy-iframe"';
 		}
 
 		$new_iframe .= $matches[3] . '>';
@@ -577,7 +577,7 @@ class WPSB_Lazy_Load {
 
 			case 'blur':
 				// Return URL to blur-up placeholder script
-				return admin_url( 'admin-ajax.php?action=wpspeed_blur_placeholder' );
+				return admin_url( 'admin-ajax.php?action=velocitywp_blur_placeholder' );
 
 			default:
 				return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';

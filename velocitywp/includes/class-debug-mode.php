@@ -4,7 +4,7 @@
  *
  * Frontend optimization indicators and debugging tools
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Debug_Mode class
+ * VelocityWP_Debug_Mode class
  */
-class WPSB_Debug_Mode {
+class VelocityWP_Debug_Mode {
 
 	/**
 	 * Debug log
@@ -44,7 +44,7 @@ class WPSB_Debug_Mode {
 	 * Initialize debug mode
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['debug_mode'] ) ) {
 			return;
@@ -73,13 +73,13 @@ class WPSB_Debug_Mode {
 	 */
 	private function setup_logging() {
 		// Cache events
-		add_action( 'wpsb_cache_hit', array( $this, 'log_cache_hit' ) );
-		add_action( 'wpsb_cache_miss', array( $this, 'log_cache_miss' ) );
-		add_action( 'wpsb_cache_created', array( $this, 'log_cache_created' ) );
+		add_action( 'velocitywp_cache_hit', array( $this, 'log_cache_hit' ) );
+		add_action( 'velocitywp_cache_miss', array( $this, 'log_cache_miss' ) );
+		add_action( 'velocitywp_cache_created', array( $this, 'log_cache_created' ) );
 
 		// Optimization events
-		add_filter( 'wpsb_minified_html', array( $this, 'log_html_minified' ), 10, 2 );
-		add_filter( 'wpsb_lazy_loaded_images', array( $this, 'log_lazy_load' ), 10, 1 );
+		add_filter( 'velocitywp_minified_html', array( $this, 'log_html_minified' ), 10, 2 );
+		add_filter( 'velocitywp_lazy_loaded_images', array( $this, 'log_lazy_load' ), 10, 1 );
 	}
 
 	/**
@@ -160,7 +160,7 @@ class WPSB_Debug_Mode {
 		$query_count = count( $wpdb->queries );
 
 		?>
-		<!-- WP Speed Booster Debug Info -->
+		<!-- VelocityWP Debug Info -->
 		<!--
 		Generation Time: <?php echo number_format( $generation_time, 4 ); ?>s
 		Memory Usage: <?php echo size_format( $memory_usage ); ?>
@@ -185,12 +185,12 @@ class WPSB_Debug_Mode {
 		global $wpdb;
 		$query_count = isset( $wpdb->queries ) ? count( $wpdb->queries ) : 0;
 
-		$cache_status = did_action( 'wpsb_cache_hit' ) > 0 ? 'HIT' : 'MISS';
+		$cache_status = did_action( 'velocitywp_cache_hit' ) > 0 ? 'HIT' : 'MISS';
 		$cache_class = $cache_status === 'HIT' ? 'hit' : 'miss';
 
 		?>
 		<style>
-		#wpsb-debug-bar {
+		#velocitywp-debug-bar {
 			position: fixed;
 			top: 32px;
 			right: 0;
@@ -203,65 +203,65 @@ class WPSB_Debug_Mode {
 			box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 			max-width: 300px;
 		}
-		#wpsb-debug-bar .wpsb-debug-item {
+		#velocitywp-debug-bar .velocitywp-debug-item {
 			margin: 5px 0;
 			padding: 5px 0;
 			border-bottom: 1px solid #32373c;
 		}
-		#wpsb-debug-bar .wpsb-debug-item:last-child {
+		#velocitywp-debug-bar .velocitywp-debug-item:last-child {
 			border-bottom: none;
 		}
-		#wpsb-debug-bar .wpsb-debug-label {
+		#velocitywp-debug-bar .velocitywp-debug-label {
 			font-weight: 600;
 			color: #00a0d2;
 		}
-		#wpsb-debug-bar .wpsb-debug-value {
+		#velocitywp-debug-bar .velocitywp-debug-value {
 			float: right;
 		}
-		#wpsb-debug-bar .wpsb-cache-hit {
+		#velocitywp-debug-bar .velocitywp-cache-hit {
 			color: #46b450;
 		}
-		#wpsb-debug-bar .wpsb-cache-miss {
+		#velocitywp-debug-bar .velocitywp-cache-miss {
 			color: #f56e28;
 		}
-		#wpsb-debug-bar .wpsb-debug-toggle {
+		#velocitywp-debug-bar .velocitywp-debug-toggle {
 			cursor: pointer;
 			text-align: center;
 			padding: 5px;
 			background: #32373c;
 			margin: -10px -15px 10px;
 		}
-		#wpsb-debug-bar.collapsed .wpsb-debug-content {
+		#velocitywp-debug-bar.collapsed .velocitywp-debug-content {
 			display: none;
 		}
 		</style>
-		<div id="wpsb-debug-bar">
-			<div class="wpsb-debug-toggle" onclick="this.parentElement.classList.toggle('collapsed')">
-				⚡ WP Speed Booster Debug
+		<div id="velocitywp-debug-bar">
+			<div class="velocitywp-debug-toggle" onclick="this.parentElement.classList.toggle('collapsed')">
+				⚡ VelocityWP Debug
 			</div>
-			<div class="wpsb-debug-content">
-				<div class="wpsb-debug-item">
-					<span class="wpsb-debug-label">Cache:</span>
-					<span class="wpsb-debug-value wpsb-cache-<?php echo esc_attr( strtolower( $cache_status ) ); ?>">
+			<div class="velocitywp-debug-content">
+				<div class="velocitywp-debug-item">
+					<span class="velocitywp-debug-label">Cache:</span>
+					<span class="velocitywp-debug-value wpsb-cache-<?php echo esc_attr( strtolower( $cache_status ) ); ?>">
 						<?php echo esc_html( $cache_status ); ?>
 					</span>
 				</div>
-				<div class="wpsb-debug-item">
-					<span class="wpsb-debug-label">Time:</span>
-					<span class="wpsb-debug-value"><?php echo number_format( $generation_time, 4 ); ?>s</span>
+				<div class="velocitywp-debug-item">
+					<span class="velocitywp-debug-label">Time:</span>
+					<span class="velocitywp-debug-value"><?php echo number_format( $generation_time, 4 ); ?>s</span>
 				</div>
-				<div class="wpsb-debug-item">
-					<span class="wpsb-debug-label">Memory:</span>
-					<span class="wpsb-debug-value"><?php echo size_format( $memory_usage ); ?></span>
+				<div class="velocitywp-debug-item">
+					<span class="velocitywp-debug-label">Memory:</span>
+					<span class="velocitywp-debug-value"><?php echo size_format( $memory_usage ); ?></span>
 				</div>
-				<div class="wpsb-debug-item">
-					<span class="wpsb-debug-label">Queries:</span>
-					<span class="wpsb-debug-value"><?php echo esc_html( $query_count ); ?></span>
+				<div class="velocitywp-debug-item">
+					<span class="velocitywp-debug-label">Queries:</span>
+					<span class="velocitywp-debug-value"><?php echo esc_html( $query_count ); ?></span>
 				</div>
 				<?php if ( ! empty( $this->debug_log ) ) : ?>
-				<div class="wpsb-debug-item">
-					<span class="wpsb-debug-label">Events:</span>
-					<span class="wpsb-debug-value"><?php echo count( $this->debug_log ); ?></span>
+				<div class="velocitywp-debug-item">
+					<span class="velocitywp-debug-label">Events:</span>
+					<span class="velocitywp-debug-value"><?php echo count( $this->debug_log ); ?></span>
 				</div>
 				<?php endif; ?>
 			</div>
@@ -315,11 +315,11 @@ class WPSB_Debug_Mode {
 			'generation_time' => microtime( true ) - $this->start_time,
 			'memory_usage'    => memory_get_peak_usage( true ),
 			'query_count'     => isset( $wpdb->queries ) ? count( $wpdb->queries ) : 0,
-			'cache_status'    => did_action( 'wpsb_cache_hit' ) > 0 ? 'hit' : 'miss',
+			'cache_status'    => did_action( 'velocitywp_cache_hit' ) > 0 ? 'hit' : 'miss',
 			'log'             => $this->debug_log,
 			'php_version'     => PHP_VERSION,
 			'wp_version'      => get_bloginfo( 'version' ),
-			'plugin_version'  => WPSB_VERSION,
+			'plugin_version'  => VelocityWP_VERSION,
 		);
 
 		return $report;

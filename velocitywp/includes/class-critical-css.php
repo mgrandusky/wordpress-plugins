@@ -4,7 +4,7 @@
  *
  * Automatically extracts and inlines above-the-fold CSS
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Critical_CSS class
+ * VelocityWP_Critical_CSS class
  */
-class WPSB_Critical_CSS {
+class VelocityWP_Critical_CSS {
 
 	/**
 	 * Settings array
@@ -28,7 +28,7 @@ class WPSB_Critical_CSS {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->settings = get_option( 'wpsb_options', array() );
+		$this->settings = get_option( 'velocitywp_options', array() );
 		
 		if ( $this->is_enabled() ) {
 			add_action( 'wp_head', array( $this, 'inject_critical_css' ), 1 );
@@ -42,14 +42,14 @@ class WPSB_Critical_CSS {
 		add_action( 'save_post', array( $this, 'save_critical_css_meta' ) );
 		
 		// AJAX handlers
-		add_action( 'wp_ajax_wpsb_generate_critical_css', array( $this, 'ajax_generate_critical_css' ) );
-		add_action( 'wp_ajax_wpsb_clear_critical_css', array( $this, 'ajax_clear_critical_css' ) );
-		add_action( 'wp_ajax_wpsb_regenerate_all_critical_css', array( $this, 'ajax_regenerate_all_critical_css' ) );
-		add_action( 'wp_ajax_wpsb_save_manual_css', array( $this, 'ajax_save_manual_css' ) );
-		add_action( 'wp_ajax_wpsb_delete_template_css', array( $this, 'ajax_delete_template_css' ) );
+		add_action( 'wp_ajax_velocitywp_generate_critical_css', array( $this, 'ajax_generate_critical_css' ) );
+		add_action( 'wp_ajax_velocitywp_clear_critical_css', array( $this, 'ajax_clear_critical_css' ) );
+		add_action( 'wp_ajax_velocitywp_regenerate_all_critical_css', array( $this, 'ajax_regenerate_all_critical_css' ) );
+		add_action( 'wp_ajax_velocitywp_save_manual_css', array( $this, 'ajax_save_manual_css' ) );
+		add_action( 'wp_ajax_velocitywp_delete_template_css', array( $this, 'ajax_delete_template_css' ) );
 		
 		// Cron hook for background generation
-		add_action( 'wpspeed_generate_critical_css', array( $this, 'process_critical_css_generation' ) );
+		add_action( 'velocitywp_generate_critical_css', array( $this, 'process_critical_css_generation' ) );
 	}
 
 	/**
@@ -106,7 +106,7 @@ class WPSB_Critical_CSS {
 		$critical_css = $this->get_critical_css();
 		
 		if ( ! empty( $critical_css ) ) {
-			echo '<style id="wpsb-critical-css">' . $critical_css . '</style>' . "\n";
+			echo '<style id="velocitywp-critical-css">' . $critical_css . '</style>' . "\n";
 			
 			// Add noscript fallback for full CSS
 			echo '<noscript><link rel="stylesheet" href="' . esc_url( get_stylesheet_uri() ) . '"></noscript>' . "\n";
@@ -126,7 +126,7 @@ class WPSB_Critical_CSS {
 		
 		// Check for per-page manual critical CSS in post meta
 		if ( $post_id ) {
-			$manual_css = get_post_meta( $post_id, '_wpsb_critical_css', true );
+			$manual_css = get_post_meta( $post_id, '_velocitywp_critical_css', true );
 			if ( ! empty( $manual_css ) ) {
 				return $manual_css;
 			}
@@ -147,7 +147,7 @@ class WPSB_Critical_CSS {
 		}
 		
 		// Get template critical CSS from database
-		$critical_css_data = get_option( 'wpspeed_critical_css', array() );
+		$critical_css_data = get_option( 'velocitywp_critical_css', array() );
 		$template_key = $template . '_' . $viewport;
 		
 		if ( isset( $critical_css_data[ $template_key ]['css'] ) ) {
@@ -609,7 +609,7 @@ class WPSB_Critical_CSS {
 	 */
 	public function save_critical_css( $template, $css, $viewport = 'desktop' ) {
 		// Save to database
-		$critical_css_data = get_option( 'wpspeed_critical_css', array() );
+		$critical_css_data = get_option( 'velocitywp_critical_css', array() );
 		
 		$template_key = $template . '_' . $viewport;
 		$critical_css_data[ $template_key ] = array(
@@ -620,7 +620,7 @@ class WPSB_Critical_CSS {
 			'viewport' => $viewport
 		);
 		
-		update_option( 'wpspeed_critical_css', $critical_css_data );
+		update_option( 'velocitywp_critical_css', $critical_css_data );
 		
 		// Also save to file for faster access
 		$upload_dir = wp_upload_dir();
@@ -648,12 +648,12 @@ class WPSB_Critical_CSS {
 	 * @return bool Success status
 	 */
 	public function delete_critical_css( $template, $viewport = 'desktop' ) {
-		$critical_css_data = get_option( 'wpspeed_critical_css', array() );
+		$critical_css_data = get_option( 'velocitywp_critical_css', array() );
 		$template_key = $template . '_' . $viewport;
 		
 		if ( isset( $critical_css_data[ $template_key ] ) ) {
 			unset( $critical_css_data[ $template_key ] );
-			update_option( 'wpspeed_critical_css', $critical_css_data );
+			update_option( 'velocitywp_critical_css', $critical_css_data );
 			
 			// Delete file
 			$upload_dir = wp_upload_dir();
@@ -681,7 +681,7 @@ class WPSB_Critical_CSS {
 	public function clear_critical_css_cache( $post_id ) {
 		// Clear old transient-based cache
 		$page_type = is_front_page() ? 'front_page' : 'default';
-		$cache_key = 'wpsb_critical_css_' . $page_type . '_' . $post_id;
+		$cache_key = 'velocitywp_critical_css_' . $page_type . '_' . $post_id;
 		
 		delete_transient( $cache_key );
 	}
@@ -691,8 +691,8 @@ class WPSB_Critical_CSS {
 	 */
 	public function clear_all_critical_css() {
 		global $wpdb;
-		$prefix = $wpdb->esc_like( '_transient_wpsb_critical_css_' );
-		$timeout_prefix = $wpdb->esc_like( '_transient_timeout_wpsb_critical_css_' );
+		$prefix = $wpdb->esc_like( '_transient_velocitywp_critical_css_' );
+		$timeout_prefix = $wpdb->esc_like( '_transient_timeout_velocitywp_critical_css_' );
 		
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $prefix . '%' ) );
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $timeout_prefix . '%' ) );
@@ -706,8 +706,8 @@ class WPSB_Critical_CSS {
 		
 		foreach ( $post_types as $post_type ) {
 			add_meta_box(
-				'wpsb_critical_css',
-				__( 'Critical CSS', 'wp-speed-booster' ),
+				'velocitywp_critical_css',
+				__( 'Critical CSS', 'velocitywp' ),
 				array( $this, 'render_critical_css_meta_box' ),
 				$post_type,
 				'normal',
@@ -722,41 +722,41 @@ class WPSB_Critical_CSS {
 	 * @param WP_Post $post Post object.
 	 */
 	public function render_critical_css_meta_box( $post ) {
-		wp_nonce_field( 'wpsb_critical_css_meta', 'wpsb_critical_css_nonce' );
+		wp_nonce_field( 'velocitywp_critical_css_meta', 'velocitywp_critical_css_nonce' );
 		
-		$critical_css = get_post_meta( $post->ID, '_wpsb_critical_css', true );
+		$critical_css = get_post_meta( $post->ID, '_velocitywp_critical_css', true );
 		?>
 		<p>
-			<label for="wpsb_critical_css_input"><?php esc_html_e( 'Enter custom critical CSS for this page:', 'wp-speed-booster' ); ?></label>
+			<label for="velocitywp_critical_css_input"><?php esc_html_e( 'Enter custom critical CSS for this page:', 'velocitywp' ); ?></label>
 		</p>
-		<textarea id="wpsb_critical_css_input" name="wpsb_critical_css" rows="10" class="large-text code"><?php echo esc_textarea( $critical_css ); ?></textarea>
+		<textarea id="velocitywp_critical_css_input" name="velocitywp_critical_css" rows="10" class="large-text code"><?php echo esc_textarea( $critical_css ); ?></textarea>
 		<p class="description">
-			<?php esc_html_e( 'Leave empty to use automatically generated critical CSS.', 'wp-speed-booster' ); ?>
+			<?php esc_html_e( 'Leave empty to use automatically generated critical CSS.', 'velocitywp' ); ?>
 		</p>
 		<p>
-			<button type="button" class="button" id="wpsb-generate-page-critical-css" data-url="<?php echo esc_url( get_permalink( $post->ID ) ); ?>">
-				<?php esc_html_e( 'Generate Critical CSS', 'wp-speed-booster' ); ?>
+			<button type="button" class="button" id="velocitywp-generate-page-critical-css" data-url="<?php echo esc_url( get_permalink( $post->ID ) ); ?>">
+				<?php esc_html_e( 'Generate Critical CSS', 'velocitywp' ); ?>
 			</button>
 		</p>
 		<script>
 		jQuery(document).ready(function($) {
-			$('#wpsb-generate-page-critical-css').on('click', function() {
+			$('#velocitywp-generate-page-critical-css').on('click', function() {
 				var $btn = $(this);
 				var url = $btn.data('url');
 				
-				$btn.prop('disabled', true).text('<?php esc_html_e( 'Generating...', 'wp-speed-booster' ); ?>');
+				$btn.prop('disabled', true).text('<?php esc_html_e( 'Generating...', 'velocitywp' ); ?>');
 				
 				$.post(ajaxurl, {
-					action: 'wpsb_generate_critical_css',
-					nonce: '<?php echo wp_create_nonce( 'wpsb_admin_nonce' ); ?>',
+					action: 'velocitywp_generate_critical_css',
+					nonce: '<?php echo wp_create_nonce( 'velocitywp_admin_nonce' ); ?>',
 					url: url
 				}, function(response) {
-					$btn.prop('disabled', false).text('<?php esc_html_e( 'Generate Critical CSS', 'wp-speed-booster' ); ?>');
+					$btn.prop('disabled', false).text('<?php esc_html_e( 'Generate Critical CSS', 'velocitywp' ); ?>');
 					if (response.success) {
-						$('#wpsb_critical_css_input').val(response.data.css);
-						alert('<?php esc_html_e( 'Critical CSS generated successfully!', 'wp-speed-booster' ); ?>');
+						$('#velocitywp_critical_css_input').val(response.data.css);
+						alert('<?php esc_html_e( 'Critical CSS generated successfully!', 'velocitywp' ); ?>');
 					} else {
-						alert('<?php esc_html_e( 'Failed to generate critical CSS.', 'wp-speed-booster' ); ?>');
+						alert('<?php esc_html_e( 'Failed to generate critical CSS.', 'velocitywp' ); ?>');
 					}
 				});
 			});
@@ -772,7 +772,7 @@ class WPSB_Critical_CSS {
 	 */
 	public function save_critical_css_meta( $post_id ) {
 		// Check nonce
-		if ( ! isset( $_POST['wpsb_critical_css_nonce'] ) || ! wp_verify_nonce( $_POST['wpsb_critical_css_nonce'], 'wpsb_critical_css_meta' ) ) {
+		if ( ! isset( $_POST['velocitywp_critical_css_nonce'] ) || ! wp_verify_nonce( $_POST['velocitywp_critical_css_nonce'], 'velocitywp_critical_css_meta' ) ) {
 			return;
 		}
 		
@@ -787,10 +787,10 @@ class WPSB_Critical_CSS {
 		}
 		
 		// Save critical CSS
-		if ( isset( $_POST['wpsb_critical_css'] ) ) {
+		if ( isset( $_POST['velocitywp_critical_css'] ) ) {
 			// Sanitize CSS - preserve valid CSS syntax while removing any potential scripts
-			$critical_css = wp_strip_all_tags( $_POST['wpsb_critical_css'] );
-			update_post_meta( $post_id, '_wpsb_critical_css', $critical_css );
+			$critical_css = wp_strip_all_tags( $_POST['velocitywp_critical_css'] );
+			update_post_meta( $post_id, '_velocitywp_critical_css', $critical_css );
 		}
 	}
 
@@ -798,10 +798,10 @@ class WPSB_Critical_CSS {
 	 * Generate critical CSS via AJAX
 	 */
 	public function ajax_generate_critical_css() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'velocitywp' ) ) );
 		}
 		
 		$url = isset( $_POST['url'] ) ? esc_url_raw( $_POST['url'] ) : home_url();
@@ -811,13 +811,13 @@ class WPSB_Critical_CSS {
 		
 		if ( $critical_css ) {
 			wp_send_json_success( array(
-				'message' => __( 'Critical CSS generated successfully', 'wp-speed-booster' ),
+				'message' => __( 'Critical CSS generated successfully', 'velocitywp' ),
 				'css' => $critical_css,
 				'size' => strlen( $critical_css ),
 				'template' => $template
 			) );
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Failed to generate critical CSS', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Failed to generate critical CSS', 'velocitywp' ) ) );
 		}
 	}
 
@@ -825,25 +825,25 @@ class WPSB_Critical_CSS {
 	 * Clear critical CSS cache via AJAX
 	 */
 	public function ajax_clear_critical_css() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'velocitywp' ) ) );
 		}
 		
 		$this->clear_all_critical_css();
 		
-		wp_send_json_success( array( 'message' => __( 'Critical CSS cache cleared', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Critical CSS cache cleared', 'velocitywp' ) ) );
 	}
 
 	/**
 	 * Regenerate all critical CSS via AJAX
 	 */
 	public function ajax_regenerate_all_critical_css() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'velocitywp' ) ) );
 		}
 		
 		// Regenerate all templates
@@ -866,7 +866,7 @@ class WPSB_Critical_CSS {
 		}
 		
 		wp_send_json_success( array(
-			'message' => sprintf( __( 'Generated critical CSS for %d templates', 'wp-speed-booster' ), $generated ),
+			'message' => sprintf( __( 'Generated critical CSS for %d templates', 'velocitywp' ), $generated ),
 			'generated' => $generated,
 			'total' => count( $templates ),
 			'errors' => $errors
@@ -907,7 +907,7 @@ class WPSB_Critical_CSS {
 		}
 		
 		foreach ( $templates as $template ) {
-			wp_schedule_single_event( time() + 60, 'wpspeed_generate_critical_css', array( $template ) );
+			wp_schedule_single_event( time() + 60, 'velocitywp_generate_critical_css', array( $template ) );
 		}
 	}
 
@@ -930,10 +930,10 @@ class WPSB_Critical_CSS {
 	 * Save manual CSS via AJAX
 	 */
 	public function ajax_save_manual_css() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'velocitywp' ) ) );
 		}
 		
 		$template = isset( $_POST['template'] ) ? sanitize_text_field( $_POST['template'] ) : '';
@@ -941,13 +941,13 @@ class WPSB_Critical_CSS {
 		$viewport = isset( $_POST['viewport'] ) ? sanitize_text_field( $_POST['viewport'] ) : 'desktop';
 		
 		if ( empty( $template ) || empty( $css ) ) {
-			wp_send_json_error( array( 'message' => __( 'Template and CSS are required', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Template and CSS are required', 'velocitywp' ) ) );
 		}
 		
 		$this->save_critical_css( $template, $css, $viewport );
 		
 		wp_send_json_success( array(
-			'message' => __( 'Critical CSS saved successfully', 'wp-speed-booster' ),
+			'message' => __( 'Critical CSS saved successfully', 'velocitywp' ),
 			'size' => strlen( $css )
 		) );
 	}
@@ -956,22 +956,22 @@ class WPSB_Critical_CSS {
 	 * Delete template CSS via AJAX
 	 */
 	public function ajax_delete_template_css() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'velocitywp' ) ) );
 		}
 		
 		$template = isset( $_POST['template'] ) ? sanitize_text_field( $_POST['template'] ) : '';
 		$viewport = isset( $_POST['viewport'] ) ? sanitize_text_field( $_POST['viewport'] ) : 'desktop';
 		
 		if ( empty( $template ) ) {
-			wp_send_json_error( array( 'message' => __( 'Template is required', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Template is required', 'velocitywp' ) ) );
 		}
 		
 		$this->delete_critical_css( $template, $viewport );
 		
-		wp_send_json_success( array( 'message' => __( 'Critical CSS deleted successfully', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Critical CSS deleted successfully', 'velocitywp' ) ) );
 	}
 
 	/**

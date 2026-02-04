@@ -5,7 +5,7 @@
  * Comprehensive database optimization and cleanup system with 
  * automated maintenance, table optimization, and revision management.
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -14,9 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WP_Speed_Booster_Database_Optimizer class
+ * VelocityWP_Database_Optimizer class
  */
-class WP_Speed_Booster_Database_Optimizer {
+class VelocityWP_Database_Optimizer {
 
 	/**
 	 * Plugin settings
@@ -29,16 +29,16 @@ class WP_Speed_Booster_Database_Optimizer {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->settings = get_option( 'wpsb_options', array() );
+		$this->settings = get_option( 'velocitywp_options', array() );
 		
 		// Register hooks
-		add_action( 'wpspeed_database_optimization', array( $this, 'run_scheduled_optimization' ) );
+		add_action( 'velocitywp_database_optimization', array( $this, 'run_scheduled_optimization' ) );
 		
 		// Register AJAX handlers
-		add_action( 'wp_ajax_wpspeed_db_get_stats', array( $this, 'ajax_get_stats' ) );
-		add_action( 'wp_ajax_wpspeed_db_cleanup', array( $this, 'ajax_cleanup' ) );
-		add_action( 'wp_ajax_wpspeed_db_optimize_tables', array( $this, 'ajax_optimize_tables' ) );
-		add_action( 'wp_ajax_wpspeed_db_get_table_info', array( $this, 'ajax_get_table_info' ) );
+		add_action( 'wp_ajax_velocitywp_db_get_stats', array( $this, 'ajax_get_stats' ) );
+		add_action( 'wp_ajax_velocitywp_db_cleanup', array( $this, 'ajax_cleanup' ) );
+		add_action( 'wp_ajax_velocitywp_db_optimize_tables', array( $this, 'ajax_optimize_tables' ) );
+		add_action( 'wp_ajax_velocitywp_db_get_table_info', array( $this, 'ajax_get_table_info' ) );
 	}
 
 	/**
@@ -700,11 +700,11 @@ class WP_Speed_Booster_Database_Optimizer {
 			$this->settings['db_optimize_schedule'] : 'weekly';
 		
 		// Clear existing schedule
-		wp_clear_scheduled_hook( 'wpspeed_database_optimization' );
+		wp_clear_scheduled_hook( 'velocitywp_database_optimization' );
 		
 		// Only schedule if optimization is enabled
 		if ( $this->is_enabled() && $frequency !== 'disabled' ) {
-			wp_schedule_event( time(), $frequency, 'wpspeed_database_optimization' );
+			wp_schedule_event( time(), $frequency, 'velocitywp_database_optimization' );
 		}
 	}
 
@@ -759,10 +759,10 @@ class WP_Speed_Booster_Database_Optimizer {
 		$admin_email = get_option( 'admin_email' );
 		$site_name = get_bloginfo( 'name' );
 		
-		$subject = sprintf( __( '[%s] Database Optimization Report', 'wp-speed-booster' ), $site_name );
+		$subject = sprintf( __( '[%s] Database Optimization Report', 'velocitywp' ), $site_name );
 		
-		$message = sprintf( __( 'Database optimization completed on %s', 'wp-speed-booster' ), date( 'Y-m-d H:i:s' ) ) . "\n\n";
-		$message .= __( 'Results:', 'wp-speed-booster' ) . "\n";
+		$message = sprintf( __( 'Database optimization completed on %s', 'velocitywp' ), date( 'Y-m-d H:i:s' ) ) . "\n\n";
+		$message .= __( 'Results:', 'velocitywp' ) . "\n";
 		$message .= str_repeat( '-', 50 ) . "\n";
 		
 		foreach ( $results as $operation => $result ) {
@@ -773,7 +773,7 @@ class WP_Speed_Booster_Database_Optimizer {
 			}
 		}
 		
-		$message .= "\n" . sprintf( __( 'Site: %s', 'wp-speed-booster' ), home_url() ) . "\n";
+		$message .= "\n" . sprintf( __( 'Site: %s', 'velocitywp' ), home_url() ) . "\n";
 		
 		wp_mail( $admin_email, $subject, $message );
 	}
@@ -786,10 +786,10 @@ class WP_Speed_Booster_Database_Optimizer {
 	 * AJAX handler: Get database statistics
 	 */
 	public function ajax_get_stats() {
-		check_ajax_referer( 'wpspeed_db_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_db_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied', 'velocitywp' ) ) );
 		}
 		
 		$stats = $this->get_stats();
@@ -807,10 +807,10 @@ class WP_Speed_Booster_Database_Optimizer {
 	 * AJAX handler: Run cleanup operation
 	 */
 	public function ajax_cleanup() {
-		check_ajax_referer( 'wpspeed_db_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_db_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied', 'velocitywp' ) ) );
 		}
 		
 		$operation = isset( $_POST['operation'] ) ? sanitize_text_field( $_POST['operation'] ) : '';
@@ -882,13 +882,13 @@ class WP_Speed_Booster_Database_Optimizer {
 				break;
 			
 			default:
-				wp_send_json_error( array( 'message' => __( 'Invalid operation', 'wp-speed-booster' ) ) );
+				wp_send_json_error( array( 'message' => __( 'Invalid operation', 'velocitywp' ) ) );
 		}
 		
 		wp_send_json_success( array(
 			'operation' => $operation,
 			'deleted' => $result,
-			'message' => sprintf( __( 'Deleted %d items', 'wp-speed-booster' ), $result ),
+			'message' => sprintf( __( 'Deleted %d items', 'velocitywp' ), $result ),
 		) );
 	}
 
@@ -896,10 +896,10 @@ class WP_Speed_Booster_Database_Optimizer {
 	 * AJAX handler: Optimize tables
 	 */
 	public function ajax_optimize_tables() {
-		check_ajax_referer( 'wpspeed_db_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_db_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied', 'velocitywp' ) ) );
 		}
 		
 		$action = isset( $_POST['table_action'] ) ? sanitize_text_field( $_POST['table_action'] ) : 'optimize';
@@ -921,7 +921,7 @@ class WP_Speed_Booster_Database_Optimizer {
 				break;
 			
 			default:
-				wp_send_json_error( array( 'message' => __( 'Invalid table action', 'wp-speed-booster' ) ) );
+				wp_send_json_error( array( 'message' => __( 'Invalid table action', 'velocitywp' ) ) );
 		}
 		
 		$success_count = count( array_filter( $results ) );
@@ -932,7 +932,7 @@ class WP_Speed_Booster_Database_Optimizer {
 			'results' => $results,
 			'success_count' => $success_count,
 			'total_count' => $total_count,
-			'message' => sprintf( __( '%s: %d of %d tables completed successfully', 'wp-speed-booster' ), ucfirst( $action ), $success_count, $total_count ),
+			'message' => sprintf( __( '%s: %d of %d tables completed successfully', 'velocitywp' ), ucfirst( $action ), $success_count, $total_count ),
 		) );
 	}
 
@@ -940,10 +940,10 @@ class WP_Speed_Booster_Database_Optimizer {
 	 * AJAX handler: Get table information
 	 */
 	public function ajax_get_table_info() {
-		check_ajax_referer( 'wpspeed_db_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_db_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied', 'velocitywp' ) ) );
 		}
 		
 		$table_info = $this->get_table_info();

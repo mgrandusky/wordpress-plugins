@@ -4,7 +4,7 @@
  *
  * Geolocation-based caching and content delivery
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Geo_Cache class
+ * VelocityWP_Geo_Cache class
  */
-class WPSB_Geo_Cache {
+class VelocityWP_Geo_Cache {
 
 	/**
 	 * Visitor location
@@ -35,7 +35,7 @@ class WPSB_Geo_Cache {
 	 * Initialize geo cache
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['geo_cache'] ) ) {
 			return;
@@ -45,7 +45,7 @@ class WPSB_Geo_Cache {
 		$this->detect_location();
 
 		// Modify cache key based on location
-		add_filter( 'wpsb_cache_key', array( $this, 'add_geo_cache_key' ) );
+		add_filter( 'velocitywp_cache_key', array( $this, 'add_geo_cache_key' ) );
 
 		// Serve geo-specific content
 		if ( ! empty( $options['geo_content'] ) ) {
@@ -58,12 +58,12 @@ class WPSB_Geo_Cache {
 	 */
 	private function detect_location() {
 		// Check if already detected
-		if ( isset( $_COOKIE['wpsb_geo_location'] ) ) {
-			$this->location = json_decode( stripslashes( $_COOKIE['wpsb_geo_location'] ), true );
+		if ( isset( $_COOKIE['velocitywp_geo_location'] ) ) {
+			$this->location = json_decode( stripslashes( $_COOKIE['velocitywp_geo_location'] ), true );
 			return;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$method = ! empty( $options['geo_detection_method'] ) ? $options['geo_detection_method'] : 'cloudflare';
 
 		switch ( $method ) {
@@ -84,7 +84,7 @@ class WPSB_Geo_Cache {
 		}
 
 		// Store in cookie
-		setcookie( 'wpsb_geo_location', wp_json_encode( $this->location ), time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		setcookie( 'velocitywp_geo_location', wp_json_encode( $this->location ), time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 	}
 
 	/**
@@ -273,7 +273,7 @@ class WPSB_Geo_Cache {
 	 * @return array Statistics by country.
 	 */
 	public function get_statistics() {
-		$stats = get_option( 'wpsb_geo_stats', array() );
+		$stats = get_option( 'velocitywp_geo_stats', array() );
 		
 		// Track current visit
 		$country = ! empty( $this->location['country'] ) ? $this->location['country'] : 'XX';
@@ -284,7 +284,7 @@ class WPSB_Geo_Cache {
 		
 		$stats[ $country ]++;
 		
-		update_option( 'wpsb_geo_stats', $stats, false );
+		update_option( 'velocitywp_geo_stats', $stats, false );
 
 		return $stats;
 	}

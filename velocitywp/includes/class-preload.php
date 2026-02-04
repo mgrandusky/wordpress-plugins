@@ -4,7 +4,7 @@
  *
  * Handles cache preloading functionality
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Preload class
+ * VelocityWP_Preload class
  */
-class WPSB_Preload {
+class VelocityWP_Preload {
 
 	/**
 	 * URLs to preload
@@ -29,7 +29,7 @@ class WPSB_Preload {
 	 */
 	public function __construct() {
 		// Register AJAX handlers
-		add_action( 'wp_ajax_wpsb_preload_cache', array( $this, 'ajax_preload_cache' ) );
+		add_action( 'wp_ajax_velocitywp_preload_cache', array( $this, 'ajax_preload_cache' ) );
 	}
 
 	/**
@@ -50,7 +50,7 @@ class WPSB_Preload {
 			$response = wp_remote_get( $url, array(
 				'timeout'    => 30,
 				'sslverify'  => false,
-				'user-agent' => 'WP Speed Booster Cache Preloader',
+				'user-agent' => 'VelocityWP Cache Preloader',
 			) );
 
 			if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
@@ -108,17 +108,17 @@ class WPSB_Preload {
 		$this->urls = array_unique( $this->urls );
 
 		// Allow filtering
-		$this->urls = apply_filters( 'wpsb_preload_urls', $this->urls );
+		$this->urls = apply_filters( 'velocitywp_preload_urls', $this->urls );
 	}
 
 	/**
 	 * AJAX handler for cache preloading
 	 */
 	public function ajax_preload_cache() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'velocitywp' ) ) );
 		}
 
 		$results = $this->preload_cache();
@@ -126,7 +126,7 @@ class WPSB_Preload {
 		wp_send_json_success( array(
 			'message' => sprintf(
 				/* translators: 1: success count, 2: total count */
-				__( 'Preloaded %1$d of %2$d URLs successfully.', 'wp-speed-booster' ),
+				__( 'Preloaded %1$d of %2$d URLs successfully.', 'velocitywp' ),
 				$results['success'],
 				$results['total']
 			),

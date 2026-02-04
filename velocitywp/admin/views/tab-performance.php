@@ -2,7 +2,7 @@
 /**
  * Performance Monitoring Tab View
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -27,7 +27,7 @@ if ( ! in_array( $period, $valid_periods, true ) ) {
 
 // Initialize performance monitor if enabled
 if ( $performance_monitoring_enabled && class_exists( 'WP_Speed_Booster_Performance_Monitor' ) ) {
-	$monitor   = new WP_Speed_Booster_Performance_Monitor();
+	$monitor   = new VelocityWP_Performance_Monitor();
 	$analytics = $monitor->get_analytics( $period );
 } else {
 	$analytics = array(
@@ -41,104 +41,104 @@ if ( $performance_monitoring_enabled && class_exists( 'WP_Speed_Booster_Performa
 $averages = $analytics['averages'];
 ?>
 
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Performance Monitoring & Analytics', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Performance Monitoring & Analytics', 'velocitywp' ); ?></h2>
 	
 	<div class="notice notice-info">
-		<p><strong><?php esc_html_e( 'What is Performance Monitoring?', 'wp-speed-booster' ); ?></strong></p>
-		<p><?php esc_html_e( 'Track real user experience metrics (Core Web Vitals) and server-side performance data to understand how your site performs for actual visitors. Get actionable insights to improve speed and user experience.', 'wp-speed-booster' ); ?></p>
-		<p><strong><?php esc_html_e( 'Features:', 'wp-speed-booster' ); ?></strong></p>
+		<p><strong><?php esc_html_e( 'What is Performance Monitoring?', 'velocitywp' ); ?></strong></p>
+		<p><?php esc_html_e( 'Track real user experience metrics (Core Web Vitals) and server-side performance data to understand how your site performs for actual visitors. Get actionable insights to improve speed and user experience.', 'velocitywp' ); ?></p>
+		<p><strong><?php esc_html_e( 'Features:', 'velocitywp' ); ?></strong></p>
 		<ul>
-			<li>📊 <?php esc_html_e( 'Core Web Vitals tracking (LCP, FID, CLS, TTFB)', 'wp-speed-booster' ); ?></li>
-			<li>🔍 <?php esc_html_e( 'Real User Monitoring (RUM)', 'wp-speed-booster' ); ?></li>
-			<li>⚡ <?php esc_html_e( 'Server performance metrics', 'wp-speed-booster' ); ?></li>
-			<li>📈 <?php esc_html_e( 'Historical trends and analytics', 'wp-speed-booster' ); ?></li>
-			<li>📱 <?php esc_html_e( 'Device breakdown (Mobile vs Desktop)', 'wp-speed-booster' ); ?></li>
+			<li>📊 <?php esc_html_e( 'Core Web Vitals tracking (LCP, FID, CLS, TTFB)', 'velocitywp' ); ?></li>
+			<li>🔍 <?php esc_html_e( 'Real User Monitoring (RUM)', 'velocitywp' ); ?></li>
+			<li>⚡ <?php esc_html_e( 'Server performance metrics', 'velocitywp' ); ?></li>
+			<li>📈 <?php esc_html_e( 'Historical trends and analytics', 'velocitywp' ); ?></li>
+			<li>📱 <?php esc_html_e( 'Device breakdown (Mobile vs Desktop)', 'velocitywp' ); ?></li>
 		</ul>
 	</div>
 </div>
 
 <!-- Master Settings -->
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Enable/Disable', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Enable/Disable', 'velocitywp' ); ?></h2>
 	
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Enable Performance Monitoring', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Enable Performance Monitoring', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[performance_monitoring_enabled]" value="1" <?php checked( $performance_monitoring_enabled, 1 ); ?>>
-					<?php esc_html_e( 'Enable performance monitoring and analytics', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[performance_monitoring_enabled]" value="1" <?php checked( $performance_monitoring_enabled, 1 ); ?>>
+					<?php esc_html_e( 'Enable performance monitoring and analytics', 'velocitywp' ); ?>
 				</label>
-				<p class="description"><?php esc_html_e( 'Master switch for all performance monitoring features', 'wp-speed-booster' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Master switch for all performance monitoring features', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 		
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Track Real User Metrics', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Track Real User Metrics', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[performance_track_rum]" value="1" <?php checked( $performance_track_rum, 1 ); ?>>
-					<?php esc_html_e( 'Enable Real User Monitoring (RUM)', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[performance_track_rum]" value="1" <?php checked( $performance_track_rum, 1 ); ?>>
+					<?php esc_html_e( 'Enable Real User Monitoring (RUM)', 'velocitywp' ); ?>
 				</label>
-				<p class="description"><?php esc_html_e( 'Track actual user experience metrics like LCP, FID, CLS from real visitors', 'wp-speed-booster' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Track actual user experience metrics like LCP, FID, CLS from real visitors', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 		
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Track Server Performance', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Track Server Performance', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[performance_track_server]" value="1" <?php checked( $performance_track_server, 1 ); ?>>
-					<?php esc_html_e( 'Track server-side performance metrics', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[performance_track_server]" value="1" <?php checked( $performance_track_server, 1 ); ?>>
+					<?php esc_html_e( 'Track server-side performance metrics', 'velocitywp' ); ?>
 				</label>
-				<p class="description"><?php esc_html_e( 'Monitor generation time, database queries, and memory usage', 'wp-speed-booster' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Monitor generation time, database queries, and memory usage', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 		
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Debug Comments', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Debug Comments', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[performance_debug_comments]" value="1" <?php checked( $performance_debug_comments, 1 ); ?>>
-					<?php esc_html_e( 'Add debug comments to HTML', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[performance_debug_comments]" value="1" <?php checked( $performance_debug_comments, 1 ); ?>>
+					<?php esc_html_e( 'Add debug comments to HTML', 'velocitywp' ); ?>
 				</label>
-				<p class="description"><?php esc_html_e( 'Include performance info as HTML comments (visible in page source)', 'wp-speed-booster' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Include performance info as HTML comments (visible in page source)', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 	</table>
 </div>
 
 <!-- Data Settings -->
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Data Management', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Data Management', 'velocitywp' ); ?></h2>
 	
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Data Retention', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Data Retention', 'velocitywp' ); ?></th>
 			<td>
-				<input type="number" name="wpsb_options[performance_data_retention]" value="<?php echo esc_attr( $performance_data_retention ); ?>" min="1" max="365" class="small-text">
-				<?php esc_html_e( 'days', 'wp-speed-booster' ); ?>
-				<p class="description"><?php esc_html_e( 'Keep performance data for this many days (older data will be automatically deleted)', 'wp-speed-booster' ); ?></p>
+				<input type="number" name="velocitywp_options[performance_data_retention]" value="<?php echo esc_attr( $performance_data_retention ); ?>" min="1" max="365" class="small-text">
+				<?php esc_html_e( 'days', 'velocitywp' ); ?>
+				<p class="description"><?php esc_html_e( 'Keep performance data for this many days (older data will be automatically deleted)', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 		
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Sample Rate', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Sample Rate', 'velocitywp' ); ?></th>
 			<td>
-				<input type="number" name="wpsb_options[performance_sample_rate]" value="<?php echo esc_attr( $performance_sample_rate ); ?>" min="1" max="100" class="small-text">
-				<?php esc_html_e( '%', 'wp-speed-booster' ); ?>
-				<p class="description"><?php esc_html_e( 'Track this percentage of pageviews (100% = track all, 50% = track half, reduces database load)', 'wp-speed-booster' ); ?></p>
+				<input type="number" name="velocitywp_options[performance_sample_rate]" value="<?php echo esc_attr( $performance_sample_rate ); ?>" min="1" max="100" class="small-text">
+				<?php esc_html_e( '%', 'velocitywp' ); ?>
+				<p class="description"><?php esc_html_e( 'Track this percentage of pageviews (100% = track all, 50% = track half, reduces database load)', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 		
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Cleanup Data', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Cleanup Data', 'velocitywp' ); ?></th>
 			<td>
-				<button type="button" class="button" id="wpspeed-cleanup-performance-data">
-					<?php esc_html_e( 'Clean Up Old Data Now', 'wp-speed-booster' ); ?>
+				<button type="button" class="button" id="velocitywp-cleanup-performance-data">
+					<?php esc_html_e( 'Clean Up Old Data Now', 'velocitywp' ); ?>
 				</button>
-				<p class="description"><?php esc_html_e( 'Manually remove performance data older than the retention period', 'wp-speed-booster' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Manually remove performance data older than the retention period', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 	</table>
@@ -147,31 +147,31 @@ $averages = $analytics['averages'];
 <?php if ( $performance_monitoring_enabled && $averages && $averages->total_samples > 0 ) : ?>
 
 <!-- Time Period Selector -->
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Performance Dashboard', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Performance Dashboard', 'velocitywp' ); ?></h2>
 	
 	<div style="margin-bottom: 20px;">
-		<label for="performance-period-selector"><strong><?php esc_html_e( 'Time Period:', 'wp-speed-booster' ); ?></strong></label>
+		<label for="performance-period-selector"><strong><?php esc_html_e( 'Time Period:', 'velocitywp' ); ?></strong></label>
 		<select id="performance-period-selector" onchange="window.location.href='<?php echo esc_url( admin_url( 'options-general.php?page=wp-speed-booster&tab=performance&period=' ) ); ?>' + this.value;">
-			<option value="1" <?php selected( $period, 1 ); ?>><?php esc_html_e( 'Last 24 Hours', 'wp-speed-booster' ); ?></option>
-			<option value="7" <?php selected( $period, 7 ); ?>><?php esc_html_e( 'Last 7 Days', 'wp-speed-booster' ); ?></option>
-			<option value="30" <?php selected( $period, 30 ); ?>><?php esc_html_e( 'Last 30 Days', 'wp-speed-booster' ); ?></option>
-			<option value="90" <?php selected( $period, 90 ); ?>><?php esc_html_e( 'Last 90 Days', 'wp-speed-booster' ); ?></option>
+			<option value="1" <?php selected( $period, 1 ); ?>><?php esc_html_e( 'Last 24 Hours', 'velocitywp' ); ?></option>
+			<option value="7" <?php selected( $period, 7 ); ?>><?php esc_html_e( 'Last 7 Days', 'velocitywp' ); ?></option>
+			<option value="30" <?php selected( $period, 30 ); ?>><?php esc_html_e( 'Last 30 Days', 'velocitywp' ); ?></option>
+			<option value="90" <?php selected( $period, 90 ); ?>><?php esc_html_e( 'Last 90 Days', 'velocitywp' ); ?></option>
 		</select>
-		<span style="margin-left: 20px;"><strong><?php esc_html_e( 'Total Samples:', 'wp-speed-booster' ); ?></strong> <?php echo number_format( $averages->total_samples ); ?></span>
+		<span style="margin-left: 20px;"><strong><?php esc_html_e( 'Total Samples:', 'velocitywp' ); ?></strong> <?php echo number_format( $averages->total_samples ); ?></span>
 	</div>
 </div>
 
 <!-- Core Web Vitals Cards -->
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
 	<h2>
 		<?php
 		/* translators: %d: Number of days for the time period */
-		echo esc_html( sprintf( __( 'Core Web Vitals (Last %d Days)', 'wp-speed-booster' ), $period ) );
+		echo esc_html( sprintf( __( 'Core Web Vitals (Last %d Days)', 'velocitywp' ), $period ) );
 		?>
 	</h2>
 	
-	<div class="wpspeed-cwv-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+	<div class="velocitywp-cwv-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
 		
 		<!-- LCP Card -->
 		<?php
@@ -179,7 +179,7 @@ $averages = $analytics['averages'];
 		$lcp_rating = $monitor->get_cwv_rating( $lcp_value, 'lcp' );
 		$lcp_class  = 'wpspeed-metric-' . $lcp_rating;
 		?>
-		<div class="wpspeed-metric-card <?php echo esc_attr( $lcp_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
+		<div class="velocitywp-metric-card <?php echo esc_attr( $lcp_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">LCP</h3>
 			<div style="font-size: 36px; font-weight: bold; margin: 10px 0;"><?php echo number_format( $lcp_value ); ?>ms</div>
 			<div style="text-transform: uppercase; font-weight: bold; font-size: 12px; letter-spacing: 1px;">
@@ -194,7 +194,7 @@ $averages = $analytics['averages'];
 		$fid_rating = $monitor->get_cwv_rating( $fid_value, 'fid' );
 		$fid_class  = 'wpspeed-metric-' . $fid_rating;
 		?>
-		<div class="wpspeed-metric-card <?php echo esc_attr( $fid_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
+		<div class="velocitywp-metric-card <?php echo esc_attr( $fid_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">FID</h3>
 			<div style="font-size: 36px; font-weight: bold; margin: 10px 0;"><?php echo number_format( $fid_value ); ?>ms</div>
 			<div style="text-transform: uppercase; font-weight: bold; font-size: 12px; letter-spacing: 1px;">
@@ -209,7 +209,7 @@ $averages = $analytics['averages'];
 		$cls_rating = $monitor->get_cwv_rating( $cls_value, 'cls' );
 		$cls_class  = 'wpspeed-metric-' . $cls_rating;
 		?>
-		<div class="wpspeed-metric-card <?php echo esc_attr( $cls_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
+		<div class="velocitywp-metric-card <?php echo esc_attr( $cls_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">CLS</h3>
 			<div style="font-size: 36px; font-weight: bold; margin: 10px 0;"><?php echo number_format( $cls_value, 3 ); ?></div>
 			<div style="text-transform: uppercase; font-weight: bold; font-size: 12px; letter-spacing: 1px;">
@@ -224,7 +224,7 @@ $averages = $analytics['averages'];
 		$score_rating  = $overall_score >= 80 ? 'good' : ( $overall_score >= 50 ? 'needs-improvement' : 'poor' );
 		$score_class   = 'wpspeed-metric-' . $score_rating;
 		?>
-		<div class="wpspeed-metric-card <?php echo esc_attr( $score_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
+		<div class="velocitywp-metric-card <?php echo esc_attr( $score_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">Performance Score</h3>
 			<div style="font-size: 36px; font-weight: bold; margin: 10px 0;"><?php echo $overall_score; ?>/100</div>
 			<div style="text-transform: uppercase; font-weight: bold; font-size: 12px; letter-spacing: 1px;">
@@ -237,8 +237,8 @@ $averages = $analytics['averages'];
 </div>
 
 <!-- Quick Stats Grid -->
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Quick Stats', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Quick Stats', 'velocitywp' ); ?></h2>
 	
 	<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
 		<div style="background: white; padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
@@ -266,10 +266,10 @@ $averages = $analytics['averages'];
 
 <!-- Performance Trend Chart -->
 <?php if ( ! empty( $analytics['daily_trend'] ) ) : ?>
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Performance Trend', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Performance Trend', 'velocitywp' ); ?></h2>
 	
-	<canvas id="wpspeed-performance-chart" width="400" height="150"></canvas>
+	<canvas id="velocitywp-performance-chart" width="400" height="150"></canvas>
 	
 	<script>
 	(function() {
@@ -348,17 +348,17 @@ $averages = $analytics['averages'];
 
 <!-- Device Breakdown -->
 <?php if ( ! empty( $analytics['device_breakdown'] ) ) : ?>
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Device Breakdown', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Device Breakdown', 'velocitywp' ); ?></h2>
 	
 	<table class="wp-list-table widefat fixed striped">
 		<thead>
 			<tr>
-				<th><?php esc_html_e( 'Device', 'wp-speed-booster' ); ?></th>
-				<th><?php esc_html_e( 'Samples', 'wp-speed-booster' ); ?></th>
-				<th><?php esc_html_e( 'Avg LCP', 'wp-speed-booster' ); ?></th>
-				<th><?php esc_html_e( 'Avg FID', 'wp-speed-booster' ); ?></th>
-				<th><?php esc_html_e( 'Percentage', 'wp-speed-booster' ); ?></th>
+				<th><?php esc_html_e( 'Device', 'velocitywp' ); ?></th>
+				<th><?php esc_html_e( 'Samples', 'velocitywp' ); ?></th>
+				<th><?php esc_html_e( 'Avg LCP', 'velocitywp' ); ?></th>
+				<th><?php esc_html_e( 'Avg FID', 'velocitywp' ); ?></th>
+				<th><?php esc_html_e( 'Percentage', 'velocitywp' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -379,16 +379,16 @@ $averages = $analytics['averages'];
 
 <!-- Slowest Pages -->
 <?php if ( ! empty( $analytics['slowest_pages'] ) ) : ?>
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Slowest Pages', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Slowest Pages', 'velocitywp' ); ?></h2>
 	
 	<table class="wp-list-table widefat fixed striped">
 		<thead>
 			<tr>
-				<th><?php esc_html_e( 'URL', 'wp-speed-booster' ); ?></th>
-				<th><?php esc_html_e( 'Samples', 'wp-speed-booster' ); ?></th>
-				<th><?php esc_html_e( 'Avg LCP', 'wp-speed-booster' ); ?></th>
-				<th><?php esc_html_e( 'Avg Load Time', 'wp-speed-booster' ); ?></th>
+				<th><?php esc_html_e( 'URL', 'velocitywp' ); ?></th>
+				<th><?php esc_html_e( 'Samples', 'velocitywp' ); ?></th>
+				<th><?php esc_html_e( 'Avg LCP', 'velocitywp' ); ?></th>
+				<th><?php esc_html_e( 'Avg Load Time', 'velocitywp' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -406,8 +406,8 @@ $averages = $analytics['averages'];
 <?php endif; ?>
 
 <!-- Recommendations -->
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Recommendations', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Recommendations', 'velocitywp' ); ?></h2>
 	
 	<?php
 	$recommendations = array();
@@ -470,8 +470,8 @@ $averages = $analytics['averages'];
 	}
 	
 	if ( empty( $recommendations ) ) {
-		echo '<div class="notice notice-success"><p><strong>' . esc_html__( '✓ Excellent Performance!', 'wp-speed-booster' ) . '</strong><br>';
-		echo esc_html__( 'Your Core Web Vitals are in the good range. Keep monitoring to maintain optimal performance.', 'wp-speed-booster' ) . '</p></div>';
+		echo '<div class="notice notice-success"><p><strong>' . esc_html__( '✓ Excellent Performance!', 'velocitywp' ) . '</strong><br>';
+		echo esc_html__( 'Your Core Web Vitals are in the good range. Keep monitoring to maintain optimal performance.', 'velocitywp' ) . '</p></div>';
 	} else {
 		foreach ( $recommendations as $rec ) {
 			echo '<div class="notice notice-warning" style="padding: 15px;">';
@@ -489,20 +489,20 @@ $averages = $analytics['averages'];
 </div>
 
 <!-- Export Data -->
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Export Data', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Export Data', 'velocitywp' ); ?></h2>
 	
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Export Format', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Export Format', 'velocitywp' ); ?></th>
 			<td>
 				<button type="button" class="button" onclick="wpspeedExportPerformanceData('csv', <?php echo $period; ?>)">
-					<?php esc_html_e( 'Export as CSV', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Export as CSV', 'velocitywp' ); ?>
 				</button>
 				<button type="button" class="button" onclick="wpspeedExportPerformanceData('json', <?php echo $period; ?>)">
-					<?php esc_html_e( 'Export as JSON', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Export as JSON', 'velocitywp' ); ?>
 				</button>
-				<p class="description"><?php esc_html_e( 'Download performance data for external analysis', 'wp-speed-booster' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Download performance data for external analysis', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 	</table>
@@ -510,10 +510,10 @@ $averages = $analytics['averages'];
 
 <?php else : ?>
 
-<div class="wpspeed-tab-section">
+<div class="velocitywp-tab-section">
 	<div class="notice notice-info">
-		<p><strong><?php esc_html_e( 'No Performance Data Yet', 'wp-speed-booster' ); ?></strong></p>
-		<p><?php esc_html_e( 'Enable performance monitoring above and visit your site to start collecting data. Data will appear here once visitors interact with your site.', 'wp-speed-booster' ); ?></p>
+		<p><strong><?php esc_html_e( 'No Performance Data Yet', 'velocitywp' ); ?></strong></p>
+		<p><?php esc_html_e( 'Enable performance monitoring above and visit your site to start collecting data. Data will appear here once visitors interact with your site.', 'velocitywp' ); ?></p>
 	</div>
 </div>
 
@@ -554,10 +554,10 @@ $averages = $analytics['averages'];
 <script>
 function wpspeedExportPerformanceData(format, period) {
 	var data = new FormData();
-	data.append('action', 'wpspeed_export_data');
+	data.append('action', 'velocitywp_export_data');
 	data.append('format', format);
 	data.append('period', period);
-	data.append('nonce', <?php echo wp_json_encode( wp_create_nonce( 'wpspeed_admin' ) ); ?>);
+	data.append('nonce', <?php echo wp_json_encode( wp_create_nonce( 'velocitywp_admin' ) ); ?>);
 	
 	fetch(<?php echo wp_json_encode( esc_url( admin_url( 'admin-ajax.php' ) ) ); ?>, {
 		method: 'POST',
@@ -582,31 +582,31 @@ function wpspeedExportPerformanceData(format, period) {
 }
 
 jQuery(document).ready(function($) {
-	$('#wpspeed-cleanup-performance-data').on('click', function() {
-		if (!confirm('<?php esc_html_e( 'Are you sure you want to delete old performance data? This cannot be undone.', 'wp-speed-booster' ); ?>')) {
+	$('#velocitywp-cleanup-performance-data').on('click', function() {
+		if (!confirm('<?php esc_html_e( 'Are you sure you want to delete old performance data? This cannot be undone.', 'velocitywp' ); ?>')) {
 			return;
 		}
 		
 		var button = $(this);
-		button.prop('disabled', true).text('<?php esc_html_e( 'Cleaning up...', 'wp-speed-booster' ); ?>');
+		button.prop('disabled', true).text('<?php esc_html_e( 'Cleaning up...', 'velocitywp' ); ?>');
 		
 		$.ajax({
 			url: <?php echo wp_json_encode( esc_url( admin_url( 'admin-ajax.php' ) ) ); ?>,
 			type: 'POST',
 			data: {
-				action: 'wpspeed_cleanup_data',
-				nonce: <?php echo wp_json_encode( wp_create_nonce( 'wpspeed_admin' ) ); ?>
+				action: 'velocitywp_cleanup_data',
+				nonce: <?php echo wp_json_encode( wp_create_nonce( 'velocitywp_admin' ) ); ?>
 			},
 			success: function(response) {
 				if (response.success) {
-					alert('<?php esc_html_e( 'Old performance data cleaned up successfully!', 'wp-speed-booster' ); ?>');
+					alert('<?php esc_html_e( 'Old performance data cleaned up successfully!', 'velocitywp' ); ?>');
 					location.reload();
 				} else {
-					alert('<?php esc_html_e( 'Error cleaning up data', 'wp-speed-booster' ); ?>');
+					alert('<?php esc_html_e( 'Error cleaning up data', 'velocitywp' ); ?>');
 				}
 			},
 			complete: function() {
-				button.prop('disabled', false).text('<?php esc_html_e( 'Clean Up Old Data Now', 'wp-speed-booster' ); ?>');
+				button.prop('disabled', false).text('<?php esc_html_e( 'Clean Up Old Data Now', 'velocitywp' ); ?>');
 			}
 		});
 	});

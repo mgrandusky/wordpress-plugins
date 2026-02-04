@@ -1,5 +1,5 @@
 /**
- * WP Speed Booster Lazy Loading Script
+ * VelocityWP Lazy Loading Script
  */
 
 (function() {
@@ -12,7 +12,7 @@
      * Lazy load images
      */
     function lazyLoadImages() {
-        var lazyImages = document.querySelectorAll('img.wpsb-lazy');
+        var lazyImages = document.querySelectorAll('img.velocitywp-lazy');
 
         if (lazyImages.length === 0) {
             return;
@@ -91,7 +91,7 @@
      * Lazy load iframes
      */
     function lazyLoadIframes() {
-        var lazyIframes = document.querySelectorAll('iframe.wpsb-lazy-iframe');
+        var lazyIframes = document.querySelectorAll('iframe.velocitywp-lazy-iframe');
 
         if (lazyIframes.length === 0) {
             return;

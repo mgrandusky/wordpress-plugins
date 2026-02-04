@@ -4,7 +4,7 @@
  *
  * Preload, preconnect, prefetch resource hints
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Resource_Hints class
+ * VelocityWP_Resource_Hints class
  */
-class WPSB_Resource_Hints {
+class VelocityWP_Resource_Hints {
 
 	/**
 	 * Constructor
@@ -24,15 +24,15 @@ class WPSB_Resource_Hints {
 		add_action( 'init', array( $this, 'init' ) );
 		
 		// AJAX handlers
-		add_action( 'wp_ajax_wpsb_detect_resources', array( $this, 'ajax_detect_resources' ) );
-		add_action( 'wp_ajax_wpsb_test_hints', array( $this, 'ajax_test_hints' ) );
+		add_action( 'wp_ajax_velocitywp_detect_resources', array( $this, 'ajax_detect_resources' ) );
+		add_action( 'wp_ajax_velocitywp_test_hints', array( $this, 'ajax_test_hints' ) );
 	}
 
 	/**
 	 * Initialize resource hints
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['resource_hints_enabled'] ) || is_admin() ) {
 			return;
@@ -48,7 +48,7 @@ class WPSB_Resource_Hints {
 	 * @return bool
 	 */
 	public function is_enabled() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		return ! empty( $options['resource_hints_enabled'] );
 	}
 
@@ -56,7 +56,7 @@ class WPSB_Resource_Hints {
 	 * Inject resource hints in head
 	 */
 	public function inject_resource_hints() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// DNS Prefetch
 		if ( ! empty( $options['dns_prefetch_enabled'] ) ) {
@@ -223,7 +223,7 @@ class WPSB_Resource_Hints {
 	 * @return array Domains to prefetch.
 	 */
 	public function get_dns_prefetch_domains() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$domains = array();
 
 		// Auto-detect external domains
@@ -263,7 +263,7 @@ class WPSB_Resource_Hints {
 	 * @return array Origins to preconnect.
 	 */
 	public function get_preconnect_origins() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$origins = array();
 
 		if ( ! empty( $options['preconnect_origins'] ) && is_array( $options['preconnect_origins'] ) ) {
@@ -302,7 +302,7 @@ class WPSB_Resource_Hints {
 	 * @return array Resources to preload.
 	 */
 	public function get_preload_resources() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$resources = array();
 
 		if ( ! empty( $options['preload_resources'] ) && is_array( $options['preload_resources'] ) ) {
@@ -409,7 +409,7 @@ class WPSB_Resource_Hints {
 	 * @return array URLs to prefetch.
 	 */
 	public function get_prefetch_urls() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$urls = array();
 
 		// Auto-prefetch next page
@@ -477,7 +477,7 @@ class WPSB_Resource_Hints {
 	 * @return array Modified URLs.
 	 */
 	public function add_resource_hints( $urls, $relation_type ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		switch ( $relation_type ) {
 			case 'dns-prefetch':
@@ -504,7 +504,7 @@ class WPSB_Resource_Hints {
 	 * AJAX handler to detect resources
 	 */
 	public function ajax_detect_resources() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
@@ -525,13 +525,13 @@ class WPSB_Resource_Hints {
 	 * AJAX handler to test hints
 	 */
 	public function ajax_test_hints() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$hints = array();
 
 		if ( ! empty( $options['dns_prefetch_enabled'] ) ) {

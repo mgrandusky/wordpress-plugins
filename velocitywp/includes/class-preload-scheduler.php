@@ -4,7 +4,7 @@
  *
  * Sitemap-based cache warming and preloading scheduler
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,16 +13,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Preload_Scheduler class
+ * VelocityWP_Preload_Scheduler class
  */
-class WPSB_Preload_Scheduler {
+class VelocityWP_Preload_Scheduler {
 
 	/**
 	 * Cron hook name
 	 *
 	 * @var string
 	 */
-	private $cron_hook = 'wpsb_preload_cache';
+	private $cron_hook = 'velocitywp_preload_cache';
 
 	/**
 	 * Constructor
@@ -30,16 +30,16 @@ class WPSB_Preload_Scheduler {
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( $this->cron_hook, array( $this, 'run_preload' ) );
-		add_action( 'wp_ajax_wpsb_start_preload', array( $this, 'ajax_start_preload' ) );
-		add_action( 'wp_ajax_wpsb_stop_preload', array( $this, 'ajax_stop_preload' ) );
-		add_action( 'wp_ajax_wpsb_preload_status', array( $this, 'ajax_preload_status' ) );
+		add_action( 'wp_ajax_velocitywp_start_preload', array( $this, 'ajax_start_preload' ) );
+		add_action( 'wp_ajax_velocitywp_stop_preload', array( $this, 'ajax_stop_preload' ) );
+		add_action( 'wp_ajax_velocitywp_preload_status', array( $this, 'ajax_preload_status' ) );
 	}
 
 	/**
 	 * Initialize preload scheduler
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['preload_scheduler'] ) ) {
 			// Remove scheduled event if disabled
@@ -89,12 +89,12 @@ class WPSB_Preload_Scheduler {
 			return;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$batch_size = ! empty( $options['preload_batch_size'] ) ? intval( $options['preload_batch_size'] ) : 10;
 		$delay = ! empty( $options['preload_delay'] ) ? intval( $options['preload_delay'] ) : 500;
 
 		// Get current progress
-		$progress = get_option( 'wpsb_preload_progress', array(
+		$progress = get_option( 'velocitywp_preload_progress', array(
 			'total'     => 0,
 			'processed' => 0,
 			'running'   => false,
@@ -109,14 +109,14 @@ class WPSB_Preload_Scheduler {
 		$progress['processed'] = 0;
 		$progress['running'] = true;
 		$progress['started'] = current_time( 'mysql' );
-		update_option( 'wpsb_preload_progress', $progress, false );
+		update_option( 'velocitywp_preload_progress', $progress, false );
 
 		// Process URLs in batches
 		foreach ( array_chunk( $urls, $batch_size ) as $batch ) {
 			$this->preload_batch( $batch );
 			
 			$progress['processed'] += count( $batch );
-			update_option( 'wpsb_preload_progress', $progress, false );
+			update_option( 'velocitywp_preload_progress', $progress, false );
 
 			// Delay between batches
 			usleep( $delay * 1000 );
@@ -125,9 +125,9 @@ class WPSB_Preload_Scheduler {
 		// Complete preload
 		$progress['running'] = false;
 		$progress['completed'] = current_time( 'mysql' );
-		update_option( 'wpsb_preload_progress', $progress, false );
+		update_option( 'velocitywp_preload_progress', $progress, false );
 
-		do_action( 'wpsb_preload_completed', $urls );
+		do_action( 'velocitywp_preload_completed', $urls );
 	}
 
 	/**
@@ -136,7 +136,7 @@ class WPSB_Preload_Scheduler {
 	 * @param array $urls URLs to preload.
 	 */
 	private function preload_batch( $urls ) {
-		$user_agent = 'WP Speed Booster/Cache Preloader';
+		$user_agent = 'VelocityWP/Cache Preloader';
 
 		foreach ( $urls as $url ) {
 			wp_remote_get( $url, array(
@@ -154,7 +154,7 @@ class WPSB_Preload_Scheduler {
 	 * @return array URLs.
 	 */
 	private function get_urls_to_preload() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$urls = array();
 
 		// Get from sitemaps
@@ -184,7 +184,7 @@ class WPSB_Preload_Scheduler {
 			$urls = array_merge( $urls, array_filter( $custom ) );
 		}
 
-		return array_unique( apply_filters( 'wpsb_preload_urls', $urls ) );
+		return array_unique( apply_filters( 'velocitywp_preload_urls', $urls ) );
 	}
 
 	/**
@@ -194,7 +194,7 @@ class WPSB_Preload_Scheduler {
 	 */
 	private function get_urls_from_sitemap() {
 		$urls = array();
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		$sitemap_url = ! empty( $options['preload_sitemap_url'] ) ? $options['preload_sitemap_url'] : home_url( '/sitemap.xml' );
 
@@ -284,7 +284,7 @@ class WPSB_Preload_Scheduler {
 	 */
 	private function get_post_urls() {
 		$urls = array();
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		$limit = ! empty( $options['preload_post_limit'] ) ? intval( $options['preload_post_limit'] ) : 100;
 
@@ -368,7 +368,7 @@ class WPSB_Preload_Scheduler {
 	 * @return array Progress data.
 	 */
 	public function get_progress() {
-		return get_option( 'wpsb_preload_progress', array(
+		return get_option( 'velocitywp_preload_progress', array(
 			'total'     => 0,
 			'processed' => 0,
 			'running'   => false,
@@ -382,14 +382,14 @@ class WPSB_Preload_Scheduler {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		// Run in background
 		wp_schedule_single_event( time(), $this->cron_hook );
 		spawn_cron();
 
-		wp_send_json_success( array( 'message' => __( 'Preload started', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Preload started', 'velocitywp' ) ) );
 	}
 
 	/**
@@ -399,14 +399,14 @@ class WPSB_Preload_Scheduler {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$progress = $this->get_progress();
 		$progress['running'] = false;
-		update_option( 'wpsb_preload_progress', $progress, false );
+		update_option( 'velocitywp_preload_progress', $progress, false );
 
-		wp_send_json_success( array( 'message' => __( 'Preload stopped', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Preload stopped', 'velocitywp' ) ) );
 	}
 
 	/**
@@ -416,7 +416,7 @@ class WPSB_Preload_Scheduler {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$progress = $this->get_progress();

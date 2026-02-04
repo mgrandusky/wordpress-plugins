@@ -4,7 +4,7 @@
  *
  * Database query monitoring and optimization
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Query_Monitor class
+ * VelocityWP_Query_Monitor class
  */
-class WPSB_Query_Monitor {
+class VelocityWP_Query_Monitor {
 
 	/**
 	 * Queries log
@@ -50,15 +50,15 @@ class WPSB_Query_Monitor {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_get_query_log', array( $this, 'ajax_get_query_log' ) );
-		add_action( 'wp_ajax_wpsb_clear_query_log', array( $this, 'ajax_clear_query_log' ) );
+		add_action( 'wp_ajax_velocitywp_get_query_log', array( $this, 'ajax_get_query_log' ) );
+		add_action( 'wp_ajax_velocitywp_clear_query_log', array( $this, 'ajax_clear_query_log' ) );
 	}
 
 	/**
 	 * Initialize query monitoring
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['query_monitor'] ) ) {
 			return;
@@ -135,13 +135,13 @@ class WPSB_Query_Monitor {
 			'url'       => isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( $_SERVER['REQUEST_URI'] ) : '',
 		);
 
-		$slow_queries = get_option( 'wpsb_slow_queries', array() );
+		$slow_queries = get_option( 'velocitywp_slow_queries', array() );
 		$slow_queries[] = $log_entry;
 
 		// Keep only last 100 slow queries
 		$slow_queries = array_slice( $slow_queries, -100 );
 
-		update_option( 'wpsb_slow_queries', $slow_queries, false );
+		update_option( 'velocitywp_slow_queries', $slow_queries, false );
 	}
 
 	/**
@@ -152,7 +152,7 @@ class WPSB_Query_Monitor {
 	private function detect_duplicate( $sql ) {
 		$normalized = $this->normalize_query( $sql );
 		
-		$duplicates = get_option( 'wpsb_duplicate_queries', array() );
+		$duplicates = get_option( 'velocitywp_duplicate_queries', array() );
 
 		if ( ! isset( $duplicates[ $normalized ] ) ) {
 			$duplicates[ $normalized ] = array(
@@ -163,7 +163,7 @@ class WPSB_Query_Monitor {
 
 		$duplicates[ $normalized ]['count']++;
 
-		update_option( 'wpsb_duplicate_queries', $duplicates, false );
+		update_option( 'velocitywp_duplicate_queries', $duplicates, false );
 	}
 
 	/**
@@ -194,7 +194,7 @@ class WPSB_Query_Monitor {
 		}
 
 		// Skip if EXPLAIN is disabled
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( empty( $options['query_explain'] ) ) {
 			return;
 		}
@@ -227,7 +227,7 @@ class WPSB_Query_Monitor {
 	 * @param array  $explain EXPLAIN output.
 	 */
 	private function log_missing_index( $sql, $explain ) {
-		$missing_indexes = get_option( 'wpsb_missing_indexes', array() );
+		$missing_indexes = get_option( 'velocitywp_missing_indexes', array() );
 
 		$query_hash = md5( $sql );
 
@@ -241,7 +241,7 @@ class WPSB_Query_Monitor {
 
 		$missing_indexes[ $query_hash ]['count']++;
 
-		update_option( 'wpsb_missing_indexes', $missing_indexes, false );
+		update_option( 'velocitywp_missing_indexes', $missing_indexes, false );
 	}
 
 	/**
@@ -255,13 +255,13 @@ class WPSB_Query_Monitor {
 			'url'         => isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( $_SERVER['REQUEST_URI'] ) : '',
 		);
 
-		$history = get_option( 'wpsb_query_history', array() );
+		$history = get_option( 'velocitywp_query_history', array() );
 		$history[] = $stats;
 
 		// Keep only last 100 page loads
 		$history = array_slice( $history, -100 );
 
-		update_option( 'wpsb_query_history', $history, false );
+		update_option( 'velocitywp_query_history', $history, false );
 	}
 
 	/**
@@ -289,7 +289,7 @@ class WPSB_Query_Monitor {
 		}
 
 		?>
-		<div id="wpsb-query-info" style="position: fixed; bottom: 0; right: 0; background: #23282d; color: #fff; padding: 10px 15px; font-size: 12px; z-index: 99999; border-top-left-radius: 3px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;">
+		<div id="velocitywp-query-info" style="position: fixed; bottom: 0; right: 0; background: #23282d; color: #fff; padding: 10px 15px; font-size: 12px; z-index: 99999; border-top-left-radius: 3px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;">
 			<strong>Database Queries:</strong> <?php echo esc_html( $query_count ); ?> |
 			<strong>Time:</strong> <?php echo esc_html( number_format( $total_time, 4 ) ); ?>s
 			<?php if ( $slow_count > 0 ) : ?>
@@ -308,17 +308,17 @@ class WPSB_Query_Monitor {
 		$recommendations = array();
 
 		// Check slow queries
-		$slow_queries = get_option( 'wpsb_slow_queries', array() );
+		$slow_queries = get_option( 'velocitywp_slow_queries', array() );
 		if ( ! empty( $slow_queries ) ) {
 			$recommendations[] = array(
 				'type'    => 'slow_queries',
 				'level'   => 'warning',
-				'message' => sprintf( __( 'Found %d slow queries that need optimization', 'wp-speed-booster' ), count( $slow_queries ) ),
+				'message' => sprintf( __( 'Found %d slow queries that need optimization', 'velocitywp' ), count( $slow_queries ) ),
 			);
 		}
 
 		// Check duplicate queries
-		$duplicates = get_option( 'wpsb_duplicate_queries', array() );
+		$duplicates = get_option( 'velocitywp_duplicate_queries', array() );
 		$high_duplicates = array_filter( $duplicates, function( $item ) {
 			return $item['count'] > 5;
 		} );
@@ -327,17 +327,17 @@ class WPSB_Query_Monitor {
 			$recommendations[] = array(
 				'type'    => 'duplicate_queries',
 				'level'   => 'warning',
-				'message' => sprintf( __( 'Found %d queries that are executed multiple times', 'wp-speed-booster' ), count( $high_duplicates ) ),
+				'message' => sprintf( __( 'Found %d queries that are executed multiple times', 'velocitywp' ), count( $high_duplicates ) ),
 			);
 		}
 
 		// Check missing indexes
-		$missing_indexes = get_option( 'wpsb_missing_indexes', array() );
+		$missing_indexes = get_option( 'velocitywp_missing_indexes', array() );
 		if ( ! empty( $missing_indexes ) ) {
 			$recommendations[] = array(
 				'type'    => 'missing_indexes',
 				'level'   => 'error',
-				'message' => sprintf( __( 'Found %d queries that may benefit from database indexes', 'wp-speed-booster' ), count( $missing_indexes ) ),
+				'message' => sprintf( __( 'Found %d queries that may benefit from database indexes', 'velocitywp' ), count( $missing_indexes ) ),
 			);
 		}
 
@@ -351,23 +351,23 @@ class WPSB_Query_Monitor {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$type = isset( $_POST['type'] ) ? sanitize_text_field( $_POST['type'] ) : 'slow';
 
 		switch ( $type ) {
 			case 'slow':
-				$data = get_option( 'wpsb_slow_queries', array() );
+				$data = get_option( 'velocitywp_slow_queries', array() );
 				break;
 			case 'duplicate':
-				$data = get_option( 'wpsb_duplicate_queries', array() );
+				$data = get_option( 'velocitywp_duplicate_queries', array() );
 				break;
 			case 'missing_index':
-				$data = get_option( 'wpsb_missing_indexes', array() );
+				$data = get_option( 'velocitywp_missing_indexes', array() );
 				break;
 			case 'history':
-				$data = get_option( 'wpsb_query_history', array() );
+				$data = get_option( 'velocitywp_query_history', array() );
 				break;
 			default:
 				$data = array();
@@ -383,14 +383,14 @@ class WPSB_Query_Monitor {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
-		delete_option( 'wpsb_slow_queries' );
-		delete_option( 'wpsb_duplicate_queries' );
-		delete_option( 'wpsb_missing_indexes' );
-		delete_option( 'wpsb_query_history' );
+		delete_option( 'velocitywp_slow_queries' );
+		delete_option( 'velocitywp_duplicate_queries' );
+		delete_option( 'velocitywp_missing_indexes' );
+		delete_option( 'velocitywp_query_history' );
 
-		wp_send_json_success( array( 'message' => __( 'Query log cleared', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Query log cleared', 'velocitywp' ) ) );
 	}
 }

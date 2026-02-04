@@ -4,7 +4,7 @@
  *
  * Cache hit/miss tracking and analytics
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Cache_Analytics class
+ * VelocityWP_Cache_Analytics class
  */
-class WPSB_Cache_Analytics {
+class VelocityWP_Cache_Analytics {
 
 	/**
 	 * Analytics data
@@ -38,23 +38,23 @@ class WPSB_Cache_Analytics {
 		$this->page_load_start = microtime( true );
 		
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_get_cache_stats', array( $this, 'ajax_get_cache_stats' ) );
-		add_action( 'wp_ajax_wpsb_reset_cache_stats', array( $this, 'ajax_reset_cache_stats' ) );
+		add_action( 'wp_ajax_velocitywp_get_cache_stats', array( $this, 'ajax_get_cache_stats' ) );
+		add_action( 'wp_ajax_velocitywp_reset_cache_stats', array( $this, 'ajax_reset_cache_stats' ) );
 	}
 
 	/**
 	 * Initialize cache analytics
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['cache_analytics'] ) ) {
 			return;
 		}
 
 		// Track cache hits/misses
-		add_action( 'wpsb_cache_hit', array( $this, 'track_cache_hit' ) );
-		add_action( 'wpsb_cache_miss', array( $this, 'track_cache_miss' ) );
+		add_action( 'velocitywp_cache_hit', array( $this, 'track_cache_hit' ) );
+		add_action( 'velocitywp_cache_miss', array( $this, 'track_cache_miss' ) );
 
 		// Track page generation time
 		add_action( 'shutdown', array( $this, 'track_page_generation' ), 999 );
@@ -66,7 +66,7 @@ class WPSB_Cache_Analytics {
 
 		// Periodic cleanup
 		if ( wp_doing_cron() ) {
-			add_action( 'wpsb_cleanup_analytics', array( $this, 'cleanup_old_data' ) );
+			add_action( 'velocitywp_cleanup_analytics', array( $this, 'cleanup_old_data' ) );
 		}
 	}
 
@@ -193,7 +193,7 @@ class WPSB_Cache_Analytics {
 			'last_updated'         => current_time( 'mysql' ),
 		);
 
-		$stats = get_option( 'wpsb_cache_analytics', $default );
+		$stats = get_option( 'velocitywp_cache_analytics', $default );
 
 		// Calculate cache size
 		$stats['cache_size'] = $this->get_cache_size();
@@ -208,7 +208,7 @@ class WPSB_Cache_Analytics {
 	 */
 	private function save_stats( $stats ) {
 		$stats['last_updated'] = current_time( 'mysql' );
-		update_option( 'wpsb_cache_analytics', $stats, false );
+		update_option( 'velocitywp_cache_analytics', $stats, false );
 	}
 
 	/**
@@ -256,11 +256,11 @@ class WPSB_Cache_Analytics {
 		$stats = $this->get_stats();
 		$generation_time = microtime( true ) - $this->page_load_start;
 		
-		$cached = did_action( 'wpsb_cache_hit' ) > 0;
+		$cached = did_action( 'velocitywp_cache_hit' ) > 0;
 		$badge_color = $cached ? '#00a32a' : '#f56e28';
 
 		?>
-		<div id="wpsb-cache-badge" style="position: fixed; bottom: 0; left: 0; background: <?php echo esc_attr( $badge_color ); ?>; color: #fff; padding: 8px 12px; font-size: 11px; z-index: 99999; border-top-right-radius: 3px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; line-height: 1.4;">
+		<div id="velocitywp-cache-badge" style="position: fixed; bottom: 0; left: 0; background: <?php echo esc_attr( $badge_color ); ?>; color: #fff; padding: 8px 12px; font-size: 11px; z-index: 99999; border-top-right-radius: 3px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; line-height: 1.4;">
 			<div style="font-weight: 600; margin-bottom: 3px;">
 				<?php echo $cached ? '⚡ Cached' : '🔄 Not Cached'; ?>
 			</div>
@@ -325,7 +325,7 @@ class WPSB_Cache_Analytics {
 	 * Reset statistics
 	 */
 	public function reset_stats() {
-		delete_option( 'wpsb_cache_analytics' );
+		delete_option( 'velocitywp_cache_analytics' );
 	}
 
 	/**
@@ -335,7 +335,7 @@ class WPSB_Cache_Analytics {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$days = isset( $_POST['days'] ) ? intval( $_POST['days'] ) : 30;
@@ -355,11 +355,11 @@ class WPSB_Cache_Analytics {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$this->reset_stats();
 
-		wp_send_json_success( array( 'message' => __( 'Cache statistics reset', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Cache statistics reset', 'velocitywp' ) ) );
 	}
 }

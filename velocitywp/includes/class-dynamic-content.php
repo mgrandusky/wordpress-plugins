@@ -4,7 +4,7 @@
  *
  * AJAX cart and personalization handling
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,24 +13,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Dynamic_Content class
+ * VelocityWP_Dynamic_Content class
  */
-class WPSB_Dynamic_Content {
+class VelocityWP_Dynamic_Content {
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_get_dynamic_content', array( $this, 'ajax_get_dynamic_content' ) );
-		add_action( 'wp_ajax_nopriv_wpsb_get_dynamic_content', array( $this, 'ajax_get_dynamic_content' ) );
+		add_action( 'wp_ajax_velocitywp_get_dynamic_content', array( $this, 'ajax_get_dynamic_content' ) );
+		add_action( 'wp_ajax_nopriv_velocitywp_get_dynamic_content', array( $this, 'ajax_get_dynamic_content' ) );
 	}
 
 	/**
 	 * Initialize dynamic content
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['dynamic_content'] ) ) {
 			return;
@@ -44,7 +44,7 @@ class WPSB_Dynamic_Content {
 
 		// Handle user-specific content
 		if ( ! empty( $options['personalized_content'] ) ) {
-			add_shortcode( 'wpsb_dynamic', array( $this, 'dynamic_shortcode' ) );
+			add_shortcode( 'velocitywp_dynamic', array( $this, 'dynamic_shortcode' ) );
 		}
 	}
 
@@ -89,7 +89,7 @@ class WPSB_Dynamic_Content {
 	private function replace_cart_widget( $content ) {
 		// Look for cart widgets
 		if ( strpos( $content, 'woocommerce-mini-cart' ) !== false ) {
-			$placeholder = '<div class="wpsb-dynamic-cart" data-wpsb-type="cart"></div>';
+			$placeholder = '<div class="velocitywp-dynamic-cart" data-wpsb-type="cart"></div>';
 			$content = preg_replace( '/<div[^>]*woocommerce-mini-cart[^>]*>.*?<\/div>/s', $placeholder, $content );
 		}
 
@@ -106,7 +106,7 @@ class WPSB_Dynamic_Content {
 		// Replace logged-in user elements
 		if ( is_user_logged_in() ) {
 			$user = wp_get_current_user();
-			$placeholder = '<span class="wpsb-dynamic-user" data-wpsb-type="username" data-wpsb-user="' . esc_attr( $user->ID ) . '"></span>';
+			$placeholder = '<span class="velocitywp-dynamic-user" data-wpsb-type="username" data-wpsb-user="' . esc_attr( $user->ID ) . '"></span>';
 			
 			// This is a simplified example
 			$content = str_replace( $user->display_name, $placeholder, $content );
@@ -127,7 +127,7 @@ class WPSB_Dynamic_Content {
 			'content' => '',
 		), $atts );
 
-		$cache_key = 'wpsb_dynamic_' . md5( serialize( $atts ) . get_current_user_id() );
+		$cache_key = 'velocitywp_dynamic_' . md5( serialize( $atts ) . get_current_user_id() );
 		
 		$cached = get_transient( $cache_key );
 		if ( $cached !== false ) {
@@ -162,7 +162,7 @@ class WPSB_Dynamic_Content {
 			case 'cart':
 				if ( class_exists( 'WooCommerce' ) ) {
 					$cart_count = WC()->cart->get_cart_contents_count();
-					$output = sprintf( __( '%d items', 'wp-speed-booster' ), $cart_count );
+					$output = sprintf( __( '%d items', 'velocitywp' ), $cart_count );
 				}
 				break;
 
@@ -171,7 +171,7 @@ class WPSB_Dynamic_Content {
 				break;
 		}
 
-		return apply_filters( 'wpsb_dynamic_content_output', $output, $atts );
+		return apply_filters( 'velocitywp_dynamic_content_output', $output, $atts );
 	}
 
 	/**

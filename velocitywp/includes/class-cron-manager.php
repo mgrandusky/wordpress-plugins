@@ -4,7 +4,7 @@
  *
  * Scheduled tasks dashboard and management
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,18 +13,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Cron_Manager class
+ * VelocityWP_Cron_Manager class
  */
-class WPSB_Cron_Manager {
+class VelocityWP_Cron_Manager {
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_get_cron_jobs', array( $this, 'ajax_get_cron_jobs' ) );
-		add_action( 'wp_ajax_wpsb_run_cron_job', array( $this, 'ajax_run_cron_job' ) );
-		add_action( 'wp_ajax_wpsb_delete_cron_job', array( $this, 'ajax_delete_cron_job' ) );
+		add_action( 'wp_ajax_velocitywp_get_cron_jobs', array( $this, 'ajax_get_cron_jobs' ) );
+		add_action( 'wp_ajax_velocitywp_run_cron_job', array( $this, 'ajax_run_cron_job' ) );
+		add_action( 'wp_ajax_velocitywp_delete_cron_job', array( $this, 'ajax_delete_cron_job' ) );
 	}
 
 	/**
@@ -47,17 +47,17 @@ class WPSB_Cron_Manager {
 	public function add_custom_schedules( $schedules ) {
 		$schedules['five_minutes'] = array(
 			'interval' => 300,
-			'display'  => __( 'Every 5 Minutes', 'wp-speed-booster' ),
+			'display'  => __( 'Every 5 Minutes', 'velocitywp' ),
 		);
 
 		$schedules['fifteen_minutes'] = array(
 			'interval' => 900,
-			'display'  => __( 'Every 15 Minutes', 'wp-speed-booster' ),
+			'display'  => __( 'Every 15 Minutes', 'velocitywp' ),
 		);
 
 		$schedules['thirty_minutes'] = array(
 			'interval' => 1800,
-			'display'  => __( 'Every 30 Minutes', 'wp-speed-booster' ),
+			'display'  => __( 'Every 30 Minutes', 'velocitywp' ),
 		);
 
 		return $schedules;
@@ -67,26 +67,26 @@ class WPSB_Cron_Manager {
 	 * Setup default cron jobs
 	 */
 	private function setup_default_cron_jobs() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Cache cleanup
 		if ( ! empty( $options['cache_cleanup_schedule'] ) ) {
-			if ( ! wp_next_scheduled( 'wpsb_cache_cleanup' ) ) {
-				wp_schedule_event( time(), 'daily', 'wpsb_cache_cleanup' );
+			if ( ! wp_next_scheduled( 'velocitywp_cache_cleanup' ) ) {
+				wp_schedule_event( time(), 'daily', 'velocitywp_cache_cleanup' );
 			}
 		}
 
 		// Database optimization
 		if ( ! empty( $options['db_optimize_schedule'] ) ) {
-			if ( ! wp_next_scheduled( 'wpsb_database_optimize' ) ) {
-				wp_schedule_event( time(), 'weekly', 'wpsb_database_optimize' );
+			if ( ! wp_next_scheduled( 'velocitywp_database_optimize' ) ) {
+				wp_schedule_event( time(), 'weekly', 'velocitywp_database_optimize' );
 			}
 		}
 
 		// Image optimization
 		if ( ! empty( $options['image_optimize_schedule'] ) ) {
-			if ( ! wp_next_scheduled( 'wpsb_image_optimize' ) ) {
-				wp_schedule_event( time(), 'daily', 'wpsb_image_optimize' );
+			if ( ! wp_next_scheduled( 'velocitywp_image_optimize' ) ) {
+				wp_schedule_event( time(), 'daily', 'velocitywp_image_optimize' );
 			}
 		}
 	}
@@ -107,7 +107,7 @@ class WPSB_Cron_Manager {
 		foreach ( $crons as $timestamp => $cron ) {
 			foreach ( $cron as $hook => $dings ) {
 				// Filter to only WPSB hooks
-				if ( strpos( $hook, 'wpsb_' ) !== 0 ) {
+				if ( strpos( $hook, 'velocitywp_' ) !== 0 ) {
 					continue;
 				}
 
@@ -180,7 +180,7 @@ class WPSB_Cron_Manager {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$jobs = $this->get_cron_jobs();
@@ -195,21 +195,21 @@ class WPSB_Cron_Manager {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$hook = isset( $_POST['hook'] ) ? sanitize_text_field( $_POST['hook'] ) : '';
 
 		if ( empty( $hook ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid hook', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid hook', 'velocitywp' ) ) );
 		}
 
 		$result = $this->run_cron_job( $hook );
 
 		if ( $result ) {
-			wp_send_json_success( array( 'message' => __( 'Cron job executed', 'wp-speed-booster' ) ) );
+			wp_send_json_success( array( 'message' => __( 'Cron job executed', 'velocitywp' ) ) );
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Failed to execute cron job', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Failed to execute cron job', 'velocitywp' ) ) );
 		}
 	}
 
@@ -220,22 +220,22 @@ class WPSB_Cron_Manager {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$hook = isset( $_POST['hook'] ) ? sanitize_text_field( $_POST['hook'] ) : '';
 		$timestamp = isset( $_POST['timestamp'] ) ? intval( $_POST['timestamp'] ) : 0;
 
 		if ( empty( $hook ) || empty( $timestamp ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid parameters', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid parameters', 'velocitywp' ) ) );
 		}
 
 		$result = $this->delete_cron_job( $hook, $timestamp );
 
 		if ( $result ) {
-			wp_send_json_success( array( 'message' => __( 'Cron job deleted', 'wp-speed-booster' ) ) );
+			wp_send_json_success( array( 'message' => __( 'Cron job deleted', 'velocitywp' ) ) );
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Failed to delete cron job', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Failed to delete cron job', 'velocitywp' ) ) );
 		}
 	}
 }

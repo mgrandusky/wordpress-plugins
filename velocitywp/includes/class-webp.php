@@ -4,7 +4,7 @@
  *
  * Automatic WebP conversion and smart serving
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,15 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_WebP class
+ * VelocityWP_WebP class
  */
-class WPSB_WebP {
+class VelocityWP_WebP {
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		if ( ! empty( $options['webp_enabled'] ) ) {
 			// Auto-convert on upload
@@ -38,8 +38,8 @@ class WPSB_WebP {
 		}
 		
 		// AJAX handlers
-		add_action( 'wp_ajax_wpsb_bulk_convert_webp', array( $this, 'ajax_bulk_convert' ) );
-		add_action( 'wp_ajax_wpsb_get_conversion_progress', array( $this, 'ajax_get_progress' ) );
+		add_action( 'wp_ajax_velocitywp_bulk_convert_webp', array( $this, 'ajax_bulk_convert' ) );
+		add_action( 'wp_ajax_velocitywp_get_conversion_progress', array( $this, 'ajax_get_progress' ) );
 	}
 
 	/**
@@ -96,7 +96,7 @@ class WPSB_WebP {
 			return false;
 		}
 		
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$quality = isset( $options['webp_quality'] ) ? absint( $options['webp_quality'] ) : 85;
 		
 		$extension = strtolower( pathinfo( $file, PATHINFO_EXTENSION ) );
@@ -146,7 +146,7 @@ class WPSB_WebP {
 			return $url;
 		}
 		
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( empty( $options['webp_delivery'] ) || $options['webp_delivery'] !== 'url_rewrite' ) {
 			return $url;
 		}
@@ -170,7 +170,7 @@ class WPSB_WebP {
 	 * @return string Modified content
 	 */
 	public function replace_images_with_picture( $content ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		if ( empty( $options['webp_delivery'] ) || $options['webp_delivery'] !== 'picture_tag' ) {
 			return $content;
@@ -257,10 +257,10 @@ class WPSB_WebP {
 	 * Bulk convert images via AJAX
 	 */
 	public function ajax_bulk_convert() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'velocitywp' ) ) );
 		}
 		
 		$offset = isset( $_POST['offset'] ) ? absint( $_POST['offset'] ) : 0;
@@ -320,13 +320,13 @@ class WPSB_WebP {
 	 * Get conversion progress via AJAX
 	 */
 	public function ajax_get_progress() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'velocitywp' ) ) );
 		}
 		
-		$progress = get_transient( 'wpsb_webp_conversion_progress' );
+		$progress = get_transient( 'velocitywp_webp_conversion_progress' );
 		
 		wp_send_json_success( array( 'progress' => $progress ? $progress : 0 ) );
 	}

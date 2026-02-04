@@ -8,20 +8,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WP_Speed_Booster_Performance_Metrics {
+class VelocityWP_Performance_Metrics {
     
     private $settings;
     private $api_endpoint = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
     
     public function __construct() {
-        $this->settings = get_option('wpsb_options', array());
+        $this->settings = get_option('velocitywp_options', array());
         
         // AJAX handlers
-        add_action('wp_ajax_wpspeed_run_pagespeed', array($this, 'ajax_run_pagespeed'));
-        add_action('wp_ajax_wpspeed_get_metrics_history', array($this, 'ajax_get_history'));
+        add_action('wp_ajax_velocitywp_run_pagespeed', array($this, 'ajax_run_pagespeed'));
+        add_action('wp_ajax_velocitywp_get_metrics_history', array($this, 'ajax_get_history'));
         
         // Scheduled checks
-        add_action('wpspeed_scheduled_performance_check', array($this, 'scheduled_check'));
+        add_action('velocitywp_scheduled_performance_check', array($this, 'scheduled_check'));
     }
     
     /**
@@ -174,7 +174,7 @@ class WP_Speed_Booster_Performance_Metrics {
      * Save result to history
      */
     private function save_to_history($result) {
-        $history = get_option('wpspeed_performance_history', array());
+        $history = get_option('velocitywp_performance_history', array());
         
         $history[] = array(
             'timestamp' => $result['timestamp'],
@@ -194,14 +194,14 @@ class WP_Speed_Booster_Performance_Metrics {
             return strtotime($item['timestamp']) > $cutoff;
         });
         
-        update_option('wpspeed_performance_history', array_values($history));
+        update_option('velocitywp_performance_history', array_values($history));
     }
     
     /**
      * Get performance history
      */
     public function get_history($days = 30, $url = null, $strategy = null) {
-        $history = get_option('wpspeed_performance_history', array());
+        $history = get_option('velocitywp_performance_history', array());
         
         if ($url) {
             $history = array_filter($history, function($item) use ($url) {
@@ -289,7 +289,7 @@ class WP_Speed_Booster_Performance_Metrics {
      * AJAX: Run PageSpeed test
      */
     public function ajax_run_pagespeed() {
-        check_ajax_referer('wpspeed_performance', 'nonce');
+        check_ajax_referer('velocitywp_performance', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Permission denied'));
@@ -311,7 +311,7 @@ class WP_Speed_Booster_Performance_Metrics {
      * AJAX: Get metrics history
      */
     public function ajax_get_history() {
-        check_ajax_referer('wpspeed_performance', 'nonce');
+        check_ajax_referer('velocitywp_performance', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Permission denied'));
@@ -330,10 +330,10 @@ class WP_Speed_Booster_Performance_Metrics {
      * Setup scheduled events on activation
      */
     public static function activate() {
-        $options = get_option('wpsb_options', array());
-        if ( ! wp_next_scheduled('wpspeed_scheduled_performance_check') ) {
+        $options = get_option('velocitywp_options', array());
+        if ( ! wp_next_scheduled('velocitywp_scheduled_performance_check') ) {
             $frequency = ! empty( $options['performance_check_frequency'] ) ? $options['performance_check_frequency'] : 'weekly';
-            wp_schedule_event( time(), $frequency, 'wpspeed_scheduled_performance_check' );
+            wp_schedule_event( time(), $frequency, 'velocitywp_scheduled_performance_check' );
         }
     }
 
@@ -341,18 +341,18 @@ class WP_Speed_Booster_Performance_Metrics {
      * Clear scheduled events on deactivation
      */
     public static function deactivate() {
-        wp_clear_scheduled_hook('wpspeed_scheduled_performance_check');
+        wp_clear_scheduled_hook('velocitywp_scheduled_performance_check');
     }
 }
 
 // Initialize singleton
-if ( ! function_exists( 'wpsb_performance_metrics' ) ) {
-    function wpsb_performance_metrics() {
+if ( ! function_exists( 'velocitywp_performance_metrics' ) ) {
+    function velocitywp_performance_metrics() {
         static $instance = null;
         if ( null === $instance ) {
-            $instance = new WP_Speed_Booster_Performance_Metrics();
+            $instance = new VelocityWP_Performance_Metrics();
         }
         return $instance;
     }
-    wpsb_performance_metrics();
+    velocitywp_performance_metrics();
 }

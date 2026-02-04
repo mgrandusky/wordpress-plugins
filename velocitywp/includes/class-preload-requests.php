@@ -4,7 +4,7 @@
  *
  * Critical resource preloading and priority hints
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Preload_Requests class
+ * VelocityWP_Preload_Requests class
  */
-class WPSB_Preload_Requests {
+class VelocityWP_Preload_Requests {
 
 	/**
 	 * Preload resources
@@ -35,7 +35,7 @@ class WPSB_Preload_Requests {
 	 * Initialize preload requests
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['preload_requests'] ) ) {
 			return;
@@ -152,7 +152,7 @@ class WPSB_Preload_Requests {
 	 * Preload critical fonts
 	 */
 	private function preload_critical_fonts() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['critical_fonts'] ) ) {
 			return;
@@ -175,7 +175,7 @@ class WPSB_Preload_Requests {
 	 * Preload manual resources
 	 */
 	public function preload_manual_resources() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['manual_preload_resources'] ) ) {
 			return;

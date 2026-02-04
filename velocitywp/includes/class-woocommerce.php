@@ -4,7 +4,7 @@
  *
  * WooCommerce-specific performance optimizations
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_WooCommerce class
+ * VelocityWP_WooCommerce class
  */
-class WPSB_WooCommerce {
+class VelocityWP_WooCommerce {
 
 	/**
 	 * Constructor
@@ -33,7 +33,7 @@ class WPSB_WooCommerce {
 			return;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['woocommerce_optimize'] ) ) {
 			return;
@@ -196,7 +196,7 @@ class WPSB_WooCommerce {
 	 * @param int $product_id Product ID.
 	 */
 	public function cache_product_data( $product_id ) {
-		$cache_key = 'wpsb_product_' . $product_id;
+		$cache_key = 'velocitywp_product_' . $product_id;
 		
 		$cached = wp_cache_get( $cache_key );
 		if ( $cached !== false ) {

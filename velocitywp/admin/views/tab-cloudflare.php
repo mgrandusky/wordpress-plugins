@@ -2,7 +2,7 @@
 /**
  * Cloudflare Tab View
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -20,26 +20,26 @@ $cf_zone_id = ! empty( $options['cloudflare_zone_id'] ) ? $options['cloudflare_z
 $cf_purge_on_update = ! empty( $options['cloudflare_purge_on_update'] ) ? 1 : 0;
 $cf_purge_on_comment = ! empty( $options['cloudflare_purge_on_comment'] ) ? 1 : 0;
 $cf_restore_ip = ! empty( $options['cloudflare_restore_ip'] ) ? 1 : 0;
-$cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
+$cf_last_purge = get_option( 'velocitywp_cf_last_purge', 0 );
 ?>
 
-<div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Cloudflare Integration', 'wp-speed-booster' ); ?></h2>
+<div class="velocitywp-tab-section">
+	<h2><?php esc_html_e( 'Cloudflare Integration', 'velocitywp' ); ?></h2>
 	<p class="description">
-		<?php esc_html_e( 'Integrate with Cloudflare CDN for advanced caching, security, and performance optimization.', 'wp-speed-booster' ); ?>
+		<?php esc_html_e( 'Integrate with Cloudflare CDN for advanced caching, security, and performance optimization.', 'velocitywp' ); ?>
 	</p>
 
 	<!-- Enable Cloudflare -->
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Enable Cloudflare Integration', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Enable Cloudflare Integration', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[cloudflare_enabled]" value="1" <?php checked( $cf_enabled, 1 ); ?>>
-					<?php esc_html_e( 'Enable Cloudflare API integration', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[cloudflare_enabled]" value="1" <?php checked( $cf_enabled, 1 ); ?>>
+					<?php esc_html_e( 'Enable Cloudflare API integration', 'velocitywp' ); ?>
 				</label>
 				<p class="description">
-					<?php esc_html_e( 'Connect to Cloudflare to manage cache purging and settings directly from WordPress.', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Connect to Cloudflare to manage cache purging and settings directly from WordPress.', 'velocitywp' ); ?>
 				</p>
 			</td>
 		</tr>
@@ -47,52 +47,52 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 
 	<!-- Connection Status -->
 	<?php if ( $cf_enabled && ! empty( $cf_zone_id ) ) : ?>
-		<div class="wpsb-cf-status notice notice-success inline">
+		<div class="velocitywp-cf-status notice notice-success inline">
 			<p>
 				<span class="dashicons dashicons-yes-alt"></span>
-				<strong><?php esc_html_e( 'Connected to Cloudflare', 'wp-speed-booster' ); ?></strong>
+				<strong><?php esc_html_e( 'Connected to Cloudflare', 'velocitywp' ); ?></strong>
 				<?php if ( ! empty( $cf_zone_id ) ) : ?>
-					<br><small><?php echo esc_html( sprintf( __( 'Zone ID: %s', 'wp-speed-booster' ), $cf_zone_id ) ); ?></small>
+					<br><small><?php echo esc_html( sprintf( __( 'Zone ID: %s', 'velocitywp' ), $cf_zone_id ) ); ?></small>
 				<?php endif; ?>
 			</p>
 		</div>
 	<?php endif; ?>
 
 	<!-- API Authentication -->
-	<h3><?php esc_html_e( 'API Authentication', 'wp-speed-booster' ); ?></h3>
+	<h3><?php esc_html_e( 'API Authentication', 'velocitywp' ); ?></h3>
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Authentication Type', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Authentication Type', 'velocitywp' ); ?></th>
 			<td>
 				<fieldset>
 					<label>
-						<input type="radio" name="wpsb_options[cloudflare_auth_type]" value="token" <?php checked( $cf_auth_type, 'token' ); ?>>
-						<?php esc_html_e( 'API Token (Recommended)', 'wp-speed-booster' ); ?>
+						<input type="radio" name="velocitywp_options[cloudflare_auth_type]" value="token" <?php checked( $cf_auth_type, 'token' ); ?>>
+						<?php esc_html_e( 'API Token (Recommended)', 'velocitywp' ); ?>
 					</label><br>
 					<label>
-						<input type="radio" name="wpsb_options[cloudflare_auth_type]" value="key" <?php checked( $cf_auth_type, 'key' ); ?>>
-						<?php esc_html_e( 'Global API Key + Email', 'wp-speed-booster' ); ?>
+						<input type="radio" name="velocitywp_options[cloudflare_auth_type]" value="key" <?php checked( $cf_auth_type, 'key' ); ?>>
+						<?php esc_html_e( 'Global API Key + Email', 'velocitywp' ); ?>
 					</label>
 				</fieldset>
 				<p class="description">
-					<?php esc_html_e( 'API Token is more secure as it can have limited permissions.', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'API Token is more secure as it can have limited permissions.', 'velocitywp' ); ?>
 				</p>
 			</td>
 		</tr>
 
 		<!-- API Token -->
-		<tr class="wpsb-cf-token-field" style="<?php echo $cf_auth_type === 'key' ? 'display:none;' : ''; ?>">
+		<tr class="velocitywp-cf-token-field" style="<?php echo $cf_auth_type === 'key' ? 'display:none;' : ''; ?>">
 			<th scope="row">
-				<label for="cf-api-token"><?php esc_html_e( 'API Token', 'wp-speed-booster' ); ?></label>
+				<label for="cf-api-token"><?php esc_html_e( 'API Token', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<input type="password" id="cf-api-token" name="wpsb_options[cloudflare_api_token]" 
+				<input type="password" id="cf-api-token" name="velocitywp_options[cloudflare_api_token]" 
 					value="<?php echo esc_attr( $cf_api_token ); ?>" class="regular-text" autocomplete="off">
 				<p class="description">
 					<?php
 					printf(
 						/* translators: %s: Link to Cloudflare API tokens page */
-						esc_html__( 'Get your API Token from %s. Create a token with "Zone.Cache Purge" and "Zone.Zone Settings:Read" permissions.', 'wp-speed-booster' ),
+						esc_html__( 'Get your API Token from %s. Create a token with "Zone.Cache Purge" and "Zone.Zone Settings:Read" permissions.', 'velocitywp' ),
 						'<a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">Cloudflare Dashboard</a>'
 					);
 					?>
@@ -101,29 +101,29 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 		</tr>
 
 		<!-- API Key + Email -->
-		<tr class="wpsb-cf-key-field" style="<?php echo $cf_auth_type === 'token' ? 'display:none;' : ''; ?>">
+		<tr class="velocitywp-cf-key-field" style="<?php echo $cf_auth_type === 'token' ? 'display:none;' : ''; ?>">
 			<th scope="row">
-				<label for="cf-email"><?php esc_html_e( 'Cloudflare Email', 'wp-speed-booster' ); ?></label>
+				<label for="cf-email"><?php esc_html_e( 'Cloudflare Email', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<input type="email" id="cf-email" name="wpsb_options[cloudflare_email]" 
+				<input type="email" id="cf-email" name="velocitywp_options[cloudflare_email]" 
 					value="<?php echo esc_attr( $cf_email ); ?>" class="regular-text">
-				<p class="description"><?php esc_html_e( 'The email address associated with your Cloudflare account.', 'wp-speed-booster' ); ?></p>
+				<p class="description"><?php esc_html_e( 'The email address associated with your Cloudflare account.', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 
-		<tr class="wpsb-cf-key-field" style="<?php echo $cf_auth_type === 'token' ? 'display:none;' : ''; ?>">
+		<tr class="velocitywp-cf-key-field" style="<?php echo $cf_auth_type === 'token' ? 'display:none;' : ''; ?>">
 			<th scope="row">
-				<label for="cf-api-key"><?php esc_html_e( 'Global API Key', 'wp-speed-booster' ); ?></label>
+				<label for="cf-api-key"><?php esc_html_e( 'Global API Key', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<input type="password" id="cf-api-key" name="wpsb_options[cloudflare_api_key]" 
+				<input type="password" id="cf-api-key" name="velocitywp_options[cloudflare_api_key]" 
 					value="<?php echo esc_attr( $cf_api_key ); ?>" class="regular-text" autocomplete="off">
 				<p class="description">
 					<?php
 					printf(
 						/* translators: %s: Link to Cloudflare API keys page */
-						esc_html__( 'Find your Global API Key in %s', 'wp-speed-booster' ),
+						esc_html__( 'Find your Global API Key in %s', 'velocitywp' ),
 						'<a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">Cloudflare Dashboard</a>'
 					);
 					?>
@@ -134,20 +134,20 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 		<!-- Zone ID -->
 		<tr>
 			<th scope="row">
-				<label for="cf-zone-id"><?php esc_html_e( 'Zone ID', 'wp-speed-booster' ); ?></label>
+				<label for="cf-zone-id"><?php esc_html_e( 'Zone ID', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<input type="text" id="cf-zone-id" name="wpsb_options[cloudflare_zone_id]" 
+				<input type="text" id="cf-zone-id" name="velocitywp_options[cloudflare_zone_id]" 
 					value="<?php echo esc_attr( $cf_zone_id ); ?>" class="regular-text">
-				<button type="button" id="wpsb-cf-get-zones" class="button button-secondary">
-					<?php esc_html_e( 'Auto-Detect Zones', 'wp-speed-booster' ); ?>
+				<button type="button" id="velocitywp-cf-get-zones" class="button button-secondary">
+					<?php esc_html_e( 'Auto-Detect Zones', 'velocitywp' ); ?>
 				</button>
 				<p class="description">
-					<?php esc_html_e( 'Your Cloudflare Zone ID. Click "Auto-Detect" to fetch available zones.', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Your Cloudflare Zone ID. Click "Auto-Detect" to fetch available zones.', 'velocitywp' ); ?>
 				</p>
-				<div id="wpsb-cf-zones-list" style="display:none; margin-top:10px;">
-					<select id="wpsb-cf-zone-select" class="regular-text">
-						<option value=""><?php esc_html_e( 'Select a zone...', 'wp-speed-booster' ); ?></option>
+				<div id="velocitywp-cf-zones-list" style="display:none; margin-top:10px;">
+					<select id="velocitywp-cf-zone-select" class="regular-text">
+						<option value=""><?php esc_html_e( 'Select a zone...', 'velocitywp' ); ?></option>
 					</select>
 				</div>
 			</td>
@@ -155,32 +155,32 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 
 		<!-- Test Connection -->
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Connection Test', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Connection Test', 'velocitywp' ); ?></th>
 			<td>
-				<button type="button" id="wpsb-cf-test-connection" class="button button-secondary">
-					<?php esc_html_e( 'Test Connection', 'wp-speed-booster' ); ?>
+				<button type="button" id="velocitywp-cf-test-connection" class="button button-secondary">
+					<?php esc_html_e( 'Test Connection', 'velocitywp' ); ?>
 				</button>
-				<span id="wpsb-cf-test-result"></span>
-				<p class="description"><?php esc_html_e( 'Verify that your API credentials are working.', 'wp-speed-booster' ); ?></p>
+				<span id="velocitywp-cf-test-result"></span>
+				<p class="description"><?php esc_html_e( 'Verify that your API credentials are working.', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 	</table>
 
 	<!-- Cache Management -->
-	<h3><?php esc_html_e( 'Cache Management', 'wp-speed-booster' ); ?></h3>
+	<h3><?php esc_html_e( 'Cache Management', 'velocitywp' ); ?></h3>
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Manual Cache Purge', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Manual Cache Purge', 'velocitywp' ); ?></th>
 			<td>
-				<button type="button" id="wpsb-cf-purge-everything" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
-					<?php esc_html_e( 'Purge Everything', 'wp-speed-booster' ); ?>
+				<button type="button" id="velocitywp-cf-purge-everything" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
+					<?php esc_html_e( 'Purge Everything', 'velocitywp' ); ?>
 				</button>
 				<?php if ( $cf_last_purge > 0 ) : ?>
 					<p class="description">
 						<?php
 						printf(
 							/* translators: %s: Time since last purge */
-							esc_html__( 'Last purged: %s ago', 'wp-speed-booster' ),
+							esc_html__( 'Last purged: %s ago', 'velocitywp' ),
 							esc_html( human_time_diff( $cf_last_purge, current_time( 'timestamp' ) ) )
 						);
 						?>
@@ -191,95 +191,95 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 
 		<tr>
 			<th scope="row">
-				<label for="wpsb-cf-purge-urls"><?php esc_html_e( 'Purge Specific URLs', 'wp-speed-booster' ); ?></label>
+				<label for="wpsb-cf-purge-urls"><?php esc_html_e( 'Purge Specific URLs', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<textarea id="wpsb-cf-purge-urls" rows="5" class="large-text" placeholder="https://example.com/page1&#10;https://example.com/page2" aria-describedby="wpsb-cf-purge-urls-desc"></textarea>
+				<textarea id="velocitywp-cf-purge-urls" rows="5" class="large-text" placeholder="https://example.com/page1&#10;https://example.com/page2" aria-describedby="wpsb-cf-purge-urls-desc"></textarea>
 				<br>
-				<button type="button" id="wpsb-cf-purge-urls-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
-					<?php esc_html_e( 'Purge URLs', 'wp-speed-booster' ); ?>
+				<button type="button" id="velocitywp-cf-purge-urls-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
+					<?php esc_html_e( 'Purge URLs', 'velocitywp' ); ?>
 				</button>
-				<p class="description" id="wpsb-cf-purge-urls-desc"><?php esc_html_e( 'Enter one URL per line to purge specific pages.', 'wp-speed-booster' ); ?></p>
+				<p class="description" id="velocitywp-cf-purge-urls-desc"><?php esc_html_e( 'Enter one URL per line to purge specific pages.', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 
 		<tr>
 			<th scope="row">
-				<label for="wpsb-cf-purge-tags"><?php esc_html_e( 'Purge by Cache Tags', 'wp-speed-booster' ); ?></label>
+				<label for="wpsb-cf-purge-tags"><?php esc_html_e( 'Purge by Cache Tags', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<textarea id="wpsb-cf-purge-tags" rows="3" class="large-text" placeholder="tag1&#10;tag2" aria-describedby="wpsb-cf-purge-tags-desc"></textarea>
+				<textarea id="velocitywp-cf-purge-tags" rows="3" class="large-text" placeholder="tag1&#10;tag2" aria-describedby="wpsb-cf-purge-tags-desc"></textarea>
 				<br>
-				<button type="button" id="wpsb-cf-purge-tags-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
-					<?php esc_html_e( 'Purge Tags', 'wp-speed-booster' ); ?>
+				<button type="button" id="velocitywp-cf-purge-tags-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
+					<?php esc_html_e( 'Purge Tags', 'velocitywp' ); ?>
 				</button>
-				<p class="description" id="wpsb-cf-purge-tags-desc"><?php esc_html_e( 'Enter cache tags (one per line). Requires Cloudflare Enterprise.', 'wp-speed-booster' ); ?></p>
+				<p class="description" id="velocitywp-cf-purge-tags-desc"><?php esc_html_e( 'Enter cache tags (one per line). Requires Cloudflare Enterprise.', 'velocitywp' ); ?></p>
 			</td>
 		</tr>
 	</table>
 
 	<!-- Automatic Purge Settings -->
-	<h3><?php esc_html_e( 'Automatic Cache Purging', 'wp-speed-booster' ); ?></h3>
+	<h3><?php esc_html_e( 'Automatic Cache Purging', 'velocitywp' ); ?></h3>
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Purge on Post Update', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Purge on Post Update', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[cloudflare_purge_on_update]" value="1" <?php checked( $cf_purge_on_update, 1 ); ?>>
-					<?php esc_html_e( 'Automatically purge cache when posts are published or updated', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[cloudflare_purge_on_update]" value="1" <?php checked( $cf_purge_on_update, 1 ); ?>>
+					<?php esc_html_e( 'Automatically purge cache when posts are published or updated', 'velocitywp' ); ?>
 				</label>
 				<p class="description">
-					<?php esc_html_e( 'Purges: Post URL, homepage, post archive, category archives, tag archives, and author archive.', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Purges: Post URL, homepage, post archive, category archives, tag archives, and author archive.', 'velocitywp' ); ?>
 				</p>
 			</td>
 		</tr>
 
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Purge on Comment', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Purge on Comment', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[cloudflare_purge_on_comment]" value="1" <?php checked( $cf_purge_on_comment, 1 ); ?>>
-					<?php esc_html_e( 'Automatically purge cache when comments are approved', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[cloudflare_purge_on_comment]" value="1" <?php checked( $cf_purge_on_comment, 1 ); ?>>
+					<?php esc_html_e( 'Automatically purge cache when comments are approved', 'velocitywp' ); ?>
 				</label>
 				<p class="description">
-					<?php esc_html_e( 'Purges the post URL and homepage when comments are approved.', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Purges the post URL and homepage when comments are approved.', 'velocitywp' ); ?>
 				</p>
 			</td>
 		</tr>
 	</table>
 
 	<!-- Development Mode -->
-	<h3><?php esc_html_e( 'Development Mode', 'wp-speed-booster' ); ?></h3>
+	<h3><?php esc_html_e( 'Development Mode', 'velocitywp' ); ?></h3>
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Development Mode', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Development Mode', 'velocitywp' ); ?></th>
 			<td>
-				<button type="button" id="wpsb-cf-enable-dev-mode" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
-					<?php esc_html_e( 'Enable for 3 Hours', 'wp-speed-booster' ); ?>
+				<button type="button" id="velocitywp-cf-enable-dev-mode" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
+					<?php esc_html_e( 'Enable for 3 Hours', 'velocitywp' ); ?>
 				</button>
-				<button type="button" id="wpsb-cf-disable-dev-mode" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
-					<?php esc_html_e( 'Disable Now', 'wp-speed-booster' ); ?>
+				<button type="button" id="velocitywp-cf-disable-dev-mode" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
+					<?php esc_html_e( 'Disable Now', 'velocitywp' ); ?>
 				</button>
-				<span id="wpsb-cf-dev-mode-status"></span>
+				<span id="velocitywp-cf-dev-mode-status"></span>
 				<p class="description">
-					<?php esc_html_e( 'Bypass Cloudflare cache for testing. Automatically disables after 3 hours.', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Bypass Cloudflare cache for testing. Automatically disables after 3 hours.', 'velocitywp' ); ?>
 				</p>
 			</td>
 		</tr>
 	</table>
 
 	<!-- Advanced Settings -->
-	<h3><?php esc_html_e( 'Advanced Settings', 'wp-speed-booster' ); ?></h3>
+	<h3><?php esc_html_e( 'Advanced Settings', 'velocitywp' ); ?></h3>
 	<table class="form-table">
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Restore Visitor IP', 'wp-speed-booster' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Restore Visitor IP', 'velocitywp' ); ?></th>
 			<td>
 				<label>
-					<input type="checkbox" name="wpsb_options[cloudflare_restore_ip]" value="1" <?php checked( $cf_restore_ip, 1 ); ?>>
-					<?php esc_html_e( 'Restore real visitor IP from Cloudflare headers', 'wp-speed-booster' ); ?>
+					<input type="checkbox" name="velocitywp_options[cloudflare_restore_ip]" value="1" <?php checked( $cf_restore_ip, 1 ); ?>>
+					<?php esc_html_e( 'Restore real visitor IP from Cloudflare headers', 'velocitywp' ); ?>
 				</label>
 				<p class="description">
-					<?php esc_html_e( 'Uses CF-Connecting-IP header to get real visitor IP addresses.', 'wp-speed-booster' ); ?>
+					<?php esc_html_e( 'Uses CF-Connecting-IP header to get real visitor IP addresses.', 'velocitywp' ); ?>
 				</p>
 			</td>
 		</tr>
@@ -287,57 +287,57 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 
 	<!-- APO Information -->
 	<div class="notice notice-info inline" style="margin-top:20px;">
-		<h3><?php esc_html_e( 'Cloudflare APO (Automatic Platform Optimization)', 'wp-speed-booster' ); ?></h3>
+		<h3><?php esc_html_e( 'Cloudflare APO (Automatic Platform Optimization)', 'velocitywp' ); ?></h3>
 		<p>
-			<?php esc_html_e( 'Cloudflare APO provides full HTML caching at the edge for WordPress sites. It can significantly improve performance for visitors worldwide.', 'wp-speed-booster' ); ?>
+			<?php esc_html_e( 'Cloudflare APO provides full HTML caching at the edge for WordPress sites. It can significantly improve performance for visitors worldwide.', 'velocitywp' ); ?>
 		</p>
 		<p>
 			<?php
 			// Note: Pricing verified as of 2024. Check Cloudflare website for current pricing.
 			?>
-			<strong><?php esc_html_e( 'Pricing:', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( '$5/month per domain', 'wp-speed-booster' ); ?><br>
-			<strong><?php esc_html_e( 'Benefits:', 'wp-speed-booster' ); ?></strong>
+			<strong><?php esc_html_e( 'Pricing:', 'velocitywp' ); ?></strong> <?php esc_html_e( '$5/month per domain', 'velocitywp' ); ?><br>
+			<strong><?php esc_html_e( 'Benefits:', 'velocitywp' ); ?></strong>
 		</p>
 		<ul style="list-style-type: disc; margin-left: 20px;">
-			<li><?php esc_html_e( 'Full HTML caching at 200+ Cloudflare edge locations', 'wp-speed-booster' ); ?></li>
-			<li><?php esc_html_e( 'Smart cache bypass for logged-in users and WooCommerce carts', 'wp-speed-booster' ); ?></li>
-			<li><?php esc_html_e( 'Automatic cache invalidation on content updates', 'wp-speed-booster' ); ?></li>
-			<li><?php esc_html_e( '90%+ cache hit ratio typical', 'wp-speed-booster' ); ?></li>
+			<li><?php esc_html_e( 'Full HTML caching at 200+ Cloudflare edge locations', 'velocitywp' ); ?></li>
+			<li><?php esc_html_e( 'Smart cache bypass for logged-in users and WooCommerce carts', 'velocitywp' ); ?></li>
+			<li><?php esc_html_e( 'Automatic cache invalidation on content updates', 'velocitywp' ); ?></li>
+			<li><?php esc_html_e( '90%+ cache hit ratio typical', 'velocitywp' ); ?></li>
 		</ul>
 		<p>
 			<a href="https://www.cloudflare.com/automatic-platform-optimization/" target="_blank" class="button button-primary">
-				<?php esc_html_e( 'Learn More About APO', 'wp-speed-booster' ); ?>
+				<?php esc_html_e( 'Learn More About APO', 'velocitywp' ); ?>
 			</a>
 			<a href="https://dash.cloudflare.com/" target="_blank" class="button button-secondary">
-				<?php esc_html_e( 'Enable in Cloudflare Dashboard', 'wp-speed-booster' ); ?>
+				<?php esc_html_e( 'Enable in Cloudflare Dashboard', 'velocitywp' ); ?>
 			</a>
 		</p>
 	</div>
 </div>
 
 <style>
-.wpsb-cf-status {
+.velocitywp-cf-status {
 	padding: 10px 15px;
 	margin: 15px 0;
 }
-.wpsb-cf-status .dashicons {
+.velocitywp-cf-status .dashicons {
 	color: #46b450;
 	margin-right: 5px;
 }
-#wpsb-cf-test-result,
-#wpsb-cf-dev-mode-status {
+#velocitywp-cf-test-result,
+#velocitywp-cf-dev-mode-status {
 	margin-left: 10px;
 	font-weight: bold;
 }
-#wpsb-cf-test-result.success,
-#wpsb-cf-dev-mode-status.success {
+#velocitywp-cf-test-result.success,
+#velocitywp-cf-dev-mode-status.success {
 	color: #46b450;
 }
-#wpsb-cf-test-result.error,
-#wpsb-cf-dev-mode-status.error {
+#velocitywp-cf-test-result.error,
+#velocitywp-cf-dev-mode-status.error {
 	color: #dc3232;
 }
-.wpsb-cf-loading {
+.velocitywp-cf-loading {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
@@ -359,34 +359,34 @@ jQuery(document).ready(function($) {
 	'use strict';
 
 	// Toggle auth fields
-	$('input[name="wpsb_options[cloudflare_auth_type]"]').on('change', function() {
+	$('input[name="velocitywp_options[cloudflare_auth_type]"]').on('change', function() {
 		var authType = $(this).val();
 		if (authType === 'token') {
-			$('.wpsb-cf-token-field').show();
-			$('.wpsb-cf-key-field').hide();
+			$('.velocitywp-cf-token-field').show();
+			$('.velocitywp-cf-key-field').hide();
 		} else {
-			$('.wpsb-cf-token-field').hide();
-			$('.wpsb-cf-key-field').show();
+			$('.velocitywp-cf-token-field').hide();
+			$('.velocitywp-cf-key-field').show();
 		}
 	});
 
 	// Test connection
-	$('#wpsb-cf-test-connection').on('click', function() {
+	$('#velocitywp-cf-test-connection').on('click', function() {
 		var $btn = $(this);
-		var $result = $('#wpsb-cf-test-result');
-		var authType = $('input[name="wpsb_options[cloudflare_auth_type]"]:checked').val();
+		var $result = $('#velocitywp-cf-test-result');
+		var authType = $('input[name="velocitywp_options[cloudflare_auth_type]"]:checked').val();
 		var apiToken = $('#cf-api-token').val();
 		var email = $('#cf-email').val();
 		var apiKey = $('#cf-api-key').val();
 
 		$btn.prop('disabled', true);
-		$result.html('<span class="wpsb-cf-loading"></span>');
+		$result.html('<span class="velocitywp-cf-loading"></span>');
 
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'wpsb_cf_test_connection',
+				action: 'velocitywp_cf_test_connection',
 				nonce: wpsbAdmin.nonce,
 				auth_type: authType,
 				api_token: apiToken,
@@ -410,23 +410,23 @@ jQuery(document).ready(function($) {
 	});
 
 	// Get zones
-	$('#wpsb-cf-get-zones').on('click', function() {
+	$('#velocitywp-cf-get-zones').on('click', function() {
 		var $btn = $(this);
-		var $zonesList = $('#wpsb-cf-zones-list');
-		var $zoneSelect = $('#wpsb-cf-zone-select');
+		var $zonesList = $('#velocitywp-cf-zones-list');
+		var $zoneSelect = $('#velocitywp-cf-zone-select');
 
-		$btn.prop('disabled', true).text('<?php esc_html_e( 'Loading...', 'wp-speed-booster' ); ?>');
+		$btn.prop('disabled', true).text('<?php esc_html_e( 'Loading...', 'velocitywp' ); ?>');
 
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'wpsb_cf_get_zones',
+				action: 'velocitywp_cf_get_zones',
 				nonce: wpsbAdmin.nonce
 			},
 			success: function(response) {
 				if (response.success && response.data.result) {
-					$zoneSelect.empty().append('<option value=""><?php esc_html_e( 'Select a zone...', 'wp-speed-booster' ); ?></option>');
+					$zoneSelect.empty().append('<option value=""><?php esc_html_e( 'Select a zone...', 'velocitywp' ); ?></option>');
 					
 					$.each(response.data.result, function(i, zone) {
 						$zoneSelect.append(
@@ -438,156 +438,156 @@ jQuery(document).ready(function($) {
 					
 					$zonesList.show();
 				} else {
-					alert(response.data.message || '<?php esc_html_e( 'Failed to fetch zones', 'wp-speed-booster' ); ?>');
+					alert(response.data.message || '<?php esc_html_e( 'Failed to fetch zones', 'velocitywp' ); ?>');
 				}
 			},
 			error: function() {
-				alert('<?php esc_html_e( 'Failed to fetch zones', 'wp-speed-booster' ); ?>');
+				alert('<?php esc_html_e( 'Failed to fetch zones', 'velocitywp' ); ?>');
 			},
 			complete: function() {
-				$btn.prop('disabled', false).text('<?php esc_html_e( 'Auto-Detect Zones', 'wp-speed-booster' ); ?>');
+				$btn.prop('disabled', false).text('<?php esc_html_e( 'Auto-Detect Zones', 'velocitywp' ); ?>');
 			}
 		});
 	});
 
 	// Select zone
-	$('#wpsb-cf-zone-select').on('change', function() {
+	$('#velocitywp-cf-zone-select').on('change', function() {
 		$('#cf-zone-id').val($(this).val());
 	});
 
 	// Purge everything
-	$('#wpsb-cf-purge-everything').on('click', function() {
-		if (!confirm('<?php esc_html_e( 'Are you sure you want to purge the entire Cloudflare cache?', 'wp-speed-booster' ); ?>')) {
+	$('#velocitywp-cf-purge-everything').on('click', function() {
+		if (!confirm('<?php esc_html_e( 'Are you sure you want to purge the entire Cloudflare cache?', 'velocitywp' ); ?>')) {
 			return;
 		}
 
 		var $btn = $(this);
-		$btn.prop('disabled', true).text('<?php esc_html_e( 'Purging...', 'wp-speed-booster' ); ?>');
+		$btn.prop('disabled', true).text('<?php esc_html_e( 'Purging...', 'velocitywp' ); ?>');
 
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'wpsb_cf_purge_cache',
+				action: 'velocitywp_cf_purge_cache',
 				nonce: wpsbAdmin.nonce,
 				type: 'everything'
 			},
 			success: function(response) {
 				if (response.success) {
-					alert('<?php esc_html_e( 'Cache purged successfully!', 'wp-speed-booster' ); ?>');
+					alert('<?php esc_html_e( 'Cache purged successfully!', 'velocitywp' ); ?>');
 					location.reload();
 				} else {
-					alert(response.data.message || '<?php esc_html_e( 'Purge failed', 'wp-speed-booster' ); ?>');
+					alert(response.data.message || '<?php esc_html_e( 'Purge failed', 'velocitywp' ); ?>');
 				}
 			},
 			error: function() {
-				alert('<?php esc_html_e( 'Purge failed', 'wp-speed-booster' ); ?>');
+				alert('<?php esc_html_e( 'Purge failed', 'velocitywp' ); ?>');
 			},
 			complete: function() {
-				$btn.prop('disabled', false).text('<?php esc_html_e( 'Purge Everything', 'wp-speed-booster' ); ?>');
+				$btn.prop('disabled', false).text('<?php esc_html_e( 'Purge Everything', 'velocitywp' ); ?>');
 			}
 		});
 	});
 
 	// Purge URLs
-	$('#wpsb-cf-purge-urls-btn').on('click', function() {
-		var urls = $('#wpsb-cf-purge-urls').val().trim();
+	$('#velocitywp-cf-purge-urls-btn').on('click', function() {
+		var urls = $('#velocitywp-cf-purge-urls').val().trim();
 		if (!urls) {
-			alert('<?php esc_html_e( 'Please enter at least one URL', 'wp-speed-booster' ); ?>');
+			alert('<?php esc_html_e( 'Please enter at least one URL', 'velocitywp' ); ?>');
 			return;
 		}
 
 		var $btn = $(this);
-		$btn.prop('disabled', true).text('<?php esc_html_e( 'Purging...', 'wp-speed-booster' ); ?>');
+		$btn.prop('disabled', true).text('<?php esc_html_e( 'Purging...', 'velocitywp' ); ?>');
 
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'wpsb_cf_purge_cache',
+				action: 'velocitywp_cf_purge_cache',
 				nonce: wpsbAdmin.nonce,
 				type: 'urls',
 				urls: urls
 			},
 			success: function(response) {
 				if (response.success) {
-					alert('<?php esc_html_e( 'URLs purged successfully!', 'wp-speed-booster' ); ?>');
-					$('#wpsb-cf-purge-urls').val('');
+					alert('<?php esc_html_e( 'URLs purged successfully!', 'velocitywp' ); ?>');
+					$('#velocitywp-cf-purge-urls').val('');
 				} else {
-					alert(response.data.message || '<?php esc_html_e( 'Purge failed', 'wp-speed-booster' ); ?>');
+					alert(response.data.message || '<?php esc_html_e( 'Purge failed', 'velocitywp' ); ?>');
 				}
 			},
 			error: function() {
-				alert('<?php esc_html_e( 'Purge failed', 'wp-speed-booster' ); ?>');
+				alert('<?php esc_html_e( 'Purge failed', 'velocitywp' ); ?>');
 			},
 			complete: function() {
-				$btn.prop('disabled', false).text('<?php esc_html_e( 'Purge URLs', 'wp-speed-booster' ); ?>');
+				$btn.prop('disabled', false).text('<?php esc_html_e( 'Purge URLs', 'velocitywp' ); ?>');
 			}
 		});
 	});
 
 	// Purge tags
-	$('#wpsb-cf-purge-tags-btn').on('click', function() {
-		var tags = $('#wpsb-cf-purge-tags').val().trim();
+	$('#velocitywp-cf-purge-tags-btn').on('click', function() {
+		var tags = $('#velocitywp-cf-purge-tags').val().trim();
 		if (!tags) {
-			alert('<?php esc_html_e( 'Please enter at least one tag', 'wp-speed-booster' ); ?>');
+			alert('<?php esc_html_e( 'Please enter at least one tag', 'velocitywp' ); ?>');
 			return;
 		}
 
 		var $btn = $(this);
-		$btn.prop('disabled', true).text('<?php esc_html_e( 'Purging...', 'wp-speed-booster' ); ?>');
+		$btn.prop('disabled', true).text('<?php esc_html_e( 'Purging...', 'velocitywp' ); ?>');
 
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'wpsb_cf_purge_cache',
+				action: 'velocitywp_cf_purge_cache',
 				nonce: wpsbAdmin.nonce,
 				type: 'tags',
 				tags: tags
 			},
 			success: function(response) {
 				if (response.success) {
-					alert('<?php esc_html_e( 'Tags purged successfully!', 'wp-speed-booster' ); ?>');
-					$('#wpsb-cf-purge-tags').val('');
+					alert('<?php esc_html_e( 'Tags purged successfully!', 'velocitywp' ); ?>');
+					$('#velocitywp-cf-purge-tags').val('');
 				} else {
-					alert(response.data.message || '<?php esc_html_e( 'Purge failed', 'wp-speed-booster' ); ?>');
+					alert(response.data.message || '<?php esc_html_e( 'Purge failed', 'velocitywp' ); ?>');
 				}
 			},
 			error: function() {
-				alert('<?php esc_html_e( 'Purge failed', 'wp-speed-booster' ); ?>');
+				alert('<?php esc_html_e( 'Purge failed', 'velocitywp' ); ?>');
 			},
 			complete: function() {
-				$btn.prop('disabled', false).text('<?php esc_html_e( 'Purge Tags', 'wp-speed-booster' ); ?>');
+				$btn.prop('disabled', false).text('<?php esc_html_e( 'Purge Tags', 'velocitywp' ); ?>');
 			}
 		});
 	});
 
 	// Enable development mode
-	$('#wpsb-cf-enable-dev-mode').on('click', function() {
+	$('#velocitywp-cf-enable-dev-mode').on('click', function() {
 		var $btn = $(this);
-		var $status = $('#wpsb-cf-dev-mode-status');
+		var $status = $('#velocitywp-cf-dev-mode-status');
 
 		$btn.prop('disabled', true);
-		$status.html('<span class="wpsb-cf-loading"></span>');
+		$status.html('<span class="velocitywp-cf-loading"></span>');
 
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'wpsb_cf_toggle_dev_mode',
+				action: 'velocitywp_cf_toggle_dev_mode',
 				nonce: wpsbAdmin.nonce,
 				action_type: 'enable'
 			},
 			success: function(response) {
 				if (response.success) {
-					$status.html('<span class="dashicons dashicons-yes-alt success"></span> <?php esc_html_e( 'Enabled for 3 hours', 'wp-speed-booster' ); ?>').addClass('success').removeClass('error');
+					$status.html('<span class="dashicons dashicons-yes-alt success"></span> <?php esc_html_e( 'Enabled for 3 hours', 'velocitywp' ); ?>').addClass('success').removeClass('error');
 				} else {
 					$status.html('<span class="dashicons dashicons-dismiss error"></span> ' + response.data.message).addClass('error').removeClass('success');
 				}
 			},
 			error: function() {
-				$status.html('<span class="dashicons dashicons-dismiss error"></span> <?php esc_html_e( 'Failed', 'wp-speed-booster' ); ?>').addClass('error').removeClass('success');
+				$status.html('<span class="dashicons dashicons-dismiss error"></span> <?php esc_html_e( 'Failed', 'velocitywp' ); ?>').addClass('error').removeClass('success');
 			},
 			complete: function() {
 				$btn.prop('disabled', false);
@@ -596,30 +596,30 @@ jQuery(document).ready(function($) {
 	});
 
 	// Disable development mode
-	$('#wpsb-cf-disable-dev-mode').on('click', function() {
+	$('#velocitywp-cf-disable-dev-mode').on('click', function() {
 		var $btn = $(this);
-		var $status = $('#wpsb-cf-dev-mode-status');
+		var $status = $('#velocitywp-cf-dev-mode-status');
 
 		$btn.prop('disabled', true);
-		$status.html('<span class="wpsb-cf-loading"></span>');
+		$status.html('<span class="velocitywp-cf-loading"></span>');
 
 		$.ajax({
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'wpsb_cf_toggle_dev_mode',
+				action: 'velocitywp_cf_toggle_dev_mode',
 				nonce: wpsbAdmin.nonce,
 				action_type: 'disable'
 			},
 			success: function(response) {
 				if (response.success) {
-					$status.html('<span class="dashicons dashicons-yes-alt success"></span> <?php esc_html_e( 'Disabled', 'wp-speed-booster' ); ?>').addClass('success').removeClass('error');
+					$status.html('<span class="dashicons dashicons-yes-alt success"></span> <?php esc_html_e( 'Disabled', 'velocitywp' ); ?>').addClass('success').removeClass('error');
 				} else {
 					$status.html('<span class="dashicons dashicons-dismiss error"></span> ' + response.data.message).addClass('error').removeClass('success');
 				}
 			},
 			error: function() {
-				$status.html('<span class="dashicons dashicons-dismiss error"></span> <?php esc_html_e( 'Failed', 'wp-speed-booster' ); ?>').addClass('error').removeClass('success');
+				$status.html('<span class="dashicons dashicons-dismiss error"></span> <?php esc_html_e( 'Failed', 'velocitywp' ); ?>').addClass('error').removeClass('success');
 			},
 			complete: function() {
 				$btn.prop('disabled', false);

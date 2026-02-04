@@ -4,7 +4,7 @@
  *
  * Handles HTML/CSS/JS minification
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Minify class
+ * VelocityWP_Minify class
  */
-class WPSB_Minify {
+class VelocityWP_Minify {
 
 	/**
 	 * Constructor
@@ -29,7 +29,7 @@ class WPSB_Minify {
 	 * Initialize minification
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// HTML minification
 		if ( ! empty( $options['html_minify'] ) && ! is_admin() ) {
@@ -91,7 +91,7 @@ class WPSB_Minify {
 		// Restore protected content
 		$html = str_replace( array_keys( $protect ), array_values( $protect ), $html );
 
-		return apply_filters( 'wpsb_minify_html', $html );
+		return apply_filters( 'velocitywp_minify_html', $html );
 	}
 
 	/**
@@ -110,7 +110,7 @@ class WPSB_Minify {
 		}
 
 		// Check excluded files
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( ! empty( $options['minify_exclude_files'] ) ) {
 			$excluded = explode( "\n", $options['minify_exclude_files'] );
 			foreach ( $excluded as $pattern ) {
@@ -135,7 +135,7 @@ class WPSB_Minify {
 	public function process_assets() {
 		global $wp_styles, $wp_scripts;
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Process CSS
 		if ( ! empty( $options['css_minify'] ) && isset( $wp_styles->queue ) ) {
@@ -211,7 +211,7 @@ class WPSB_Minify {
 		// Remove trailing semicolons
 		$css = str_replace( ';}', '}', $css );
 
-		return apply_filters( 'wpsb_minify_css', trim( $css ) );
+		return apply_filters( 'velocitywp_minify_css', trim( $css ) );
 	}
 
 	/**
@@ -233,7 +233,7 @@ class WPSB_Minify {
 		// Remove spaces around operators
 		$js = preg_replace( '/\s*([{}|:;,=()[\]])\s*/', '$1', $js );
 
-		return apply_filters( 'wpsb_minify_js', trim( $js ) );
+		return apply_filters( 'velocitywp_minify_js', trim( $js ) );
 	}
 
 	/**
@@ -243,7 +243,7 @@ class WPSB_Minify {
 	 * @return bool
 	 */
 	private function is_excluded( $src ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['minify_exclude_files'] ) ) {
 			return false;

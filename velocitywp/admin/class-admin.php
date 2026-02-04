@@ -4,7 +4,7 @@
  *
  * Handles admin dashboard and settings
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Admin class
+ * VelocityWP_Admin class
  */
-class WPSB_Admin {
+class VelocityWP_Admin {
 
 	/**
 	 * Constructor
@@ -25,8 +25,8 @@ class WPSB_Admin {
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
-		add_action( 'wp_ajax_wpsb_clear_cache', array( $this, 'ajax_clear_cache' ) );
-		add_action( 'wp_ajax_wpsb_optimize_database', array( $this, 'ajax_optimize_database' ) );
+		add_action( 'wp_ajax_velocitywp_clear_cache', array( $this, 'ajax_clear_cache' ) );
+		add_action( 'wp_ajax_velocitywp_optimize_database', array( $this, 'ajax_optimize_database' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 
@@ -38,7 +38,7 @@ class WPSB_Admin {
 	 * @return mixed Setting value.
 	 */
 	public static function get_setting( $key, $default = false ) {
-		$settings = get_option( 'wpsb_options', array() );
+		$settings = get_option( 'velocitywp_options', array() );
 		return isset( $settings[ $key ] ) ? $settings[ $key ] : $default;
 	}
 
@@ -47,10 +47,10 @@ class WPSB_Admin {
 	 */
 	public function add_admin_menu() {
 		add_options_page(
-			__( 'WP Speed Booster', 'wp-speed-booster' ),
-			__( 'WP Speed Booster', 'wp-speed-booster' ),
+			__( 'VelocityWP', 'velocitywp' ),
+			__( 'VelocityWP', 'velocitywp' ),
 			'manage_options',
-			'wp-speed-booster',
+			'velocitywp',
 			array( $this, 'render_admin_page' )
 		);
 	}
@@ -59,7 +59,7 @@ class WPSB_Admin {
 	 * Register settings
 	 */
 	public function register_settings() {
-		register_setting( 'wpsb_options', 'wpsb_options', array(
+		register_setting( 'velocitywp_options', 'velocitywp_options', array(
 			'sanitize_callback' => array( $this, 'sanitize_options' ),
 		) );
 	}
@@ -237,7 +237,7 @@ class WPSB_Admin {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_admin_assets( $hook ) {
-		if ( 'settings_page_wp-speed-booster' !== $hook ) {
+		if ( 'settings_page_velocitywp' !== $hook ) {
 			return;
 		}
 
@@ -267,14 +267,14 @@ class WPSB_Admin {
 
 		wp_localize_script( 'wpsb-admin', 'wpsbAdmin', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce'    => wp_create_nonce( 'wpsb_admin_nonce' ),
-			'performance_nonce' => wp_create_nonce( 'wpspeed_performance' ),
+			'nonce'    => wp_create_nonce( 'velocitywp_admin_nonce' ),
+			'performance_nonce' => wp_create_nonce( 'velocitywp_performance' ),
 			'strings'  => array(
-				'clearing'   => __( 'Clearing cache...', 'wp-speed-booster' ),
-				'optimizing' => __( 'Optimizing database...', 'wp-speed-booster' ),
-				'preloading' => __( 'Preloading cache...', 'wp-speed-booster' ),
-				'success'    => __( 'Success!', 'wp-speed-booster' ),
-				'error'      => __( 'Error occurred.', 'wp-speed-booster' ),
+				'clearing'   => __( 'Clearing cache...', 'velocitywp' ),
+				'optimizing' => __( 'Optimizing database...', 'velocitywp' ),
+				'preloading' => __( 'Preloading cache...', 'velocitywp' ),
+				'success'    => __( 'Success!', 'velocitywp' ),
+				'error'      => __( 'Error occurred.', 'velocitywp' ),
 			),
 		) );
 	}
@@ -287,157 +287,157 @@ class WPSB_Admin {
 			return;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		?>
 		<div class="wrap wpsb-admin">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 			<!-- Single form wrapping ALL tabs -->
-			<form method="post" action="options.php" class="wpspeed-settings-form" id="wpspeed-settings-form">
-				<?php settings_fields( 'wpsb_options' ); ?>
+			<form method="post" action="options.php" class="velocitywp-settings-form" id="velocitywp-settings-form">
+				<?php settings_fields( 'velocitywp_options' ); ?>
 
 				<!-- Tab Navigation -->
 				<nav class="nav-tab-wrapper wpspeed-nav-tab-wrapper">
 					<a href="#tab-dashboard" class="nav-tab wpspeed-nav-tab" data-tab="dashboard">
-						<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-cache" class="nav-tab wpspeed-nav-tab" data-tab="cache">
-						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Cache', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Cache', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-optimization" class="nav-tab wpspeed-nav-tab" data-tab="optimization">
-						<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Optimization', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Optimization', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-media" class="nav-tab wpspeed-nav-tab" data-tab="media">
-						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Media', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Media', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-lazy-load" class="nav-tab wpspeed-nav-tab" data-tab="lazy-load">
-						<span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Lazy Loading', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Lazy Loading', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-webp" class="nav-tab wpspeed-nav-tab" data-tab="webp">
-						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'WebP Images', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'WebP Images', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-critical-css" class="nav-tab wpspeed-nav-tab" data-tab="critical-css">
-						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-fonts" class="nav-tab wpspeed-nav-tab" data-tab="fonts">
-						<span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Fonts', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Fonts', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-resource-hints" class="nav-tab wpspeed-nav-tab" data-tab="resource-hints">
-						<span class="dashicons dashicons-networking"></span> <?php esc_html_e( 'Resource Hints', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-networking"></span> <?php esc_html_e( 'Resource Hints', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-fragment-cache" class="nav-tab wpspeed-nav-tab" data-tab="fragment-cache">
-						<span class="dashicons dashicons-editor-table"></span> <?php esc_html_e( 'Fragment Cache', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-editor-table"></span> <?php esc_html_e( 'Fragment Cache', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-performance-metrics" class="nav-tab wpspeed-nav-tab" data-tab="performance-metrics">
-						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-performance" class="nav-tab wpspeed-nav-tab" data-tab="performance">
-						<span class="dashicons dashicons-analytics"></span> <?php esc_html_e( 'Performance Monitor', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-analytics"></span> <?php esc_html_e( 'Performance Monitor', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-object-cache" class="nav-tab wpspeed-nav-tab" data-tab="object-cache">
-						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Object Cache', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Object Cache', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-cloudflare" class="nav-tab wpspeed-nav-tab" data-tab="cloudflare">
-						<span class="dashicons dashicons-cloud"></span> <?php esc_html_e( 'Cloudflare', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-cloud"></span> <?php esc_html_e( 'Cloudflare', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-heartbeat" class="nav-tab wpspeed-nav-tab" data-tab="heartbeat">
-						<span class="dashicons dashicons-heart"></span> <?php esc_html_e( 'Heartbeat', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-heart"></span> <?php esc_html_e( 'Heartbeat', 'velocitywp' ); ?>
 					</a>
 					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
-						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'velocitywp' ); ?>
 					</a>
 					<?php if ( class_exists( 'WooCommerce' ) ) : ?>
 					<a href="#tab-woocommerce" class="nav-tab wpspeed-nav-tab" data-tab="woocommerce">
-						<span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'WooCommerce', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'WooCommerce', 'velocitywp' ); ?>
 					</a>
 					<?php endif; ?>
 					<a href="#tab-advanced" class="nav-tab wpspeed-nav-tab" data-tab="advanced">
-						<span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e( 'Advanced', 'wp-speed-booster' ); ?>
+						<span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e( 'Advanced', 'velocitywp' ); ?>
 					</a>
 				</nav>
 
 				<!-- Tab Contents -->
-				<div id="wpspeed-tab-dashboard" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-dashboard" class="velocitywp-tab-content">
 					<?php $this->render_dashboard_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-cache" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-cache" class="velocitywp-tab-content">
 					<?php $this->render_cache_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-optimization" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-optimization" class="velocitywp-tab-content">
 					<?php $this->render_optimization_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-media" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-media" class="velocitywp-tab-content">
 					<?php $this->render_media_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-lazy-load" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-lazy-load" class="velocitywp-tab-content">
 					<?php $this->render_lazy_load_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-webp" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-webp" class="velocitywp-tab-content">
 					<?php $this->render_webp_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-critical-css" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-critical-css" class="velocitywp-tab-content">
 					<?php $this->render_critical_css_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-fonts" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-fonts" class="velocitywp-tab-content">
 					<?php $this->render_fonts_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-resource-hints" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-resource-hints" class="velocitywp-tab-content">
 					<?php $this->render_resource_hints_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-fragment-cache" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-fragment-cache" class="velocitywp-tab-content">
 					<?php $this->render_fragment_cache_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-javascript" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-javascript" class="velocitywp-tab-content">
 					<?php $this->render_javascript_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-performance-metrics" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-performance-metrics" class="velocitywp-tab-content">
 					<?php $this->render_performance_metrics_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-performance" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-performance" class="velocitywp-tab-content">
 					<?php $this->render_performance_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-object-cache" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-object-cache" class="velocitywp-tab-content">
 					<?php $this->render_object_cache_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-cloudflare" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-cloudflare" class="velocitywp-tab-content">
 					<?php $this->render_cloudflare_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-heartbeat" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-heartbeat" class="velocitywp-tab-content">
 					<?php $this->render_heartbeat_tab( $options ); ?>
 				</div>
 
-				<div id="wpspeed-tab-database" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-database" class="velocitywp-tab-content">
 					<?php $this->render_database_tab( $options ); ?>
 				</div>
 
 				<?php if ( class_exists( 'WooCommerce' ) ) : ?>
-				<div id="wpspeed-tab-woocommerce" class="wpspeed-tab-content">
-					<?php require WPSB_DIR . 'admin/views/tab-woocommerce.php'; ?>
+				<div id="velocitywp-tab-woocommerce" class="velocitywp-tab-content">
+					<?php require VelocityWP_DIR . 'admin/views/tab-woocommerce.php'; ?>
 				</div>
 				<?php endif; ?>
 
-				<div id="wpspeed-tab-advanced" class="wpspeed-tab-content">
+				<div id="velocitywp-tab-advanced" class="velocitywp-tab-content">
 					<?php $this->render_advanced_tab( $options ); ?>
 				</div>
 
 				<!-- Single Save Button for All Settings -->
-				<div class="wpspeed-save-settings">
-					<?php submit_button( __( 'Save All Settings', 'wp-speed-booster' ), 'primary large', 'submit' ); ?>
+				<div class="velocitywp-save-settings">
+					<?php submit_button( __( 'Save All Settings', 'velocitywp' ), 'primary large', 'submit' ); ?>
 				</div>
 			</form>
 		</div>
@@ -450,32 +450,32 @@ class WPSB_Admin {
 	 * @param array $options Plugin options.
 	 */
 	private function render_dashboard_tab( $options ) {
-		$cache = new WPSB_Cache();
+		$cache = new VelocityWP_Cache();
 		$cache_stats = $cache->get_cache_stats();
-		$database = new WPSB_Database();
+		$database = new VelocityWP_Database();
 		$db_size = $database->get_database_size();
 		?>
-		<div class="wpsb-dashboard">
-			<div class="wpsb-welcome">
-				<h2><?php esc_html_e( 'Welcome to WP Speed Booster', 'wp-speed-booster' ); ?></h2>
-				<p><?php esc_html_e( 'Optimize your WordPress website for better performance and faster loading times.', 'wp-speed-booster' ); ?></p>
+		<div class="velocitywp-dashboard">
+			<div class="velocitywp-welcome">
+				<h2><?php esc_html_e( 'Welcome to VelocityWP', 'velocitywp' ); ?></h2>
+				<p><?php esc_html_e( 'Optimize your WordPress website for better performance and faster loading times.', 'velocitywp' ); ?></p>
 			</div>
 
-			<div class="wpsb-stats-grid">
-				<div class="wpsb-stat-box">
-					<h3><?php esc_html_e( 'Cache Status', 'wp-speed-booster' ); ?></h3>
+			<div class="velocitywp-stats-grid">
+				<div class="velocitywp-stat-box">
+					<h3><?php esc_html_e( 'Cache Status', 'velocitywp' ); ?></h3>
 					<div class="stat-value"><?php echo ! empty( $options['cache_enabled'] ) ? '<span class="status-enabled">✓ Enabled</span>' : '<span class="status-disabled">✗ Disabled</span>'; ?></div>
-					<p><?php echo esc_html( sprintf( __( '%d cached files (%s)', 'wp-speed-booster' ), $cache_stats['files'], size_format( $cache_stats['size'] ) ) ); ?></p>
+					<p><?php echo esc_html( sprintf( __( '%d cached files (%s)', 'velocitywp' ), $cache_stats['files'], size_format( $cache_stats['size'] ) ) ); ?></p>
 				</div>
 
-				<div class="wpsb-stat-box">
-					<h3><?php esc_html_e( 'Database', 'wp-speed-booster' ); ?></h3>
+				<div class="velocitywp-stat-box">
+					<h3><?php esc_html_e( 'Database', 'velocitywp' ); ?></h3>
 					<div class="stat-value"><?php echo esc_html( $db_size['formatted'] ); ?></div>
-					<p><?php esc_html_e( 'Total database size', 'wp-speed-booster' ); ?></p>
+					<p><?php esc_html_e( 'Total database size', 'velocitywp' ); ?></p>
 				</div>
 
-				<div class="wpsb-stat-box">
-					<h3><?php esc_html_e( 'Optimization', 'wp-speed-booster' ); ?></h3>
+				<div class="velocitywp-stat-box">
+					<h3><?php esc_html_e( 'Optimization', 'velocitywp' ); ?></h3>
 					<div class="stat-value">
 						<?php
 						$active_features = 0;
@@ -485,27 +485,27 @@ class WPSB_Admin {
 								$active_features++;
 							}
 						}
-						echo esc_html( sprintf( __( '%d/%d', 'wp-speed-booster' ), $active_features, count( $features ) ) );
+						echo esc_html( sprintf( __( '%d/%d', 'velocitywp' ), $active_features, count( $features ) ) );
 						?>
 					</div>
-					<p><?php esc_html_e( 'Active optimizations', 'wp-speed-booster' ); ?></p>
+					<p><?php esc_html_e( 'Active optimizations', 'velocitywp' ); ?></p>
 				</div>
 			</div>
 
-			<div class="wpsb-quick-actions">
-				<h3><?php esc_html_e( 'Quick Actions', 'wp-speed-booster' ); ?></h3>
-				<button type="button" class="button button-primary" id="wpsb-clear-cache-btn">
-					<?php esc_html_e( 'Clear Cache', 'wp-speed-booster' ); ?>
+			<div class="velocitywp-quick-actions">
+				<h3><?php esc_html_e( 'Quick Actions', 'velocitywp' ); ?></h3>
+				<button type="button" class="button button-primary" id="velocitywp-clear-cache-btn">
+					<?php esc_html_e( 'Clear Cache', 'velocitywp' ); ?>
 				</button>
-				<button type="button" class="button button-secondary" id="wpsb-optimize-db-btn">
-					<?php esc_html_e( 'Optimize Database', 'wp-speed-booster' ); ?>
+				<button type="button" class="button button-secondary" id="velocitywp-optimize-db-btn">
+					<?php esc_html_e( 'Optimize Database', 'velocitywp' ); ?>
 				</button>
-				<button type="button" class="button button-secondary" id="wpsb-preload-cache-btn">
-					<?php esc_html_e( 'Preload Cache', 'wp-speed-booster' ); ?>
+				<button type="button" class="button button-secondary" id="velocitywp-preload-cache-btn">
+					<?php esc_html_e( 'Preload Cache', 'velocitywp' ); ?>
 				</button>
 			</div>
 
-			<div id="wpsb-ajax-result" class="notice" style="display:none;"></div>
+			<div id="velocitywp-ajax-result" class="notice" style="display:none;"></div>
 		</div>
 		<?php
 	}
@@ -516,60 +516,60 @@ class WPSB_Admin {
 	 * @param array $options Plugin options.
 	 */
 	private function render_cache_tab( $options ) {
-		$cache = new WPSB_Cache();
+		$cache = new VelocityWP_Cache();
 		$cache_stats = $cache->get_cache_stats();
 		?>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable Page Caching', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable Page Caching', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[cache_enabled]" value="1" <?php checked( 1, ! empty( $options['cache_enabled'] ) ); ?> />
-						<?php esc_html_e( 'Enable file-based page caching', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[cache_enabled]" value="1" <?php checked( 1, ! empty( $options['cache_enabled'] ) ); ?> />
+						<?php esc_html_e( 'Enable file-based page caching', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Cache Lifespan', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Cache Lifespan', 'velocitywp' ); ?></th>
 				<td>
-					<input type="number" name="wpsb_options[cache_lifespan]" value="<?php echo esc_attr( ! empty( $options['cache_lifespan'] ) ? $options['cache_lifespan'] : 36000 ); ?>" min="0" />
-					<p class="description"><?php esc_html_e( 'Cache lifespan in seconds (default: 36000 = 10 hours)', 'wp-speed-booster' ); ?></p>
+					<input type="number" name="velocitywp_options[cache_lifespan]" value="<?php echo esc_attr( ! empty( $options['cache_lifespan'] ) ? $options['cache_lifespan'] : 36000 ); ?>" min="0" />
+					<p class="description"><?php esc_html_e( 'Cache lifespan in seconds (default: 36000 = 10 hours)', 'velocitywp' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Mobile Cache', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Mobile Cache', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[mobile_cache]" value="1" <?php checked( 1, ! empty( $options['mobile_cache'] ) ); ?> />
-						<?php esc_html_e( 'Create separate cache for mobile devices', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[mobile_cache]" value="1" <?php checked( 1, ! empty( $options['mobile_cache'] ) ); ?> />
+						<?php esc_html_e( 'Create separate cache for mobile devices', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Exclude URLs', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Exclude URLs', 'velocitywp' ); ?></th>
 				<td>
-					<textarea name="wpsb_options[cache_exclude_urls]" rows="5" class="large-text"><?php echo esc_textarea( ! empty( $options['cache_exclude_urls'] ) ? $options['cache_exclude_urls'] : '' ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'Enter URL patterns to exclude from caching, one per line. Example: /cart/, /checkout/', 'wp-speed-booster' ); ?></p>
+					<textarea name="velocitywp_options[cache_exclude_urls]" rows="5" class="large-text"><?php echo esc_textarea( ! empty( $options['cache_exclude_urls'] ) ? $options['cache_exclude_urls'] : '' ); ?></textarea>
+					<p class="description"><?php esc_html_e( 'Enter URL patterns to exclude from caching, one per line. Example: /cart/, /checkout/', 'velocitywp' ); ?></p>
 				</td>
 			</tr>
 		</table>
 
-		<div class="wpsb-cache-stats">
-			<h3><?php esc_html_e( 'Cache Statistics', 'wp-speed-booster' ); ?></h3>
-			<p><?php echo esc_html( sprintf( __( 'Cached files: %d', 'wp-speed-booster' ), $cache_stats['files'] ) ); ?></p>
-			<p><?php echo esc_html( sprintf( __( 'Cache size: %s', 'wp-speed-booster' ), size_format( $cache_stats['size'] ) ) ); ?></p>
+		<div class="velocitywp-cache-stats">
+			<h3><?php esc_html_e( 'Cache Statistics', 'velocitywp' ); ?></h3>
+			<p><?php echo esc_html( sprintf( __( 'Cached files: %d', 'velocitywp' ), $cache_stats['files'] ) ); ?></p>
+			<p><?php echo esc_html( sprintf( __( 'Cache size: %s', 'velocitywp' ), size_format( $cache_stats['size'] ) ) ); ?></p>
 		</div>
 
-		<div class="wpsb-quick-actions">
-			<button type="button" class="button" id="wpsb-clear-cache-btn">
-				<?php esc_html_e( 'Clear Cache', 'wp-speed-booster' ); ?>
+		<div class="velocitywp-quick-actions">
+			<button type="button" class="button" id="velocitywp-clear-cache-btn">
+				<?php esc_html_e( 'Clear Cache', 'velocitywp' ); ?>
 			</button>
-			<button type="button" class="button" id="wpsb-preload-cache-btn" style="margin-left: 10px;">
-				<?php esc_html_e( 'Preload Cache', 'wp-speed-booster' ); ?>
+			<button type="button" class="button" id="velocitywp-preload-cache-btn" style="margin-left: 10px;">
+				<?php esc_html_e( 'Preload Cache', 'velocitywp' ); ?>
 			</button>
 		</div>
 
-		<div id="wpsb-ajax-result" class="notice" style="display:none;"></div>
+		<div id="velocitywp-ajax-result" class="notice" style="display:none;"></div>
 		<?php
 	}
 
@@ -580,88 +580,88 @@ class WPSB_Admin {
 	 */
 	private function render_optimization_tab( $options ) {
 		?>
-		<h2><?php esc_html_e( 'HTML Minification', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'HTML Minification', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Minify HTML', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Minify HTML', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[html_minify]" value="1" <?php checked( 1, ! empty( $options['html_minify'] ) ); ?> />
-						<?php esc_html_e( 'Remove whitespace and comments from HTML', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[html_minify]" value="1" <?php checked( 1, ! empty( $options['html_minify'] ) ); ?> />
+						<?php esc_html_e( 'Remove whitespace and comments from HTML', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 		</table>
 
-		<h2><?php esc_html_e( 'CSS Optimization', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'CSS Optimization', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Minify CSS', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Minify CSS', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[css_minify]" value="1" <?php checked( 1, ! empty( $options['css_minify'] ) ); ?> />
-						<?php esc_html_e( 'Minify CSS files', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[css_minify]" value="1" <?php checked( 1, ! empty( $options['css_minify'] ) ); ?> />
+						<?php esc_html_e( 'Minify CSS files', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Combine CSS', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Combine CSS', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[css_combine]" value="1" <?php checked( 1, ! empty( $options['css_combine'] ) ); ?> />
-						<?php esc_html_e( 'Combine CSS files into one (use with caution)', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[css_combine]" value="1" <?php checked( 1, ! empty( $options['css_combine'] ) ); ?> />
+						<?php esc_html_e( 'Combine CSS files into one (use with caution)', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 		</table>
 
-		<h2><?php esc_html_e( 'JavaScript Optimization', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'JavaScript Optimization', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Minify JavaScript', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Minify JavaScript', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[js_minify]" value="1" <?php checked( 1, ! empty( $options['js_minify'] ) ); ?> />
-						<?php esc_html_e( 'Minify JavaScript files', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[js_minify]" value="1" <?php checked( 1, ! empty( $options['js_minify'] ) ); ?> />
+						<?php esc_html_e( 'Minify JavaScript files', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Combine JavaScript', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Combine JavaScript', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[js_combine]" value="1" <?php checked( 1, ! empty( $options['js_combine'] ) ); ?> />
-						<?php esc_html_e( 'Combine JavaScript files (use with caution)', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[js_combine]" value="1" <?php checked( 1, ! empty( $options['js_combine'] ) ); ?> />
+						<?php esc_html_e( 'Combine JavaScript files (use with caution)', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Defer JavaScript', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Defer JavaScript', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[js_defer]" value="1" <?php checked( 1, ! empty( $options['js_defer'] ) ); ?> />
-						<?php esc_html_e( 'Defer non-critical JavaScript loading', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[js_defer]" value="1" <?php checked( 1, ! empty( $options['js_defer'] ) ); ?> />
+						<?php esc_html_e( 'Defer non-critical JavaScript loading', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 		</table>
 
-		<h2><?php esc_html_e( 'Other Optimizations', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'Other Optimizations', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Remove Query Strings', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Remove Query Strings', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[remove_query_strings]" value="1" <?php checked( 1, ! empty( $options['remove_query_strings'] ) ); ?> />
-						<?php esc_html_e( 'Remove version query strings from static resources', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[remove_query_strings]" value="1" <?php checked( 1, ! empty( $options['remove_query_strings'] ) ); ?> />
+						<?php esc_html_e( 'Remove version query strings from static resources', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Exclude Files', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Exclude Files', 'velocitywp' ); ?></th>
 				<td>
-					<textarea name="wpsb_options[minify_exclude_files]" rows="5" class="large-text"><?php echo esc_textarea( ! empty( $options['minify_exclude_files'] ) ? $options['minify_exclude_files'] : '' ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'Enter file paths or names to exclude from minification/optimization, one per line', 'wp-speed-booster' ); ?></p>
+					<textarea name="velocitywp_options[minify_exclude_files]" rows="5" class="large-text"><?php echo esc_textarea( ! empty( $options['minify_exclude_files'] ) ? $options['minify_exclude_files'] : '' ); ?></textarea>
+					<p class="description"><?php esc_html_e( 'Enter file paths or names to exclude from minification/optimization, one per line', 'velocitywp' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -675,38 +675,38 @@ class WPSB_Admin {
 	 */
 	private function render_media_tab( $options ) {
 		?>
-		<h2><?php esc_html_e( 'Lazy Loading', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'Lazy Loading', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Lazy Load Images', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Lazy Load Images', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[lazy_load_images]" value="1" <?php checked( 1, ! empty( $options['lazy_load_images'] ) ); ?> />
-						<?php esc_html_e( 'Enable lazy loading for images', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[lazy_load_images]" value="1" <?php checked( 1, ! empty( $options['lazy_load_images'] ) ); ?> />
+						<?php esc_html_e( 'Enable lazy loading for images', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Lazy Load iframes', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Lazy Load iframes', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[lazy_load_iframes]" value="1" <?php checked( 1, ! empty( $options['lazy_load_iframes'] ) ); ?> />
-						<?php esc_html_e( 'Enable lazy loading for iframes (YouTube, etc.)', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[lazy_load_iframes]" value="1" <?php checked( 1, ! empty( $options['lazy_load_iframes'] ) ); ?> />
+						<?php esc_html_e( 'Enable lazy loading for iframes (YouTube, etc.)', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Exclude by Class', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Exclude by Class', 'velocitywp' ); ?></th>
 				<td>
-					<input type="text" name="wpsb_options[lazy_load_exclude_class]" value="<?php echo esc_attr( ! empty( $options['lazy_load_exclude_class'] ) ? $options['lazy_load_exclude_class'] : '' ); ?>" class="regular-text" />
-					<p class="description"><?php esc_html_e( 'Comma-separated list of CSS classes to exclude from lazy loading', 'wp-speed-booster' ); ?></p>
+					<input type="text" name="velocitywp_options[lazy_load_exclude_class]" value="<?php echo esc_attr( ! empty( $options['lazy_load_exclude_class'] ) ? $options['lazy_load_exclude_class'] : '' ); ?>" class="regular-text" />
+					<p class="description"><?php esc_html_e( 'Comma-separated list of CSS classes to exclude from lazy loading', 'velocitywp' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Skip Images', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Skip Images', 'velocitywp' ); ?></th>
 				<td>
-					<input type="number" name="wpsb_options[lazy_load_skip_images]" value="<?php echo esc_attr( ! empty( $options['lazy_load_skip_images'] ) ? $options['lazy_load_skip_images'] : 0 ); ?>" min="0" max="10" />
-					<p class="description"><?php esc_html_e( 'Number of images to skip from lazy loading (above the fold)', 'wp-speed-booster' ); ?></p>
+					<input type="number" name="velocitywp_options[lazy_load_skip_images]" value="<?php echo esc_attr( ! empty( $options['lazy_load_skip_images'] ) ? $options['lazy_load_skip_images'] : 0 ); ?>" min="0" max="10" />
+					<p class="description"><?php esc_html_e( 'Number of images to skip from lazy loading (above the fold)', 'velocitywp' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -720,8 +720,8 @@ class WPSB_Admin {
 	 */
 	private function render_webp_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-webp.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-webp.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-webp.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-webp.php';
 		}
 	}
 
@@ -732,8 +732,8 @@ class WPSB_Admin {
 	 */
 	private function render_lazy_load_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-lazy-load.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-lazy-load.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-lazy-load.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-lazy-load.php';
 		}
 	}
 
@@ -744,8 +744,8 @@ class WPSB_Admin {
 	 */
 	private function render_critical_css_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-critical-css.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-critical-css.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-critical-css.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-critical-css.php';
 		}
 	}
 
@@ -756,8 +756,8 @@ class WPSB_Admin {
 	 */
 	private function render_fonts_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-fonts.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-fonts.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-fonts.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-fonts.php';
 		}
 	}
 
@@ -768,8 +768,8 @@ class WPSB_Admin {
 	 */
 	private function render_resource_hints_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-resource-hints.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-resource-hints.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-resource-hints.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-resource-hints.php';
 		}
 	}
 
@@ -780,8 +780,8 @@ class WPSB_Admin {
 	 */
 	private function render_fragment_cache_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-fragment-cache.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-fragment-cache.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-fragment-cache.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-fragment-cache.php';
 		}
 	}
 
@@ -792,8 +792,8 @@ class WPSB_Admin {
 	 */
 	private function render_javascript_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-javascript.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-javascript.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-javascript.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-javascript.php';
 		}
 	}
 
@@ -804,8 +804,8 @@ class WPSB_Admin {
 	 */
 	private function render_performance_metrics_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-performance-metrics.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-performance-metrics.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-performance-metrics.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-performance-metrics.php';
 		}
 	}
 
@@ -816,8 +816,8 @@ class WPSB_Admin {
 	 */
 	private function render_performance_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-performance.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-performance.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-performance.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-performance.php';
 		}
 	}
 
@@ -828,8 +828,8 @@ class WPSB_Admin {
 	 */
 	private function render_object_cache_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-object-cache.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-object-cache.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-object-cache.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-object-cache.php';
 		}
 	}
 
@@ -840,8 +840,8 @@ class WPSB_Admin {
 	 */
 	private function render_cloudflare_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-cloudflare.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-cloudflare.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-cloudflare.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-cloudflare.php';
 		}
 	}
 
@@ -852,8 +852,8 @@ class WPSB_Admin {
 	 */
 	private function render_heartbeat_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( WPSB_DIR . 'admin/views/tab-heartbeat.php' ) ) {
-			include WPSB_DIR . 'admin/views/tab-heartbeat.php';
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-heartbeat.php' ) ) {
+			include VelocityWP_DIR . 'admin/views/tab-heartbeat.php';
 		}
 	}
 
@@ -863,7 +863,7 @@ class WPSB_Admin {
 	 * @param array $options Plugin options.
 	 */
 	private function render_database_tab( $options ) {
-		require WPSB_DIR . 'admin/views/tab-database.php';
+		require VelocityWP_DIR . 'admin/views/tab-database.php';
 	}
 
 	/**
@@ -873,81 +873,81 @@ class WPSB_Admin {
 	 */
 	private function render_advanced_tab( $options ) {
 		?>
-		<h2><?php esc_html_e( 'CDN Configuration', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'CDN Configuration', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable CDN', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable CDN', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[cdn_enabled]" value="1" <?php checked( 1, ! empty( $options['cdn_enabled'] ) ); ?> />
-						<?php esc_html_e( 'Enable CDN for static assets', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[cdn_enabled]" value="1" <?php checked( 1, ! empty( $options['cdn_enabled'] ) ); ?> />
+						<?php esc_html_e( 'Enable CDN for static assets', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'CDN URL', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'CDN URL', 'velocitywp' ); ?></th>
 				<td>
-					<input type="url" name="wpsb_options[cdn_url]" value="<?php echo esc_url( ! empty( $options['cdn_url'] ) ? $options['cdn_url'] : '' ); ?>" class="regular-text" placeholder="https://cdn.example.com" />
-					<p class="description"><?php esc_html_e( 'Enter your CDN URL (e.g., https://cdn.example.com)', 'wp-speed-booster' ); ?></p>
+					<input type="url" name="velocitywp_options[cdn_url]" value="<?php echo esc_url( ! empty( $options['cdn_url'] ) ? $options['cdn_url'] : '' ); ?>" class="regular-text" placeholder="https://cdn.example.com" />
+					<p class="description"><?php esc_html_e( 'Enter your CDN URL (e.g., https://cdn.example.com)', 'velocitywp' ); ?></p>
 				</td>
 			</tr>
 		</table>
 
-		<h2><?php esc_html_e( 'DNS Prefetch', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'DNS Prefetch', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'DNS Prefetch Domains', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'DNS Prefetch Domains', 'velocitywp' ); ?></th>
 				<td>
-					<textarea name="wpsb_options[dns_prefetch]" rows="5" class="large-text"><?php echo esc_textarea( ! empty( $options['dns_prefetch'] ) ? $options['dns_prefetch'] : '' ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'Enter external domains for DNS prefetch, one per line (e.g., //fonts.googleapis.com)', 'wp-speed-booster' ); ?></p>
+					<textarea name="velocitywp_options[dns_prefetch]" rows="5" class="large-text"><?php echo esc_textarea( ! empty( $options['dns_prefetch'] ) ? $options['dns_prefetch'] : '' ); ?></textarea>
+					<p class="description"><?php esc_html_e( 'Enter external domains for DNS prefetch, one per line (e.g., //fonts.googleapis.com)', 'velocitywp' ); ?></p>
 				</td>
 			</tr>
 		</table>
 
-		<h2><?php esc_html_e( 'Advanced Features', 'wp-speed-booster' ); ?></h2>
+		<h2><?php esc_html_e( 'Advanced Features', 'velocitywp' ); ?></h2>
 		<table class="form-table">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Disable Emojis', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Disable Emojis', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[disable_emojis]" value="1" <?php checked( 1, ! empty( $options['disable_emojis'] ) ); ?> />
-						<?php esc_html_e( 'Remove emoji scripts and styles', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[disable_emojis]" value="1" <?php checked( 1, ! empty( $options['disable_emojis'] ) ); ?> />
+						<?php esc_html_e( 'Remove emoji scripts and styles', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Disable Embeds', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Disable Embeds', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[disable_embeds]" value="1" <?php checked( 1, ! empty( $options['disable_embeds'] ) ); ?> />
-						<?php esc_html_e( 'Disable WordPress embed functionality', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[disable_embeds]" value="1" <?php checked( 1, ! empty( $options['disable_embeds'] ) ); ?> />
+						<?php esc_html_e( 'Disable WordPress embed functionality', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Remove jQuery Migrate', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Remove jQuery Migrate', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[disable_jquery_migrate]" value="1" <?php checked( 1, ! empty( $options['disable_jquery_migrate'] ) ); ?> />
-						<?php esc_html_e( 'Remove jQuery Migrate script', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[disable_jquery_migrate]" value="1" <?php checked( 1, ! empty( $options['disable_jquery_migrate'] ) ); ?> />
+						<?php esc_html_e( 'Remove jQuery Migrate script', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Remove WP Version', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Remove WP Version', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[remove_wp_version]" value="1" <?php checked( 1, ! empty( $options['remove_wp_version'] ) ); ?> />
-						<?php esc_html_e( 'Remove WordPress version from head', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[remove_wp_version]" value="1" <?php checked( 1, ! empty( $options['remove_wp_version'] ) ); ?> />
+						<?php esc_html_e( 'Remove WordPress version from head', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Remove RSD Links', 'wp-speed-booster' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Remove RSD Links', 'velocitywp' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="wpsb_options[remove_rsd_links]" value="1" <?php checked( 1, ! empty( $options['remove_rsd_links'] ) ); ?> />
-						<?php esc_html_e( 'Remove RSD and WLW manifest links', 'wp-speed-booster' ); ?>
+						<input type="checkbox" name="velocitywp_options[remove_rsd_links]" value="1" <?php checked( 1, ! empty( $options['remove_rsd_links'] ) ); ?> />
+						<?php esc_html_e( 'Remove RSD and WLW manifest links', 'velocitywp' ); ?>
 					</label>
 				</td>
 			</tr>
@@ -959,42 +959,42 @@ class WPSB_Admin {
 	 * AJAX handler for clearing cache
 	 */
 	public function ajax_clear_cache() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'velocitywp' ) ) );
 		}
 
-		$cache = new WPSB_Cache();
+		$cache = new VelocityWP_Cache();
 		$cache->clear_all_cache();
 
-		wp_send_json_success( array( 'message' => __( 'Cache cleared successfully!', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Cache cleared successfully!', 'velocitywp' ) ) );
 	}
 
 	/**
 	 * AJAX handler for database optimization
 	 */
 	public function ajax_optimize_database() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'velocitywp' ) ) );
 		}
 
-		$database = new WPSB_Database();
+		$database = new VelocityWP_Database();
 		$results = $database->optimize_database();
 
-		$message = __( 'Database optimized successfully!', 'wp-speed-booster' );
+		$message = __( 'Database optimized successfully!', 'velocitywp' );
 		if ( ! empty( $results ) ) {
 			$details = array();
 			if ( isset( $results['revisions'] ) ) {
-				$details[] = sprintf( __( 'Revisions cleaned: %d', 'wp-speed-booster' ), $results['revisions'] );
+				$details[] = sprintf( __( 'Revisions cleaned: %d', 'velocitywp' ), $results['revisions'] );
 			}
 			if ( isset( $results['autodrafts'] ) ) {
-				$details[] = sprintf( __( 'Auto-drafts removed: %d', 'wp-speed-booster' ), $results['autodrafts'] );
+				$details[] = sprintf( __( 'Auto-drafts removed: %d', 'velocitywp' ), $results['autodrafts'] );
 			}
 			if ( isset( $results['transients'] ) ) {
-				$details[] = sprintf( __( 'Transients cleaned: %d', 'wp-speed-booster' ), $results['transients'] );
+				$details[] = sprintf( __( 'Transients cleaned: %d', 'velocitywp' ), $results['transients'] );
 			}
 			if ( ! empty( $details ) ) {
 				$message .= ' ' . implode( ', ', $details );
@@ -1009,14 +1009,14 @@ class WPSB_Admin {
 	 */
 	public function admin_notices() {
 		$screen = get_current_screen();
-		if ( $screen && $screen->id !== 'settings_page_wp-speed-booster' ) {
+		if ( $screen && $screen->id !== 'settings_page_velocitywp' ) {
 			return;
 		}
 
 		if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] === 'true' ) {
 			?>
 			<div class="notice notice-success is-dismissible">
-				<p><?php esc_html_e( 'Settings saved successfully!', 'wp-speed-booster' ); ?></p>
+				<p><?php esc_html_e( 'Settings saved successfully!', 'velocitywp' ); ?></p>
 			</div>
 			<?php
 		}

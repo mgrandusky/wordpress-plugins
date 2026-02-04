@@ -4,7 +4,7 @@
  *
  * Handles Real User Monitoring (RUM), Core Web Vitals tracking, and performance analytics
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WP_Speed_Booster_Performance_Monitor class
+ * VelocityWP_Performance_Monitor class
  */
-class WP_Speed_Booster_Performance_Monitor {
+class VelocityWP_Performance_Monitor {
 
 	/**
 	 * Settings
@@ -49,15 +49,15 @@ class WP_Speed_Booster_Performance_Monitor {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->settings = get_option( 'wpsb_options', array() );
+		$this->settings = get_option( 'velocitywp_options', array() );
 
 		// Register hooks
 		add_action( 'wp_footer', array( $this, 'inject_rum_script' ), 999 );
-		add_action( 'wp_ajax_wpspeed_track_performance', array( $this, 'ajax_track_performance' ) );
-		add_action( 'wp_ajax_nopriv_wpspeed_track_performance', array( $this, 'ajax_track_performance' ) );
-		add_action( 'wp_ajax_wpspeed_get_analytics', array( $this, 'ajax_get_analytics' ) );
-		add_action( 'wp_ajax_wpspeed_export_data', array( $this, 'ajax_export_data' ) );
-		add_action( 'wp_ajax_wpspeed_cleanup_data', array( $this, 'ajax_cleanup_data' ) );
+		add_action( 'wp_ajax_velocitywp_track_performance', array( $this, 'ajax_track_performance' ) );
+		add_action( 'wp_ajax_nopriv_velocitywp_track_performance', array( $this, 'ajax_track_performance' ) );
+		add_action( 'wp_ajax_velocitywp_get_analytics', array( $this, 'ajax_get_analytics' ) );
+		add_action( 'wp_ajax_velocitywp_export_data', array( $this, 'ajax_export_data' ) );
+		add_action( 'wp_ajax_velocitywp_cleanup_data', array( $this, 'ajax_cleanup_data' ) );
 
 		// Server-side tracking hooks
 		add_action( 'init', array( $this, 'start_tracking' ), 1 );
@@ -65,7 +65,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		add_action( 'admin_footer', array( $this, 'end_tracking' ), 9999 );
 
 		// Scheduled cleanup
-		add_action( 'wpspeed_cleanup_performance_data', array( $this, 'cleanup_old_data' ) );
+		add_action( 'velocitywp_cleanup_performance_data', array( $this, 'cleanup_old_data' ) );
 	}
 
 	/**
@@ -83,7 +83,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public static function create_table() {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE IF NOT EXISTS $table_name (
@@ -219,9 +219,9 @@ class WP_Speed_Booster_Performance_Monitor {
 				// Use sendBeacon for reliability
 				if (navigator.sendBeacon) {
 					var data = new FormData();
-					data.append('action', 'wpspeed_track_performance');
+					data.append('action', 'velocitywp_track_performance');
 					data.append('metrics', JSON.stringify(metrics));
-					data.append('nonce', <?php echo wp_json_encode( wp_create_nonce( 'wpspeed_track_performance' ) ); ?>);
+					data.append('nonce', <?php echo wp_json_encode( wp_create_nonce( 'velocitywp_track_performance' ) ); ?>);
 					
 					navigator.sendBeacon(<?php echo wp_json_encode( esc_url( admin_url( 'admin-ajax.php' ) ) ); ?>, data);
 				}
@@ -242,7 +242,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	 * AJAX handler for tracking performance metrics
 	 */
 	public function ajax_track_performance() {
-		check_ajax_referer( 'wpspeed_track_performance', 'nonce' );
+		check_ajax_referer( 'velocitywp_track_performance', 'nonce' );
 
 		$metrics_json = isset( $_POST['metrics'] ) ? wp_unslash( $_POST['metrics'] ) : '';
 		$metrics      = json_decode( $metrics_json, true );
@@ -265,7 +265,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function store_metrics( $metrics ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 
 		$wpdb->insert(
 			$table_name,
@@ -327,7 +327,7 @@ class WP_Speed_Booster_Performance_Monitor {
 
 		// Add HTML comment with debug info
 		if ( ! empty( $this->settings['performance_debug_comments'] ) ) {
-			echo "\n<!-- WP Speed Booster Performance:\n";
+			echo "\n<!-- VelocityWP Performance:\n";
 			echo 'Generation Time: ' . round( $generation_time * 1000, 2 ) . "ms\n";
 			echo 'Database Queries: ' . $query_count . "\n";
 			echo 'Memory Used: ' . size_format( $memory_used ) . "\n";
@@ -343,7 +343,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function store_server_metrics( $metrics ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 
 		// Get current URL and sanitize
 		$url = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
@@ -370,7 +370,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function get_analytics( $period = 7 ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_from  = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		// Average metrics
@@ -544,7 +544,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function get_cwv_distribution( $period = 7 ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		$distribution = $wpdb->get_results(
@@ -575,7 +575,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function get_daily_trend( $period = 30 ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
@@ -606,7 +606,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function get_device_breakdown( $period = 7 ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
@@ -636,7 +636,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function get_slowest_pages( $period = 7, $limit = 10 ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
@@ -669,7 +669,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function get_fastest_pages( $period = 7, $limit = 10 ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
@@ -697,7 +697,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$retention_days = ! empty( $this->settings['performance_data_retention'] ) ? intval( $this->settings['performance_data_retention'] ) : 30;
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_threshold = gmdate( 'Y-m-d H:i:s', strtotime( "-{$retention_days} days" ) );
 
 		$wpdb->query(
@@ -718,7 +718,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function export_data( $format = 'csv', $period = 30 ) {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'wpspeed_performance';
+		$table_name = $wpdb->prefix . 'velocitywp_performance';
 		$date_from  = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		$data = $wpdb->get_results(
@@ -755,7 +755,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	 * AJAX handler for getting analytics data
 	 */
 	public function ajax_get_analytics() {
-		check_ajax_referer( 'wpspeed_admin', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -771,7 +771,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	 * AJAX handler for exporting data
 	 */
 	public function ajax_export_data() {
-		check_ajax_referer( 'wpspeed_admin', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -794,7 +794,7 @@ class WP_Speed_Booster_Performance_Monitor {
 	 * AJAX handler for cleaning up old data
 	 */
 	public function ajax_cleanup_data() {
-		check_ajax_referer( 'wpspeed_admin', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );

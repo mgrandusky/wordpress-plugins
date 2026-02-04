@@ -4,7 +4,7 @@
  *
  * Comprehensive WooCommerce-specific performance optimizations
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WP_Speed_Booster_WooCommerce_Optimizer class
+ * VelocityWP_WooCommerce_Optimizer class
  */
-class WP_Speed_Booster_WooCommerce_Optimizer {
+class VelocityWP_WooCommerce_Optimizer {
 
 	/**
 	 * Settings
@@ -29,7 +29,7 @@ class WP_Speed_Booster_WooCommerce_Optimizer {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_woo_get_stats', array( $this, 'ajax_get_stats' ) );
+		add_action( 'wp_ajax_velocitywp_woo_get_stats', array( $this, 'ajax_get_stats' ) );
 	}
 
 	/**
@@ -42,7 +42,7 @@ class WP_Speed_Booster_WooCommerce_Optimizer {
 		}
 
 		// Load settings
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$this->settings = $options;
 
 		// Check if optimization is enabled
@@ -422,7 +422,7 @@ class WP_Speed_Booster_WooCommerce_Optimizer {
 	 * AJAX handler for getting stats
 	 */
 	public function ajax_get_stats() {
-		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );

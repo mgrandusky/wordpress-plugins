@@ -4,7 +4,7 @@
  *
  * Mobile-specific optimizations and responsive handling
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Mobile_Optimizer class
+ * VelocityWP_Mobile_Optimizer class
  */
-class WPSB_Mobile_Optimizer {
+class VelocityWP_Mobile_Optimizer {
 
 	/**
 	 * Is mobile device
@@ -37,7 +37,7 @@ class WPSB_Mobile_Optimizer {
 	 * Initialize mobile optimization
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['mobile_optimize'] ) ) {
 			return;
@@ -45,7 +45,7 @@ class WPSB_Mobile_Optimizer {
 
 		// Separate mobile cache
 		if ( ! empty( $options['mobile_separate_cache'] ) ) {
-			add_filter( 'wpsb_cache_key', array( $this, 'add_mobile_cache_key' ) );
+			add_filter( 'velocitywp_cache_key', array( $this, 'add_mobile_cache_key' ) );
 		}
 
 		// Disable features on mobile
@@ -67,7 +67,7 @@ class WPSB_Mobile_Optimizer {
 
 		// Lazy load more aggressively
 		if ( ! empty( $options['mobile_aggressive_lazy'] ) ) {
-			add_filter( 'wpsb_lazy_load_skip_images', '__return_zero' );
+			add_filter( 'velocitywp_lazy_load_skip_images', '__return_zero' );
 		}
 
 		// Remove unnecessary scripts
@@ -111,7 +111,7 @@ class WPSB_Mobile_Optimizer {
 	 */
 	public function disable_animations() {
 		?>
-		<style id="wpsb-mobile-no-animations">
+		<style id="velocitywp-mobile-no-animations">
 		* {
 			animation-duration: 0s !important;
 			transition-duration: 0s !important;
@@ -124,7 +124,7 @@ class WPSB_Mobile_Optimizer {
 	 * Remove unnecessary scripts on mobile
 	 */
 	public function remove_scripts() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		$scripts_to_remove = array();
 		
@@ -139,7 +139,7 @@ class WPSB_Mobile_Optimizer {
 		);
 
 		$scripts_to_remove = array_merge( $default_remove, $scripts_to_remove );
-		$scripts_to_remove = apply_filters( 'wpsb_mobile_remove_scripts', $scripts_to_remove );
+		$scripts_to_remove = apply_filters( 'velocitywp_mobile_remove_scripts', $scripts_to_remove );
 
 		foreach ( $scripts_to_remove as $handle ) {
 			if ( ! empty( $handle ) ) {
@@ -185,7 +185,7 @@ class WPSB_Mobile_Optimizer {
 	 * @return string Modified content.
 	 */
 	public function resize_content_images( $content ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$max_width = ! empty( $options['mobile_max_image_width'] ) ? intval( $options['mobile_max_image_width'] ) : 480;
 
 		// Find all img tags
@@ -247,7 +247,7 @@ class WPSB_Mobile_Optimizer {
 	 * @return array Statistics.
 	 */
 	public function get_statistics() {
-		$stats = get_option( 'wpsb_mobile_stats', array(
+		$stats = get_option( 'velocitywp_mobile_stats', array(
 			'mobile_visits'  => 0,
 			'tablet_visits'  => 0,
 			'desktop_visits' => 0,
@@ -269,6 +269,6 @@ class WPSB_Mobile_Optimizer {
 
 		$stats[ $device_type . '_visits' ]++;
 
-		update_option( 'wpsb_mobile_stats', $stats, false );
+		update_option( 'velocitywp_mobile_stats', $stats, false );
 	}
 }

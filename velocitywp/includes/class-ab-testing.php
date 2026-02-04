@@ -4,7 +4,7 @@
  *
  * A/B testing framework for performance optimizations
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_AB_Testing class
+ * VelocityWP_AB_Testing class
  */
-class WPSB_AB_Testing {
+class VelocityWP_AB_Testing {
 
 	/**
 	 * Test ID
@@ -36,16 +36,16 @@ class WPSB_AB_Testing {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_get_ab_tests', array( $this, 'ajax_get_tests' ) );
-		add_action( 'wp_ajax_wpsb_create_ab_test', array( $this, 'ajax_create_test' ) );
-		add_action( 'wp_ajax_wpsb_end_ab_test', array( $this, 'ajax_end_test' ) );
+		add_action( 'wp_ajax_velocitywp_get_ab_tests', array( $this, 'ajax_get_tests' ) );
+		add_action( 'wp_ajax_velocitywp_create_ab_test', array( $this, 'ajax_create_test' ) );
+		add_action( 'wp_ajax_velocitywp_end_ab_test', array( $this, 'ajax_end_test' ) );
 	}
 
 	/**
 	 * Initialize A/B testing
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['ab_testing'] ) ) {
 			return;
@@ -63,8 +63,8 @@ class WPSB_AB_Testing {
 	 */
 	private function assign_variant() {
 		// Check if visitor already has a variant
-		if ( isset( $_COOKIE['wpsb_ab_variant'] ) ) {
-			$this->variant = sanitize_text_field( $_COOKIE['wpsb_ab_variant'] );
+		if ( isset( $_COOKIE['velocitywp_ab_variant'] ) ) {
+			$this->variant = sanitize_text_field( $_COOKIE['velocitywp_ab_variant'] );
 			return;
 		}
 
@@ -84,8 +84,8 @@ class WPSB_AB_Testing {
 		$this->variant = $variants[ array_rand( $variants ) ];
 
 		// Set cookie
-		setcookie( 'wpsb_ab_variant', $this->variant, time() + ( 30 * DAY_IN_SECONDS ), COOKIEPATH, COOKIE_DOMAIN );
-		setcookie( 'wpsb_ab_test_id', $this->test_id, time() + ( 30 * DAY_IN_SECONDS ), COOKIEPATH, COOKIE_DOMAIN );
+		setcookie( 'velocitywp_ab_variant', $this->variant, time() + ( 30 * DAY_IN_SECONDS ), COOKIEPATH, COOKIE_DOMAIN );
+		setcookie( 'velocitywp_ab_test_id', $this->test_id, time() + ( 30 * DAY_IN_SECONDS ), COOKIEPATH, COOKIE_DOMAIN );
 
 		// Apply variant settings
 		$this->apply_variant_settings( $test, $this->variant );
@@ -105,7 +105,7 @@ class WPSB_AB_Testing {
 		$settings = $test['settings'][ $variant ];
 
 		// Override plugin options with variant settings
-		add_filter( 'option_wpsb_options', function( $options ) use ( $settings ) {
+		add_filter( 'option_velocitywp_options', function( $options ) use ( $settings ) {
 			return array_merge( $options, $settings );
 		} );
 	}
@@ -137,7 +137,7 @@ class WPSB_AB_Testing {
 	 * @param array $data Result data.
 	 */
 	private function record_result( $data ) {
-		$results = get_option( 'wpsb_ab_results', array() );
+		$results = get_option( 'velocitywp_ab_results', array() );
 
 		if ( ! isset( $results[ $data['test_id'] ] ) ) {
 			$results[ $data['test_id'] ] = array();
@@ -157,7 +157,7 @@ class WPSB_AB_Testing {
 		$variant_results['total_time'] += $data['load_time'];
 		$variant_results['avg_load_time'] = $variant_results['total_time'] / $variant_results['count'];
 
-		update_option( 'wpsb_ab_results', $results, false );
+		update_option( 'velocitywp_ab_results', $results, false );
 	}
 
 	/**
@@ -166,7 +166,7 @@ class WPSB_AB_Testing {
 	 * @return array Active tests.
 	 */
 	private function get_active_tests() {
-		$tests = get_option( 'wpsb_ab_tests', array() );
+		$tests = get_option( 'velocitywp_ab_tests', array() );
 		
 		$active = array();
 		foreach ( $tests as $test ) {
@@ -197,9 +197,9 @@ class WPSB_AB_Testing {
 			'created'     => current_time( 'mysql' ),
 		);
 
-		$tests = get_option( 'wpsb_ab_tests', array() );
+		$tests = get_option( 'velocitywp_ab_tests', array() );
 		$tests[] = $test;
-		update_option( 'wpsb_ab_tests', $tests );
+		update_option( 'velocitywp_ab_tests', $tests );
 
 		return $test_id;
 	}
@@ -210,7 +210,7 @@ class WPSB_AB_Testing {
 	 * @param string $test_id Test ID.
 	 */
 	public function end_test( $test_id ) {
-		$tests = get_option( 'wpsb_ab_tests', array() );
+		$tests = get_option( 'velocitywp_ab_tests', array() );
 
 		foreach ( $tests as &$test ) {
 			if ( $test['id'] === $test_id ) {
@@ -220,7 +220,7 @@ class WPSB_AB_Testing {
 			}
 		}
 
-		update_option( 'wpsb_ab_tests', $tests );
+		update_option( 'velocitywp_ab_tests', $tests );
 	}
 
 	/**
@@ -230,7 +230,7 @@ class WPSB_AB_Testing {
 	 * @return array Test results.
 	 */
 	public function get_test_results( $test_id ) {
-		$results = get_option( 'wpsb_ab_results', array() );
+		$results = get_option( 'velocitywp_ab_results', array() );
 
 		if ( ! isset( $results[ $test_id ] ) ) {
 			return array();
@@ -260,11 +260,11 @@ class WPSB_AB_Testing {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
-		$tests = get_option( 'wpsb_ab_tests', array() );
-		$results = get_option( 'wpsb_ab_results', array() );
+		$tests = get_option( 'velocitywp_ab_tests', array() );
+		$results = get_option( 'velocitywp_ab_results', array() );
 
 		// Attach results to tests
 		foreach ( $tests as &$test ) {
@@ -281,19 +281,19 @@ class WPSB_AB_Testing {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$config = isset( $_POST['config'] ) ? json_decode( stripslashes( $_POST['config'] ), true ) : array();
 
 		if ( empty( $config ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid configuration', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid configuration', 'velocitywp' ) ) );
 		}
 
 		$test_id = $this->create_test( $config );
 
 		wp_send_json_success( array(
-			'message' => __( 'Test created successfully', 'wp-speed-booster' ),
+			'message' => __( 'Test created successfully', 'velocitywp' ),
 			'test_id' => $test_id,
 		) );
 	}
@@ -305,13 +305,13 @@ class WPSB_AB_Testing {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$test_id = isset( $_POST['test_id'] ) ? sanitize_text_field( $_POST['test_id'] ) : '';
 
 		if ( empty( $test_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid test ID', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid test ID', 'velocitywp' ) ) );
 		}
 
 		$this->end_test( $test_id );
@@ -319,7 +319,7 @@ class WPSB_AB_Testing {
 		$results = $this->get_test_results( $test_id );
 
 		wp_send_json_success( array(
-			'message' => __( 'Test ended successfully', 'wp-speed-booster' ),
+			'message' => __( 'Test ended successfully', 'velocitywp' ),
 			'results' => $results,
 		) );
 	}

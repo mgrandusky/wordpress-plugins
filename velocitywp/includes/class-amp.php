@@ -4,7 +4,7 @@
  *
  * Accelerated Mobile Pages (AMP) optimizations
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_AMP class
+ * VelocityWP_AMP class
  */
-class WPSB_AMP {
+class VelocityWP_AMP {
 
 	/**
 	 * Is AMP request
@@ -41,7 +41,7 @@ class WPSB_AMP {
 			return;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['amp_support'] ) ) {
 			return;
@@ -49,7 +49,7 @@ class WPSB_AMP {
 
 		// Separate cache for AMP pages
 		if ( ! empty( $options['amp_separate_cache'] ) ) {
-			add_filter( 'wpsb_cache_key', array( $this, 'add_amp_cache_key' ) );
+			add_filter( 'velocitywp_cache_key', array( $this, 'add_amp_cache_key' ) );
 		}
 
 		// Optimize AMP pages
@@ -104,7 +104,7 @@ class WPSB_AMP {
 	 * Add critical CSS for AMP
 	 */
 	private function add_amp_critical_css() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		if ( empty( $options['amp_critical_css'] ) ) {
 			return;
@@ -133,8 +133,8 @@ class WPSB_AMP {
 	 */
 	private function disable_non_amp_features() {
 		// Disable features that conflict with AMP
-		add_filter( 'wpsb_js_delay_enabled', '__return_false' );
-		add_filter( 'wpsb_lazy_load_enabled', '__return_false' );
+		add_filter( 'velocitywp_js_delay_enabled', '__return_false' );
+		add_filter( 'velocitywp_lazy_load_enabled', '__return_false' );
 	}
 
 	/**
@@ -198,6 +198,6 @@ class WPSB_AMP {
 		}
 
 		$errors = ! empty( $data['errors'] ) ? $data['errors'] : array();
-		return new WP_Error( 'amp_validation_failed', __( 'AMP validation failed', 'wp-speed-booster' ), $errors );
+		return new WP_Error( 'amp_validation_failed', __( 'AMP validation failed', 'velocitywp' ), $errors );
 	}
 }

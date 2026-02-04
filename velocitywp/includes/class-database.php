@@ -4,7 +4,7 @@
  *
  * Handles database cleaning and optimization
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,23 +13,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Database class
+ * VelocityWP_Database class
  */
-class WPSB_Database {
+class VelocityWP_Database {
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		// Register hooks
-		add_action( 'wpsb_auto_db_optimize', array( $this, 'auto_optimize' ) );
+		add_action( 'velocitywp_auto_db_optimize', array( $this, 'auto_optimize' ) );
 	}
 
 	/**
 	 * Run automatic optimization based on schedule
 	 */
 	public function auto_optimize() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['db_auto_optimize'] ) || $options['db_auto_optimize'] === 'disabled' ) {
 			return;
@@ -47,7 +47,7 @@ class WPSB_Database {
 	 */
 	public function optimize_database( $options = array() ) {
 		if ( empty( $options ) ) {
-			$options = get_option( 'wpsb_options', array() );
+			$options = get_option( 'velocitywp_options', array() );
 		}
 
 		$results = array();

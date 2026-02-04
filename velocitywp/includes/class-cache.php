@@ -4,7 +4,7 @@
  *
  * Handles page caching with file-based storage
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Cache class
+ * VelocityWP_Cache class
  */
-class WPSB_Cache {
+class VelocityWP_Cache {
 
 	/**
 	 * Cache directory path
@@ -28,7 +28,7 @@ class WPSB_Cache {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->cache_dir = WPSB_CACHE_DIR;
+		$this->cache_dir = VelocityWP_CACHE_DIR;
 
 		// Register hooks
 		add_action( 'template_redirect', array( $this, 'maybe_serve_cache' ), 1 );
@@ -46,7 +46,7 @@ class WPSB_Cache {
 	 * @return bool
 	 */
 	private function is_cache_enabled() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		return ! empty( $options['cache_enabled'] );
 	}
 
@@ -93,7 +93,7 @@ class WPSB_Cache {
 		}
 
 		// Check excluded URLs
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( ! empty( $options['cache_exclude_urls'] ) ) {
 			$excluded = explode( "\n", $options['cache_exclude_urls'] );
 			$current_url = $_SERVER['REQUEST_URI'];
@@ -114,7 +114,7 @@ class WPSB_Cache {
 	 * @return string
 	 */
 	private function get_cache_file_path() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$uri = $_SERVER['REQUEST_URI'];
 		$host = $_SERVER['HTTP_HOST'];
 
@@ -153,7 +153,7 @@ class WPSB_Cache {
 		}
 
 		// Check if cache is expired
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$cache_lifespan = ! empty( $options['cache_lifespan'] ) ? intval( $options['cache_lifespan'] ) : 36000;
 
 		if ( ( time() - filemtime( $cache_file ) ) > $cache_lifespan ) {
@@ -201,17 +201,17 @@ class WPSB_Cache {
 		$cache_file = $this->get_cache_file_path();
 
 		// Add cache signature
-		$signature = "\n<!-- Cached by WP Speed Booster on " . gmdate( 'Y-m-d H:i:s' ) . " UTC -->";
+		$signature = "\n<!-- Cached by VelocityWP on " . gmdate( 'Y-m-d H:i:s' ) . " UTC -->";
 		$content .= $signature;
 
 		// Hook before saving
-		do_action( 'wpsb_before_cache_save', $cache_file, $content );
+		do_action( 'velocitywp_before_cache_save', $cache_file, $content );
 
 		// Save file
 		file_put_contents( $cache_file, $content, LOCK_EX );
 
 		// Hook after saving
-		do_action( 'wpsb_after_cache_save', $cache_file, $content );
+		do_action( 'velocitywp_after_cache_save', $cache_file, $content );
 	}
 
 	/**
@@ -281,7 +281,7 @@ class WPSB_Cache {
 	 * Clear all cache
 	 */
 	public function clear_all_cache() {
-		do_action( 'wpsb_before_cache_clear' );
+		do_action( 'velocitywp_before_cache_clear' );
 
 		if ( ! file_exists( $this->cache_dir ) ) {
 			return;
@@ -300,7 +300,7 @@ class WPSB_Cache {
 			}
 		}
 
-		do_action( 'wpsb_after_cache_clear' );
+		do_action( 'velocitywp_after_cache_clear' );
 	}
 
 	/**

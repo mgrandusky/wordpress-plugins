@@ -4,7 +4,7 @@
  *
  * Widget and sidebar caching for partial page caching
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Fragment_Cache class
+ * VelocityWP_Fragment_Cache class
  */
-class WPSB_Fragment_Cache {
+class VelocityWP_Fragment_Cache {
 
 	/**
 	 * Cache duration in seconds
@@ -52,16 +52,16 @@ class WPSB_Fragment_Cache {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_clear_fragment_cache', array( $this, 'ajax_clear_cache' ) );
-		add_action( 'wp_ajax_wpsb_get_fragment_stats', array( $this, 'ajax_get_fragment_stats' ) );
-		add_action( 'wp_ajax_wpsb_clear_fragment_type', array( $this, 'ajax_clear_fragment_type' ) );
+		add_action( 'wp_ajax_velocitywp_clear_fragment_cache', array( $this, 'ajax_clear_cache' ) );
+		add_action( 'wp_ajax_velocitywp_get_fragment_stats', array( $this, 'ajax_get_fragment_stats' ) );
+		add_action( 'wp_ajax_velocitywp_clear_fragment_type', array( $this, 'ajax_clear_fragment_type' ) );
 	}
 
 	/**
 	 * Initialize fragment caching
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['fragment_cache_enabled'] ) || is_admin() ) {
 			return;
@@ -109,7 +109,7 @@ class WPSB_Fragment_Cache {
 	 * @return bool
 	 */
 	public function is_enabled() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		return ! empty( $options['fragment_cache_enabled'] );
 	}
 
@@ -190,7 +190,7 @@ class WPSB_Fragment_Cache {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		// Check if this widget is in the cached list
 		if ( ! empty( $options['cached_widget_list'] ) ) {
@@ -200,7 +200,7 @@ class WPSB_Fragment_Cache {
 			}
 		}
 
-		return apply_filters( 'wpsb_should_cache_widget', true, $widget );
+		return apply_filters( 'velocitywp_should_cache_widget', true, $widget );
 	}
 
 	/**
@@ -297,7 +297,7 @@ class WPSB_Fragment_Cache {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		// Check if this sidebar is in the cached list
 		if ( ! empty( $options['cached_sidebar_list'] ) ) {
@@ -307,7 +307,7 @@ class WPSB_Fragment_Cache {
 			}
 		}
 
-		return apply_filters( 'wpsb_should_cache_sidebar', true, $sidebar_id );
+		return apply_filters( 'velocitywp_should_cache_sidebar', true, $sidebar_id );
 	}
 
 	/**
@@ -397,7 +397,7 @@ class WPSB_Fragment_Cache {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		// Check if this menu location is in the cached list
 		if ( ! empty( $options['cached_menu_list'] ) && ! empty( $args->theme_location ) ) {
@@ -407,7 +407,7 @@ class WPSB_Fragment_Cache {
 			}
 		}
 
-		return apply_filters( 'wpsb_should_cache_menu', true, $args );
+		return apply_filters( 'velocitywp_should_cache_menu', true, $args );
 	}
 
 	/**
@@ -480,7 +480,7 @@ class WPSB_Fragment_Cache {
 			return false;
 		}
 
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		
 		// Check if this shortcode is in the cached list
 		if ( ! empty( $options['cached_shortcode_list'] ) ) {
@@ -490,7 +490,7 @@ class WPSB_Fragment_Cache {
 			}
 		}
 
-		return apply_filters( 'wpsb_should_cache_shortcode', true, $tag );
+		return apply_filters( 'velocitywp_should_cache_shortcode', true, $tag );
 	}
 
 	/**
@@ -534,14 +534,14 @@ class WPSB_Fragment_Cache {
 	 */
 	private function get_cache_key( $type, $id ) {
 		$key_parts = array(
-			'wpsb_fragment',
+			'velocitywp_fragment',
 			$type,
 			$id,
 		);
 
 		// Add user-specific key if needed
 		if ( is_user_logged_in() ) {
-			$options = get_option( 'wpsb_options', array() );
+			$options = get_option( 'velocitywp_options', array() );
 			if ( empty( $options['fragment_cache_logged_in'] ) ) {
 				$key_parts[] = 'logged_in';
 			}
@@ -554,7 +554,7 @@ class WPSB_Fragment_Cache {
 
 		$key = implode( '_', $key_parts );
 		
-		return apply_filters( 'wpsb_fragment_cache_key', $key, $type, $id );
+		return apply_filters( 'velocitywp_fragment_cache_key', $key, $type, $id );
 	}
 
 	/**
@@ -563,14 +563,14 @@ class WPSB_Fragment_Cache {
 	 * @return bool
 	 */
 	public function should_cache_for_user() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Check if we should skip caching for logged-in users
 		if ( ! empty( $options['fragment_cache_logged_in'] ) && is_user_logged_in() ) {
 			return false;
 		}
 
-		return apply_filters( 'wpsb_fragment_should_cache_for_user', true );
+		return apply_filters( 'velocitywp_fragment_should_cache_for_user', true );
 	}
 
 	/**
@@ -586,8 +586,8 @@ class WPSB_Fragment_Cache {
 				"DELETE FROM {$wpdb->options} 
 				WHERE option_name LIKE %s 
 				OR option_name LIKE %s",
-				'_transient_wpsb_fragment_' . $type . '%',
-				'_transient_timeout_wpsb_fragment_' . $type . '%'
+				'_transient_velocitywp_fragment_' . $type . '%',
+				'_transient_timeout_velocitywp_fragment_' . $type . '%'
 			)
 		);
 	}
@@ -601,11 +601,11 @@ class WPSB_Fragment_Cache {
 		// Delete all fragment cache transients
 		$wpdb->query(
 			"DELETE FROM {$wpdb->options} 
-			WHERE option_name LIKE '_transient_wpsb_fragment_%' 
-			OR option_name LIKE '_transient_timeout_wpsb_fragment_%'"
+			WHERE option_name LIKE '_transient_velocitywp_fragment_%' 
+			OR option_name LIKE '_transient_timeout_velocitywp_fragment_%'"
 		);
 
-		do_action( 'wpsb_fragment_cache_cleared' );
+		do_action( 'velocitywp_fragment_cache_cleared' );
 	}
 
 	/**
@@ -628,16 +628,16 @@ class WPSB_Fragment_Cache {
 
 		$total = $wpdb->get_var(
 			"SELECT COUNT(*) FROM {$wpdb->options} 
-			WHERE option_name LIKE '_transient_wpsb_fragment_%'"
+			WHERE option_name LIKE '_transient_velocitywp_fragment_%'"
 		);
 
 		$size = $wpdb->get_var(
 			"SELECT SUM(LENGTH(option_value)) FROM {$wpdb->options} 
-			WHERE option_name LIKE '_transient_wpsb_fragment_%'"
+			WHERE option_name LIKE '_transient_velocitywp_fragment_%'"
 		);
 
 		// Get persistent stats from options
-		$persistent_stats = get_option( 'wpsb_fragment_stats', $this->stats );
+		$persistent_stats = get_option( 'velocitywp_fragment_stats', $this->stats );
 
 		// Calculate hit ratio
 		$total_hits = array_sum( array_filter( $persistent_stats, function( $key ) {
@@ -674,14 +674,14 @@ class WPSB_Fragment_Cache {
 	 * @param string $type Fragment type.
 	 */
 	public function increment_hit( $type ) {
-		$stats = get_option( 'wpsb_fragment_stats', $this->stats );
+		$stats = get_option( 'velocitywp_fragment_stats', $this->stats );
 		$key = $type . '_hits';
 		if ( isset( $stats[ $key ] ) ) {
 			$stats[ $key ]++;
 		} else {
 			$stats[ $key ] = 1;
 		}
-		update_option( 'wpsb_fragment_stats', $stats, false );
+		update_option( 'velocitywp_fragment_stats', $stats, false );
 	}
 
 	/**
@@ -690,14 +690,14 @@ class WPSB_Fragment_Cache {
 	 * @param string $type Fragment type.
 	 */
 	public function increment_miss( $type ) {
-		$stats = get_option( 'wpsb_fragment_stats', $this->stats );
+		$stats = get_option( 'velocitywp_fragment_stats', $this->stats );
 		$key = $type . '_misses';
 		if ( isset( $stats[ $key ] ) ) {
 			$stats[ $key ]++;
 		} else {
 			$stats[ $key ] = 1;
 		}
-		update_option( 'wpsb_fragment_stats', $stats, false );
+		update_option( 'velocitywp_fragment_stats', $stats, false );
 	}
 
 	/**
@@ -707,12 +707,12 @@ class WPSB_Fragment_Cache {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$this->clear_all_fragments();
 
-		wp_send_json_success( array( 'message' => __( 'Fragment cache cleared successfully', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Fragment cache cleared successfully', 'velocitywp' ) ) );
 	}
 
 	/**
@@ -722,7 +722,7 @@ class WPSB_Fragment_Cache {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$stats = $this->get_stats();
@@ -737,13 +737,13 @@ class WPSB_Fragment_Cache {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$type = isset( $_POST['type'] ) ? sanitize_text_field( $_POST['type'] ) : '';
 
 		if ( empty( $type ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid fragment type', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid fragment type', 'velocitywp' ) ) );
 		}
 
 		switch ( $type ) {
@@ -760,9 +760,9 @@ class WPSB_Fragment_Cache {
 				$this->clear_shortcode_cache();
 				break;
 			default:
-				wp_send_json_error( array( 'message' => __( 'Invalid fragment type', 'wp-speed-booster' ) ) );
+				wp_send_json_error( array( 'message' => __( 'Invalid fragment type', 'velocitywp' ) ) );
 		}
 
-		wp_send_json_success( array( 'message' => ucfirst( $type ) . __( ' cache cleared successfully', 'wp-speed-booster' ) ) );
+		wp_send_json_success( array( 'message' => ucfirst( $type ) . __( ' cache cleared successfully', 'velocitywp' ) ) );
 	}
 }

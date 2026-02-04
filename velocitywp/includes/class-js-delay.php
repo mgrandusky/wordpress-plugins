@@ -6,14 +6,14 @@
 
 if (!defined('ABSPATH')) exit;
 
-class WP_Speed_Booster_JS_Delay {
+class VelocityWP_JS_Delay {
     
     private $settings;
     private $excluded_scripts = array();
     private $delay_timeout = 5000; // 5 seconds default
     
     public function __construct() {
-        $this->settings = get_option('wpsb_options', array());
+        $this->settings = get_option('velocitywp_options', array());
         
         if ($this->is_enabled()) {
             add_filter('script_loader_tag', array($this, 'add_defer_attribute'), 10, 3);
@@ -119,7 +119,7 @@ class WP_Speed_Booster_JS_Delay {
         $trigger_events = $this->get_trigger_events();
         
         ?>
-        <script id="wpspeed-delay-script">
+        <script id="velocitywp-delay-script">
         (function() {
             'use strict';
             
@@ -179,7 +179,7 @@ class WP_Speed_Booster_JS_Delay {
                 if (triggered) return;
                 triggered = true;
                 
-                console.log('[WP Speed Booster] Loading delayed scripts...');
+                console.log('[VelocityWP] Loading delayed scripts...');
                 
                 // Load normal scripts sequentially
                 var normalIndex = 0;
@@ -216,7 +216,7 @@ class WP_Speed_Booster_JS_Delay {
             // Fallback timeout
             setTimeout(function() {
                 if (!triggered) {
-                    console.log('[WP Speed Booster] Loading scripts after timeout');
+                    console.log('[VelocityWP] Loading scripts after timeout');
                     loadDelayedScripts();
                 }
             }, delayTimeout);
@@ -277,4 +277,4 @@ class WP_Speed_Booster_JS_Delay {
 }
 
 // Initialize
-new WP_Speed_Booster_JS_Delay();
+new VelocityWP_JS_Delay();

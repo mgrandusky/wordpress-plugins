@@ -4,7 +4,7 @@
  *
  * Multi-CDN support and load balancing
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Multi_CDN class
+ * VelocityWP_Multi_CDN class
  */
-class WPSB_Multi_CDN {
+class VelocityWP_Multi_CDN {
 
 	/**
 	 * CDN providers
@@ -42,7 +42,7 @@ class WPSB_Multi_CDN {
 	 * Initialize multi-CDN
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['multi_cdn'] ) ) {
 			return;
@@ -143,7 +143,7 @@ class WPSB_Multi_CDN {
 	 * @return string CDN URL.
 	 */
 	private function get_cdn_url( $original_url ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		$method = ! empty( $options['cdn_load_balancing'] ) ? $options['cdn_load_balancing'] : 'round_robin';
 
 		switch ( $method ) {
@@ -209,7 +209,7 @@ class WPSB_Multi_CDN {
 	 * @return bool Whether to rewrite.
 	 */
 	private function should_rewrite_url( $url ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Check file type inclusion
 		$included_types = ! empty( $options['cdn_file_types'] ) ? $options['cdn_file_types'] : 'jpg,jpeg,png,gif,webp,css,js';
@@ -232,7 +232,7 @@ class WPSB_Multi_CDN {
 			}
 		}
 
-		return apply_filters( 'wpsb_cdn_should_rewrite_url', true, $url );
+		return apply_filters( 'velocitywp_cdn_should_rewrite_url', true, $url );
 	}
 
 	/**
@@ -270,6 +270,6 @@ class WPSB_Multi_CDN {
 			return true;
 		}
 
-		return new WP_Error( 'cdn_test_failed', sprintf( __( 'CDN test failed with status code: %d', 'wp-speed-booster' ), $code ) );
+		return new WP_Error( 'cdn_test_failed', sprintf( __( 'CDN test failed with status code: %d', 'velocitywp' ), $code ) );
 	}
 }

@@ -4,7 +4,7 @@
  *
  * REST API and webhooks for external integrations
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_API class
+ * VelocityWP_API class
  */
-class WPSB_API {
+class VelocityWP_API {
 
 	/**
 	 * API namespace
@@ -102,7 +102,7 @@ class WPSB_API {
 		$api_key = $request->get_header( 'X-WPSB-API-Key' );
 		
 		if ( ! empty( $api_key ) ) {
-			$options = get_option( 'wpsb_options', array() );
+			$options = get_option( 'velocitywp_options', array() );
 			$stored_key = ! empty( $options['api_key'] ) ? $options['api_key'] : '';
 			
 			if ( ! empty( $stored_key ) && hash_equals( $stored_key, $api_key ) ) {
@@ -138,13 +138,13 @@ class WPSB_API {
 		if ( $result ) {
 			return new WP_REST_Response( array(
 				'success' => true,
-				'message' => __( 'Cache cleared successfully', 'wp-speed-booster' ),
+				'message' => __( 'Cache cleared successfully', 'velocitywp' ),
 			), 200 );
 		}
 
 		return new WP_REST_Response( array(
 			'success' => false,
-			'message' => __( 'Failed to clear cache', 'wp-speed-booster' ),
+			'message' => __( 'Failed to clear cache', 'velocitywp' ),
 		), 500 );
 	}
 
@@ -179,16 +179,16 @@ class WPSB_API {
 		if ( empty( $urls ) ) {
 			return new WP_REST_Response( array(
 				'success' => false,
-				'message' => __( 'No URLs provided', 'wp-speed-booster' ),
+				'message' => __( 'No URLs provided', 'velocitywp' ),
 			), 400 );
 		}
 
 		// Start preload in background
-		wp_schedule_single_event( time(), 'wpsb_preload_cache' );
+		wp_schedule_single_event( time(), 'velocitywp_preload_cache' );
 
 		return new WP_REST_Response( array(
 			'success' => true,
-			'message' => __( 'Preload started', 'wp-speed-booster' ),
+			'message' => __( 'Preload started', 'velocitywp' ),
 		), 200 );
 	}
 
@@ -199,7 +199,7 @@ class WPSB_API {
 	 * @return WP_REST_Response Response.
 	 */
 	public function get_settings( $request ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Remove sensitive data
 		unset( $options['api_key'] );
@@ -223,27 +223,27 @@ class WPSB_API {
 		if ( empty( $settings ) || ! is_array( $settings ) ) {
 			return new WP_REST_Response( array(
 				'success' => false,
-				'message' => __( 'Invalid settings provided', 'wp-speed-booster' ),
+				'message' => __( 'Invalid settings provided', 'velocitywp' ),
 			), 400 );
 		}
 
 		// Merge with existing settings
-		$current_settings = get_option( 'wpsb_options', array() );
+		$current_settings = get_option( 'velocitywp_options', array() );
 		$new_settings = array_merge( $current_settings, $settings );
 
 		// Update settings
-		$result = update_option( 'wpsb_options', $new_settings );
+		$result = update_option( 'velocitywp_options', $new_settings );
 
 		if ( $result ) {
 			return new WP_REST_Response( array(
 				'success' => true,
-				'message' => __( 'Settings updated successfully', 'wp-speed-booster' ),
+				'message' => __( 'Settings updated successfully', 'velocitywp' ),
 			), 200 );
 		}
 
 		return new WP_REST_Response( array(
 			'success' => false,
-			'message' => __( 'Failed to update settings', 'wp-speed-booster' ),
+			'message' => __( 'Failed to update settings', 'velocitywp' ),
 		), 500 );
 	}
 
@@ -259,16 +259,16 @@ class WPSB_API {
 		if ( empty( $image_id ) ) {
 			return new WP_REST_Response( array(
 				'success' => false,
-				'message' => __( 'Invalid image ID', 'wp-speed-booster' ),
+				'message' => __( 'Invalid image ID', 'velocitywp' ),
 			), 400 );
 		}
 
 		// Trigger image optimization
-		do_action( 'wpsb_optimize_image', $image_id );
+		do_action( 'velocitywp_optimize_image', $image_id );
 
 		return new WP_REST_Response( array(
 			'success' => true,
-			'message' => __( 'Image optimization started', 'wp-speed-booster' ),
+			'message' => __( 'Image optimization started', 'velocitywp' ),
 		), 200 );
 	}
 
@@ -281,7 +281,7 @@ class WPSB_API {
 	public function health_check( $request ) {
 		$health = array(
 			'status'  => 'healthy',
-			'version' => WPSB_VERSION,
+			'version' => VelocityWP_VERSION,
 			'php'     => PHP_VERSION,
 			'wp'      => get_bloginfo( 'version' ),
 			'time'    => current_time( 'mysql' ),
@@ -296,7 +296,7 @@ class WPSB_API {
 	 * @return bool Success.
 	 */
 	private function clear_all_cache() {
-		do_action( 'wpsb_clear_cache' );
+		do_action( 'velocitywp_clear_cache' );
 		return true;
 	}
 
@@ -307,7 +307,7 @@ class WPSB_API {
 	 * @return bool Success.
 	 */
 	private function clear_page_cache( $url ) {
-		do_action( 'wpsb_clear_page_cache', $url );
+		do_action( 'velocitywp_clear_page_cache', $url );
 		return true;
 	}
 
@@ -317,7 +317,7 @@ class WPSB_API {
 	 * @return array Cache stats.
 	 */
 	private function get_cache_stats() {
-		$analytics = get_option( 'wpsb_cache_analytics', array() );
+		$analytics = get_option( 'velocitywp_cache_analytics', array() );
 		
 		return array(
 			'hits'      => ! empty( $analytics['total_hits'] ) ? $analytics['total_hits'] : 0,
@@ -332,7 +332,7 @@ class WPSB_API {
 	 * @return array Performance stats.
 	 */
 	private function get_performance_stats() {
-		$analytics = get_option( 'wpsb_cache_analytics', array() );
+		$analytics = get_option( 'velocitywp_cache_analytics', array() );
 		
 		return array(
 			'avg_generation_time' => ! empty( $analytics['avg_generation_time'] ) ? $analytics['avg_generation_time'] : 0,
@@ -346,7 +346,7 @@ class WPSB_API {
 	 * @return array Image stats.
 	 */
 	private function get_image_stats() {
-		$stats = get_option( 'wpsb_image_stats', array() );
+		$stats = get_option( 'velocitywp_image_stats', array() );
 		
 		return array(
 			'optimized' => ! empty( $stats['optimized'] ) ? $stats['optimized'] : 0,

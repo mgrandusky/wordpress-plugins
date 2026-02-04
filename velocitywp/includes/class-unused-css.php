@@ -4,7 +4,7 @@
  *
  * Detect and remove unused CSS
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Unused_CSS class
+ * VelocityWP_Unused_CSS class
  */
-class WPSB_Unused_CSS {
+class VelocityWP_Unused_CSS {
 
 	/**
 	 * Used selectors
@@ -29,14 +29,14 @@ class WPSB_Unused_CSS {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_analyze_css', array( $this, 'ajax_analyze_css' ) );
+		add_action( 'wp_ajax_velocitywp_analyze_css', array( $this, 'ajax_analyze_css' ) );
 	}
 
 	/**
 	 * Initialize unused CSS removal
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['remove_unused_css'] ) ) {
 			return;
@@ -55,7 +55,7 @@ class WPSB_Unused_CSS {
 	 * @return string Modified tag.
 	 */
 	public function optimize_css( $tag, $handle, $href, $media ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Skip if handle is excluded
 		if ( ! empty( $options['unused_css_exclusions'] ) ) {
@@ -87,7 +87,7 @@ class WPSB_Unused_CSS {
 	 * @return string Optimized CSS.
 	 */
 	private function get_optimized_css( $href, $handle ) {
-		$cache_key = 'wpsb_optimized_css_' . md5( $href );
+		$cache_key = 'velocitywp_optimized_css_' . md5( $href );
 		
 		$cached = get_transient( $cache_key );
 		if ( $cached !== false ) {
@@ -325,13 +325,13 @@ class WPSB_Unused_CSS {
 		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
 		}
 
 		$url = isset( $_POST['url'] ) ? esc_url_raw( $_POST['url'] ) : '';
 
 		if ( empty( $url ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid URL', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid URL', 'velocitywp' ) ) );
 		}
 
 		// Analyze CSS

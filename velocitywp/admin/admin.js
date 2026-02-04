@@ -1,5 +1,5 @@
 /**
- * WP Speed Booster Admin JavaScript
+ * VelocityWP Admin JavaScript
  */
 
 (function($) {
@@ -7,20 +7,20 @@
 
     $(document).ready(function() {
         // Tab switching without page reload
-        $('.wpspeed-nav-tab').on('click', function(e) {
+        $('.velocitywp-nav-tab').on('click', function(e) {
             e.preventDefault();
             
             var targetTab = $(this).data('tab');
             
             // Update active tab styling
-            $('.wpspeed-nav-tab').removeClass('nav-tab-active');
+            $('.velocitywp-nav-tab').removeClass('nav-tab-active');
             $(this).addClass('nav-tab-active');
             
             // Hide all tab contents
-            $('.wpspeed-tab-content').removeClass('active').hide();
+            $('.velocitywp-tab-content').removeClass('active').hide();
             
             // Show target tab with fade effect
-            $('#wpspeed-tab-' + targetTab).addClass('active').fadeIn(200);
+            $('#velocitywp-tab-' + targetTab).addClass('active').fadeIn(200);
             
             // Update URL hash without page reload
             if (history.pushState) {
@@ -30,22 +30,22 @@
             }
             
             // Store active tab in session storage
-            sessionStorage.setItem('wpspeed_active_tab', targetTab);
+            sessionStorage.setItem('velocitywp_active_tab', targetTab);
         });
         
         // Load tab from URL hash or session storage on page load
         function loadActiveTab() {
             var hash = window.location.hash.replace('#tab-', '');
-            var sessionTab = sessionStorage.getItem('wpspeed_active_tab');
+            var sessionTab = sessionStorage.getItem('velocitywp_active_tab');
             var activeTab = hash || sessionTab || 'dashboard';
             
             // Trigger click on the active tab
-            var $tab = $('.wpspeed-nav-tab[data-tab="' + activeTab + '"]');
+            var $tab = $('.velocitywp-nav-tab[data-tab="' + activeTab + '"]');
             if ($tab.length) {
                 $tab.trigger('click');
             } else {
                 // Fallback to dashboard if tab not found
-                $('.wpspeed-nav-tab[data-tab="dashboard"]').trigger('click');
+                $('.velocitywp-nav-tab[data-tab="dashboard"]').trigger('click');
             }
         }
         
@@ -53,7 +53,7 @@
         $(window).on('hashchange', function() {
             var hash = window.location.hash.replace('#tab-', '');
             if (hash) {
-                $('.wpspeed-nav-tab[data-tab="' + hash + '"]').trigger('click');
+                $('.velocitywp-nav-tab[data-tab="' + hash + '"]').trigger('click');
             }
         });
         
@@ -61,7 +61,7 @@
         loadActiveTab();
 
         // Clear Cache Button
-        $('#wpsb-clear-cache-btn').on('click', function(e) {
+        $('#velocitywp-clear-cache-btn').on('click', function(e) {
             e.preventDefault();
             var $btn = $(this);
             var originalText = $btn.text();
@@ -75,7 +75,7 @@
                 url: wpsbAdmin.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'wpsb_clear_cache',
+                    action: 'velocitywp_clear_cache',
                     nonce: wpsbAdmin.nonce
                 },
                 success: function(response) {
@@ -96,7 +96,7 @@
         });
 
         // Optimize Database Button
-        $('#wpsb-optimize-db-btn').on('click', function(e) {
+        $('#velocitywp-optimize-db-btn').on('click', function(e) {
             e.preventDefault();
             var $btn = $(this);
             var originalText = $btn.text();
@@ -114,7 +114,7 @@
                 url: wpsbAdmin.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'wpsb_optimize_database',
+                    action: 'velocitywp_optimize_database',
                     nonce: wpsbAdmin.nonce
                 },
                 success: function(response) {
@@ -139,7 +139,7 @@
         });
 
         // Preload Cache Button
-        $('#wpsb-preload-cache-btn').on('click', function(e) {
+        $('#velocitywp-preload-cache-btn').on('click', function(e) {
             e.preventDefault();
             var $btn = $(this);
             var originalText = $btn.text();
@@ -157,7 +157,7 @@
                 url: wpsbAdmin.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'wpsb_preload_cache',
+                    action: 'velocitywp_preload_cache',
                     nonce: wpsbAdmin.nonce
                 },
                 timeout: 300000, // 5 minutes
@@ -184,7 +184,7 @@
 
         // Show notice helper function
         function showNotice(type, message) {
-            var $notice = $('#wpsb-ajax-result');
+            var $notice = $('#velocitywp-ajax-result');
             
             // Remove existing classes
             $notice.removeClass('notice-success notice-error notice-warning');
@@ -210,27 +210,27 @@
         }
 
         // Toggle sections (if needed for future enhancements)
-        $('.wpsb-toggle-header').on('click', function() {
-            $(this).next('.wpsb-toggle-content').slideToggle();
+        $('.velocitywp-toggle-header').on('click', function() {
+            $(this).next('.velocitywp-toggle-content').slideToggle();
         });
 
         // Confirm before leaving page with unsaved changes
         var formChanged = false;
-        $('#wpspeed-settings-form').on('change', 'input, select, textarea', function() {
+        $('#velocitywp-settings-form').on('change', 'input, select, textarea', function() {
             formChanged = true;
             
             // Add indicator to tabs with changes
-            var tabId = $(this).closest('.wpspeed-tab-content').attr('id');
+            var tabId = $(this).closest('.velocitywp-tab-content').attr('id');
             if (tabId) {
-                var tabName = tabId.replace('wpspeed-tab-', '');
-                $('.wpspeed-nav-tab[data-tab="' + tabName + '"]').addClass('has-changes');
+                var tabName = tabId.replace('velocitywp-tab-', '');
+                $('.velocitywp-nav-tab[data-tab="' + tabName + '"]').addClass('has-changes');
             }
         });
 
         // Reset on form submit
-        $('#wpspeed-settings-form').on('submit', function() {
+        $('#velocitywp-settings-form').on('submit', function() {
             formChanged = false;
-            $('.wpspeed-nav-tab').removeClass('has-changes');
+            $('.velocitywp-nav-tab').removeClass('has-changes');
         });
 
         // Warn before leaving with unsaved changes
@@ -241,8 +241,8 @@
         });
 
         // Enable/disable related fields based on checkboxes
-        $('input[name="wpsb_options[cache_enabled]"]').on('change', function() {
-            var $relatedFields = $('input[name="wpsb_options[cache_lifespan]"], input[name="wpsb_options[mobile_cache]"]');
+        $('input[name="velocitywp_options[cache_enabled]"]').on('change', function() {
+            var $relatedFields = $('input[name="velocitywp_options[cache_lifespan]"], input[name="velocitywp_options[mobile_cache]"]');
             if ($(this).is(':checked')) {
                 $relatedFields.prop('disabled', false);
             } else {
@@ -250,8 +250,8 @@
             }
         }).trigger('change');
 
-        $('input[name="wpsb_options[cdn_enabled]"]').on('change', function() {
-            var $cdnUrl = $('input[name="wpsb_options[cdn_url]"]');
+        $('input[name="velocitywp_options[cdn_enabled]"]').on('change', function() {
+            var $cdnUrl = $('input[name="velocitywp_options[cdn_url]"]');
             if ($(this).is(':checked')) {
                 $cdnUrl.prop('disabled', false);
             } else {
@@ -259,8 +259,8 @@
             }
         }).trigger('change');
 
-        $('input[name="wpsb_options[db_clean_revisions]"]').on('change', function() {
-            var $revisionsToKeep = $('input[name="wpsb_options[db_revisions_to_keep]"]');
+        $('input[name="velocitywp_options[db_clean_revisions]"]').on('change', function() {
+            var $revisionsToKeep = $('input[name="velocitywp_options[db_revisions_to_keep]"]');
             if ($(this).is(':checked')) {
                 $revisionsToKeep.prop('disabled', false);
             } else {

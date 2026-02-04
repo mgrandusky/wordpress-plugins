@@ -4,7 +4,7 @@
  *
  * WordPress heartbeat API control and optimization
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_Heartbeat class
+ * VelocityWP_Heartbeat class
  */
-class WPSB_Heartbeat {
+class VelocityWP_Heartbeat {
 
 	/**
 	 * Plugin settings
@@ -28,13 +28,13 @@ class WPSB_Heartbeat {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->settings = get_option( 'wpsb_options', array() );
+		$this->settings = get_option( 'velocitywp_options', array() );
 		add_action( 'init', array( $this, 'init' ), 1 );
 		
 		// AJAX handlers
-		add_action( 'wp_ajax_wpspeed_heartbeat_get_stats', array( $this, 'ajax_get_stats' ) );
-		add_action( 'wp_ajax_wpspeed_heartbeat_reset_stats', array( $this, 'ajax_reset_stats' ) );
-		add_action( 'wp_ajax_wpspeed_heartbeat_test', array( $this, 'ajax_test_heartbeat' ) );
+		add_action( 'wp_ajax_velocitywp_heartbeat_get_stats', array( $this, 'ajax_get_stats' ) );
+		add_action( 'wp_ajax_velocitywp_heartbeat_reset_stats', array( $this, 'ajax_reset_stats' ) );
+		add_action( 'wp_ajax_velocitywp_heartbeat_test', array( $this, 'ajax_test_heartbeat' ) );
 	}
 
 	/**
@@ -205,7 +205,7 @@ class WPSB_Heartbeat {
 	 * @return array
 	 */
 	public function track_heartbeat( $response, $data ) {
-		$stats = get_option( 'wpspeed_heartbeat_stats', array(
+		$stats = get_option( 'velocitywp_heartbeat_stats', array(
 			'total_requests'      => 0,
 			'last_request'        => null,
 			'location_breakdown'  => array(),
@@ -220,7 +220,7 @@ class WPSB_Heartbeat {
 		}
 		$stats['location_breakdown'][ $location ]++;
 
-		update_option( 'wpspeed_heartbeat_stats', $stats, false );
+		update_option( 'velocitywp_heartbeat_stats', $stats, false );
 
 		return $response;
 	}
@@ -231,7 +231,7 @@ class WPSB_Heartbeat {
 	 * @return array
 	 */
 	public function get_stats() {
-		return get_option( 'wpspeed_heartbeat_stats', array(
+		return get_option( 'velocitywp_heartbeat_stats', array(
 			'total_requests'      => 0,
 			'last_request'        => null,
 			'location_breakdown'  => array(),
@@ -242,7 +242,7 @@ class WPSB_Heartbeat {
 	 * Reset statistics
 	 */
 	public function reset_stats() {
-		update_option( 'wpspeed_heartbeat_stats', array(
+		update_option( 'velocitywp_heartbeat_stats', array(
 			'total_requests'      => 0,
 			'last_request'        => null,
 			'location_breakdown'  => array(),
@@ -253,7 +253,7 @@ class WPSB_Heartbeat {
 	 * AJAX handler to get stats
 	 */
 	public function ajax_get_stats() {
-		check_ajax_referer( 'wpsb_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -278,7 +278,7 @@ class WPSB_Heartbeat {
 	 * AJAX handler to reset stats
 	 */
 	public function ajax_reset_stats() {
-		check_ajax_referer( 'wpsb_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -292,7 +292,7 @@ class WPSB_Heartbeat {
 	 * AJAX handler to test heartbeat
 	 */
 	public function ajax_test_heartbeat() {
-		check_ajax_referer( 'wpsb_nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );

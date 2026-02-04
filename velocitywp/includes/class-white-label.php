@@ -4,7 +4,7 @@
  *
  * Plugin rebranding and white label options
  *
- * @package WP_Speed_Booster
+ * @package VelocityWP
  */
 
 // Prevent direct access
@@ -13,16 +13,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSB_White_Label class
+ * VelocityWP_White_Label class
  */
-class WPSB_White_Label {
+class VelocityWP_White_Label {
 
 	/**
 	 * Plugin name
 	 *
 	 * @var string
 	 */
-	private $plugin_name = 'WP Speed Booster';
+	private $plugin_name = 'VelocityWP';
 
 	/**
 	 * Plugin description
@@ -42,7 +42,7 @@ class WPSB_White_Label {
 	 * Initialize white label
 	 */
 	public function init() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		if ( empty( $options['white_label'] ) ) {
 			return;
@@ -74,7 +74,7 @@ class WPSB_White_Label {
 	 * @return array Modified plugins.
 	 */
 	public function modify_plugin_info( $plugins ) {
-		$plugin_file = plugin_basename( WPSB_FILE );
+		$plugin_file = plugin_basename( VelocityWP_FILE );
 
 		if ( isset( $plugins[ $plugin_file ] ) ) {
 			$plugins[ $plugin_file ]['Name'] = $this->plugin_name;
@@ -83,7 +83,7 @@ class WPSB_White_Label {
 				$plugins[ $plugin_file ]['Description'] = $this->plugin_description;
 			}
 
-			$options = get_option( 'wpsb_options', array() );
+			$options = get_option( 'velocitywp_options', array() );
 
 			// Custom author
 			if ( ! empty( $options['white_label_author'] ) ) {
@@ -113,13 +113,13 @@ class WPSB_White_Label {
 	 * @return string Modified translation.
 	 */
 	public function modify_plugin_text( $translation, $text, $domain ) {
-		if ( $domain !== 'wp-speed-booster' ) {
+		if ( $domain !== 'velocitywp' ) {
 			return $translation;
 		}
 
 		// Replace plugin name in translations
-		if ( strpos( $text, 'WP Speed Booster' ) !== false ) {
-			return str_replace( 'WP Speed Booster', $this->plugin_name, $text );
+		if ( strpos( $text, 'VelocityWP' ) !== false ) {
+			return str_replace( 'VelocityWP', $this->plugin_name, $text );
 		}
 
 		return $translation;
@@ -132,7 +132,7 @@ class WPSB_White_Label {
 	 * @return array Modified plugins.
 	 */
 	public function hide_plugin( $plugins ) {
-		$plugin_file = plugin_basename( WPSB_FILE );
+		$plugin_file = plugin_basename( VelocityWP_FILE );
 
 		if ( isset( $plugins[ $plugin_file ] ) ) {
 			unset( $plugins[ $plugin_file ] );
@@ -145,13 +145,13 @@ class WPSB_White_Label {
 	 * Add custom admin branding
 	 */
 	public function add_custom_branding() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 
 		// Custom logo
 		if ( ! empty( $options['white_label_logo'] ) ) {
 			?>
 			<style>
-			#wpsb-admin-header .wpsb-logo {
+			#velocitywp-admin-header .velocitywp-logo {
 				background-image: url('<?php echo esc_url( $options['white_label_logo'] ); ?>');
 			}
 			</style>
@@ -175,7 +175,7 @@ class WPSB_White_Label {
 		if ( ! empty( $options['white_label_hide_footer'] ) ) {
 			?>
 			<style>
-			.wpsb-footer-branding {
+			.velocitywp-footer-branding {
 				display: none !important;
 			}
 			</style>
