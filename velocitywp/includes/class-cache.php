@@ -28,7 +28,7 @@ class VelocityWP_Cache {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->cache_dir = VelocityWP_CACHE_DIR;
+		$this->cache_dir = VELOCITYWP_CACHE_DIR;
 
 		// Register hooks
 		add_action( 'template_redirect', array( $this, 'maybe_serve_cache' ), 1 );
