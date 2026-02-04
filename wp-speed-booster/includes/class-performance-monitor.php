@@ -344,13 +344,13 @@ class WP_Speed_Booster_Performance_Monitor {
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
 
-		// Get current URL
-		$url = $_SERVER['REQUEST_URI'];
+		// Get current URL and sanitize
+		$url = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 
 		$wpdb->insert(
 			$table_name,
 			array(
-				'url'              => sanitize_text_field( $url ),
+				'url'              => $url,
 				'generation_time'  => floatval( $metrics['generation_time'] ),
 				'query_count'      => intval( $metrics['query_count'] ),
 				'memory_used'      => intval( $metrics['memory_used'] ),

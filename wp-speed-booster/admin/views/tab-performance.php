@@ -18,8 +18,12 @@ $performance_data_retention     = ! empty( $options['performance_data_retention'
 $performance_debug_comments     = ! empty( $options['performance_debug_comments'] ) ? 1 : 0;
 $performance_sample_rate        = ! empty( $options['performance_sample_rate'] ) ? intval( $options['performance_sample_rate'] ) : 100;
 
-// Get analytics data
-$period = isset( $_GET['period'] ) ? intval( $_GET['period'] ) : 7;
+// Get and validate period parameter
+$valid_periods = array( 1, 7, 30, 90 );
+$period        = isset( $_GET['period'] ) ? intval( $_GET['period'] ) : 7;
+if ( ! in_array( $period, $valid_periods, true ) ) {
+	$period = 7;
+}
 
 // Initialize performance monitor if enabled
 if ( $performance_monitoring_enabled && class_exists( 'WP_Speed_Booster_Performance_Monitor' ) ) {
@@ -160,7 +164,12 @@ $averages = $analytics['averages'];
 
 <!-- Core Web Vitals Cards -->
 <div class="wpspeed-tab-section">
-	<h2><?php esc_html_e( 'Core Web Vitals (Last ' . $period . ' Days)', 'wp-speed-booster' ); ?></h2>
+	<h2>
+		<?php
+		/* translators: %d: Number of days for the time period */
+		echo esc_html( sprintf( __( 'Core Web Vitals (Last %d Days)', 'wp-speed-booster' ), $period ) );
+		?>
+	</h2>
 	
 	<div class="wpspeed-cwv-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
 		

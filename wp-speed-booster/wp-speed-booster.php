@@ -527,7 +527,8 @@ function wpsb_uninstall() {
 
 	// Remove performance monitoring table
 	$table_name = $wpdb->prefix . 'wpspeed_performance';
-	$wpdb->query( "DROP TABLE IF EXISTS $table_name" );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+	$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
 
 	// Remove cache directory
 	if ( file_exists( WPSB_CACHE_DIR ) ) {
