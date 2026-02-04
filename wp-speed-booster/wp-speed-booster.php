@@ -68,6 +68,13 @@ class WP_Speed_Booster {
 	private $database;
 
 	/**
+	 * Database optimizer instance
+	 *
+	 * @var WP_Speed_Booster_Database_Optimizer
+	 */
+	private $database_optimizer;
+
+	/**
 	 * CDN instance
 	 *
 	 * @var WPSB_CDN
@@ -161,6 +168,7 @@ class WP_Speed_Booster {
 		$this->minify    = new WPSB_Minify();
 		$this->lazy_load = new WPSB_Lazy_Load();
 		$this->database  = new WPSB_Database();
+		$this->database_optimizer = new WP_Speed_Booster_Database_Optimizer();
 		$this->cdn       = new WPSB_CDN();
 		$this->preload   = new WPSB_Preload();
 		$this->critical_css = new WPSB_Critical_CSS();
@@ -188,6 +196,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-minify.php';
 		require_once WPSB_DIR . 'includes/class-lazy-load.php';
 		require_once WPSB_DIR . 'includes/class-database.php';
+		require_once WPSB_DIR . 'includes/class-database-optimizer.php';
 		require_once WPSB_DIR . 'includes/class-cdn.php';
 		require_once WPSB_DIR . 'includes/class-preload.php';
 		require_once WPSB_DIR . 'includes/class-critical-css.php';
