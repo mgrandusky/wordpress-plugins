@@ -263,6 +263,12 @@ class WP_Speed_Booster {
 			'js_delay_timeout'           => 5,
 			'js_delay_exclude'           => '',
 			'js_delay_events'            => 'mousemove,scroll,touchstart,click,keydown',
+			'object_cache_backend'       => 'auto',
+			'redis_host'                 => '127.0.0.1',
+			'redis_port'                 => 6379,
+			'redis_password'             => '',
+			'redis_database'             => 0,
+			'memcached_servers'          => '127.0.0.1:11211',
 		);
 
 		// Don't override existing options
