@@ -131,6 +131,13 @@ class WP_Speed_Booster {
 	private $resource_hints;
 
 	/**
+	 * Cloudflare instance
+	 *
+	 * @var WPSB_Cloudflare
+	 */
+	private $cloudflare;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -162,6 +169,7 @@ class WP_Speed_Booster {
 		$this->object_cache = new WPSB_Object_Cache();
 		$this->fragment_cache = new WPSB_Fragment_Cache();
 		$this->resource_hints = new WPSB_Resource_Hints();
+		$this->cloudflare = new WPSB_Cloudflare();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -190,6 +198,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-object-cache.php';
 		require_once WPSB_DIR . 'includes/class-fragment-cache.php';
 		require_once WPSB_DIR . 'includes/class-resource-hints.php';
+		require_once WPSB_DIR . 'includes/class-cloudflare.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
@@ -309,6 +318,15 @@ class WP_Speed_Booster {
 			'prefetch_enabled'           => 0,
 			'prefetch_next_page'         => 0,
 			'prefetch_urls'              => '',
+			'cloudflare_enabled'         => 0,
+			'cloudflare_auth_type'       => 'token',
+			'cloudflare_api_token'       => '',
+			'cloudflare_email'           => '',
+			'cloudflare_api_key'         => '',
+			'cloudflare_zone_id'         => '',
+			'cloudflare_purge_on_update' => 0,
+			'cloudflare_purge_on_comment' => 0,
+			'cloudflare_restore_ip'      => 0,
 		);
 
 		// Don't override existing options
