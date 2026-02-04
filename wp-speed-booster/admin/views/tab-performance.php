@@ -152,7 +152,7 @@ $averages = $analytics['averages'];
 	
 	<div style="margin-bottom: 20px;">
 		<label for="performance-period-selector"><strong><?php esc_html_e( 'Time Period:', 'wp-speed-booster' ); ?></strong></label>
-		<select id="performance-period-selector" onchange="window.location.href='?page=wp-speed-booster&tab=performance&period=' + this.value;">
+		<select id="performance-period-selector" onchange="window.location.href='<?php echo esc_url( admin_url( 'options-general.php?page=wp-speed-booster&tab=performance&period=' ) ); ?>' + this.value;">
 			<option value="1" <?php selected( $period, 1 ); ?>><?php esc_html_e( 'Last 24 Hours', 'wp-speed-booster' ); ?></option>
 			<option value="7" <?php selected( $period, 7 ); ?>><?php esc_html_e( 'Last 7 Days', 'wp-speed-booster' ); ?></option>
 			<option value="30" <?php selected( $period, 30 ); ?>><?php esc_html_e( 'Last 30 Days', 'wp-speed-booster' ); ?></option>
@@ -279,7 +279,16 @@ $averages = $analytics['averages'];
 		var dates = <?php echo wp_json_encode( array_column( $analytics['daily_trend'], 'date' ) ); ?>;
 		var lcpData = <?php echo wp_json_encode( array_map( 'floatval', array_column( $analytics['daily_trend'], 'avg_lcp' ) ) ); ?>;
 		var fidData = <?php echo wp_json_encode( array_map( 'floatval', array_column( $analytics['daily_trend'], 'avg_fid' ) ) ); ?>;
-		var clsData = <?php echo wp_json_encode( array_map( function( $v ) { return floatval( $v ) * 1000; }, array_column( $analytics['daily_trend'], 'avg_cls' ) ) ); ?>;
+		<?php
+		// Scale CLS values for better chart visibility
+		$cls_scaled = array_map(
+			function( $v ) {
+				return floatval( $v ) * 1000;
+			},
+			array_column( $analytics['daily_trend'], 'avg_cls' )
+		);
+		?>
+		var clsData = <?php echo wp_json_encode( $cls_scaled ); ?>;
 		
 		new Chart(ctx, {
 			type: 'line',
@@ -548,9 +557,9 @@ function wpspeedExportPerformanceData(format, period) {
 	data.append('action', 'wpspeed_export_data');
 	data.append('format', format);
 	data.append('period', period);
-	data.append('nonce', '<?php echo wp_create_nonce( 'wpspeed_admin' ); ?>');
+	data.append('nonce', <?php echo wp_json_encode( wp_create_nonce( 'wpspeed_admin' ) ); ?>);
 	
-	fetch('<?php echo admin_url( 'admin-ajax.php' ); ?>', {
+	fetch(<?php echo wp_json_encode( esc_url( admin_url( 'admin-ajax.php' ) ) ); ?>, {
 		method: 'POST',
 		body: data
 	})

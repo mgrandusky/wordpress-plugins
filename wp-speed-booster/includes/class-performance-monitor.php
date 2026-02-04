@@ -221,9 +221,9 @@ class WP_Speed_Booster_Performance_Monitor {
 					var data = new FormData();
 					data.append('action', 'wpspeed_track_performance');
 					data.append('metrics', JSON.stringify(metrics));
-					data.append('nonce', '<?php echo wp_create_nonce( 'wpspeed_track_performance' ); ?>');
+					data.append('nonce', <?php echo wp_json_encode( wp_create_nonce( 'wpspeed_track_performance' ) ); ?>);
 					
-					navigator.sendBeacon('<?php echo admin_url( 'admin-ajax.php' ); ?>', data);
+					navigator.sendBeacon(<?php echo wp_json_encode( esc_url( admin_url( 'admin-ajax.php' ) ) ); ?>, data);
 				}
 			}
 			
@@ -244,10 +244,11 @@ class WP_Speed_Booster_Performance_Monitor {
 	public function ajax_track_performance() {
 		check_ajax_referer( 'wpspeed_track_performance', 'nonce' );
 
-		$metrics = isset( $_POST['metrics'] ) ? json_decode( stripslashes( $_POST['metrics'] ), true ) : array();
+		$metrics_json = isset( $_POST['metrics'] ) ? wp_unslash( $_POST['metrics'] ) : '';
+		$metrics      = json_decode( $metrics_json, true );
 
-		if ( empty( $metrics ) ) {
-			wp_send_json_error( array( 'message' => 'No metrics provided' ) );
+		if ( json_last_error() !== JSON_ERROR_NONE || empty( $metrics ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid metrics data' ) );
 		}
 
 		// Store metrics
@@ -370,7 +371,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from = date( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from  = gmgmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		// Average metrics
 		$averages = $wpdb->get_row(
@@ -387,7 +388,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					AVG(query_count) as avg_query_count,
 					AVG(memory_used) as avg_memory_used,
 					COUNT(*) as total_samples
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s",
 				$date_from
 			)
@@ -401,7 +402,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					COUNT(*) as count,
 					AVG(lcp) as avg_lcp,
 					AVG(fid) as avg_fid
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s
 				GROUP BY device",
 				$date_from
@@ -416,7 +417,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					COUNT(*) as samples,
 					AVG(lcp) as avg_lcp,
 					AVG(window_load) as avg_load_time
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s
 				GROUP BY url
 				ORDER BY avg_load_time DESC
@@ -434,7 +435,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					AVG(fid) as avg_fid,
 					AVG(cls) as avg_cls,
 					AVG(window_load) as avg_load_time
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s
 				GROUP BY DATE(timestamp)
 				ORDER BY date ASC",
@@ -544,7 +545,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from = date( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		$distribution = $wpdb->get_results(
 			$wpdb->prepare(
@@ -555,7 +556,7 @@ class WP_Speed_Booster_Performance_Monitor {
 						ELSE 'poor'
 					END as lcp_rating,
 					COUNT(*) as count
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s AND lcp IS NOT NULL
 				GROUP BY lcp_rating",
 				$date_from
@@ -575,7 +576,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from = date( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
 			$wpdb->prepare(
@@ -587,7 +588,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					AVG(ttfb) as avg_ttfb,
 					AVG(window_load) as avg_load_time,
 					COUNT(*) as samples
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s
 				GROUP BY DATE(timestamp)
 				ORDER BY date ASC",
@@ -606,7 +607,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from = date( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
 			$wpdb->prepare(
@@ -617,7 +618,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					AVG(fid) as avg_fid,
 					AVG(cls) as avg_cls,
 					AVG(window_load) as avg_load_time
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s
 				GROUP BY device",
 				$date_from
@@ -636,7 +637,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from = date( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
 			$wpdb->prepare(
@@ -647,7 +648,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					AVG(window_load) as avg_load_time,
 					AVG(generation_time) as avg_generation_time,
 					AVG(query_count) as avg_query_count
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s
 				GROUP BY url
 				ORDER BY avg_load_time DESC
@@ -669,7 +670,7 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from = date( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from = gmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		return $wpdb->get_results(
 			$wpdb->prepare(
@@ -678,7 +679,7 @@ class WP_Speed_Booster_Performance_Monitor {
 					COUNT(*) as samples,
 					AVG(lcp) as avg_lcp,
 					AVG(window_load) as avg_load_time
-				FROM $table_name
+				FROM `{$table_name}`
 				WHERE timestamp >= %s
 				GROUP BY url
 				ORDER BY avg_load_time ASC
@@ -697,11 +698,11 @@ class WP_Speed_Booster_Performance_Monitor {
 
 		$retention_days = ! empty( $this->settings['performance_data_retention'] ) ? intval( $this->settings['performance_data_retention'] ) : 30;
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_threshold = date( 'Y-m-d H:i:s', strtotime( "-{$retention_days} days" ) );
+		$date_threshold = gmdate( 'Y-m-d H:i:s', strtotime( "-{$retention_days} days" ) );
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM $table_name WHERE timestamp < %s",
+				"DELETE FROM `{$table_name}` WHERE timestamp < %s",
 				$date_threshold
 			)
 		);
@@ -718,11 +719,11 @@ class WP_Speed_Booster_Performance_Monitor {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'wpspeed_performance';
-		$date_from = date( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
+		$date_from  = gmgmdate( 'Y-m-d H:i:s', strtotime( "-{$period} days" ) );
 
 		$data = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM $table_name WHERE timestamp >= %s ORDER BY timestamp DESC",
+				"SELECT * FROM `{$table_name}` WHERE timestamp >= %s ORDER BY timestamp DESC",
 				$date_from
 			),
 			ARRAY_A
@@ -732,19 +733,22 @@ class WP_Speed_Booster_Performance_Monitor {
 			return wp_json_encode( $data );
 		}
 
-		// CSV format
-		$csv = '';
+		// CSV format with proper escaping
+		ob_start();
+		$output = fopen( 'php://output', 'w' );
+
 		if ( ! empty( $data ) ) {
 			// Headers
-			$csv .= implode( ',', array_keys( $data[0] ) ) . "\n";
+			fputcsv( $output, array_keys( $data[0] ) );
 
 			// Data rows
 			foreach ( $data as $row ) {
-				$csv .= implode( ',', $row ) . "\n";
+				fputcsv( $output, $row );
 			}
 		}
 
-		return $csv;
+		fclose( $output );
+		return ob_get_clean();
 	}
 
 	/**
