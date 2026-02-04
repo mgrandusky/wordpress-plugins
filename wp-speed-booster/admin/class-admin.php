@@ -80,6 +80,7 @@ class WPSB_Admin {
 			'lazy_load_images', 'lazy_load_iframes',
 			'db_clean_revisions', 'db_clean_autodrafts', 'db_clean_trash',
 			'db_optimize_tables', 'db_clean_transients', 'db_clean_spam',
+			'db_optimization_enabled', 'db_optimize_email_report',
 			'cdn_enabled', 'disable_emojis', 'disable_embeds', 'disable_jquery_migrate',
 			'remove_wp_version', 'remove_rsd_links',
 			'critical_css_enabled', 'critical_css_defer', 'critical_css_desktop', 'critical_css_mobile',
@@ -98,6 +99,7 @@ class WPSB_Admin {
 		// Integer options
 		$sanitized['cache_lifespan'] = ! empty( $input['cache_lifespan'] ) ? absint( $input['cache_lifespan'] ) : 36000;
 		$sanitized['db_revisions_to_keep'] = ! empty( $input['db_revisions_to_keep'] ) ? absint( $input['db_revisions_to_keep'] ) : 3;
+		$sanitized['keep_revisions'] = ! empty( $input['keep_revisions'] ) ? absint( $input['keep_revisions'] ) : 0;
 		$sanitized['lazy_load_skip_images'] = ! empty( $input['lazy_load_skip_images'] ) ? absint( $input['lazy_load_skip_images'] ) : 0;
 		$sanitized['webp_quality'] = ! empty( $input['webp_quality'] ) ? absint( $input['webp_quality'] ) : 85;
 		$sanitized['js_delay_timeout'] = ! empty( $input['js_delay_timeout'] ) ? absint( $input['js_delay_timeout'] ) : 5;
@@ -109,10 +111,15 @@ class WPSB_Admin {
 		$sanitized['cdn_url'] = ! empty( $input['cdn_url'] ) ? esc_url_raw( $input['cdn_url'] ) : '';
 		$sanitized['dns_prefetch'] = ! empty( $input['dns_prefetch'] ) ? sanitize_textarea_field( $input['dns_prefetch'] ) : '';
 		$sanitized['db_auto_optimize'] = ! empty( $input['db_auto_optimize'] ) ? sanitize_text_field( $input['db_auto_optimize'] ) : 'disabled';
+		$sanitized['db_optimize_schedule'] = ! empty( $input['db_optimize_schedule'] ) ? sanitize_text_field( $input['db_optimize_schedule'] ) : 'weekly';
 		$sanitized['critical_css_mode'] = ! empty( $input['critical_css_mode'] ) ? sanitize_text_field( $input['critical_css_mode'] ) : 'auto';
 		$sanitized['critical_css_exclude'] = ! empty( $input['critical_css_exclude'] ) ? sanitize_textarea_field( $input['critical_css_exclude'] ) : '';
 		// Sanitize CSS while preserving newlines
 		$sanitized['critical_css_manual'] = ! empty( $input['critical_css_manual'] ) ? wp_kses( $input['critical_css_manual'], array() ) : '';
+		
+		// Database optimization array options
+		$sanitized['db_optimize_operations'] = ! empty( $input['db_optimize_operations'] ) && is_array( $input['db_optimize_operations'] ) ? 
+			array_map( 'sanitize_text_field', $input['db_optimize_operations'] ) : array();
 
 		// JavaScript Delay options
 		$sanitized['js_delay_exclude'] = ! empty( $input['js_delay_exclude'] ) ? sanitize_textarea_field( $input['js_delay_exclude'] ) : '';
@@ -757,104 +764,7 @@ class WPSB_Admin {
 	 * @param array $options Plugin options.
 	 */
 	private function render_database_tab( $options ) {
-		$database = new WPSB_Database();
-		$stats = $database->get_statistics();
-		$db_size = $database->get_database_size();
-		?>
-		<h2><?php esc_html_e( 'Database Optimization', 'wp-speed-booster' ); ?></h2>
-
-		<div class="wpsb-db-stats">
-			<h3><?php esc_html_e( 'Database Statistics', 'wp-speed-booster' ); ?></h3>
-			<p><?php echo esc_html( sprintf( __( 'Database size: %s', 'wp-speed-booster' ), $db_size['formatted'] ) ); ?></p>
-			<p><?php echo esc_html( sprintf( __( 'Post revisions: %d', 'wp-speed-booster' ), $stats['revisions'] ) ); ?></p>
-			<p><?php echo esc_html( sprintf( __( 'Auto-drafts: %d', 'wp-speed-booster' ), $stats['autodrafts'] ) ); ?></p>
-			<p><?php echo esc_html( sprintf( __( 'Trashed posts: %d', 'wp-speed-booster' ), $stats['trash_posts'] ) ); ?></p>
-			<p><?php echo esc_html( sprintf( __( 'Spam comments: %d', 'wp-speed-booster' ), $stats['spam_comments'] ) ); ?></p>
-			<p><?php echo esc_html( sprintf( __( 'Transients: %d', 'wp-speed-booster' ), $stats['transients'] ) ); ?></p>
-		</div>
-
-		<table class="form-table">
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Clean Revisions', 'wp-speed-booster' ); ?></th>
-				<td>
-					<label>
-						<input type="checkbox" name="wpsb_options[db_clean_revisions]" value="1" <?php checked( 1, ! empty( $options['db_clean_revisions'] ) ); ?> />
-						<?php esc_html_e( 'Clean old post revisions', 'wp-speed-booster' ); ?>
-					</label>
-					<br>
-					<label>
-						<?php esc_html_e( 'Keep last', 'wp-speed-booster' ); ?>
-						<input type="number" name="wpsb_options[db_revisions_to_keep]" value="<?php echo esc_attr( ! empty( $options['db_revisions_to_keep'] ) ? $options['db_revisions_to_keep'] : 3 ); ?>" min="0" max="100" style="width: 60px;" />
-						<?php esc_html_e( 'revisions per post', 'wp-speed-booster' ); ?>
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Clean Auto-drafts', 'wp-speed-booster' ); ?></th>
-				<td>
-					<label>
-						<input type="checkbox" name="wpsb_options[db_clean_autodrafts]" value="1" <?php checked( 1, ! empty( $options['db_clean_autodrafts'] ) ); ?> />
-						<?php esc_html_e( 'Remove auto-draft posts', 'wp-speed-booster' ); ?>
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Clean Trash', 'wp-speed-booster' ); ?></th>
-				<td>
-					<label>
-						<input type="checkbox" name="wpsb_options[db_clean_trash]" value="1" <?php checked( 1, ! empty( $options['db_clean_trash'] ) ); ?> />
-						<?php esc_html_e( 'Empty trash (posts and comments)', 'wp-speed-booster' ); ?>
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Clean Transients', 'wp-speed-booster' ); ?></th>
-				<td>
-					<label>
-						<input type="checkbox" name="wpsb_options[db_clean_transients]" value="1" <?php checked( 1, ! empty( $options['db_clean_transients'] ) ); ?> />
-						<?php esc_html_e( 'Remove expired transient options', 'wp-speed-booster' ); ?>
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Clean Spam Comments', 'wp-speed-booster' ); ?></th>
-				<td>
-					<label>
-						<input type="checkbox" name="wpsb_options[db_clean_spam]" value="1" <?php checked( 1, ! empty( $options['db_clean_spam'] ) ); ?> />
-						<?php esc_html_e( 'Remove spam comments', 'wp-speed-booster' ); ?>
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Optimize Tables', 'wp-speed-booster' ); ?></th>
-				<td>
-					<label>
-						<input type="checkbox" name="wpsb_options[db_optimize_tables]" value="1" <?php checked( 1, ! empty( $options['db_optimize_tables'] ) ); ?> />
-						<?php esc_html_e( 'Optimize database tables', 'wp-speed-booster' ); ?>
-					</label>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Automatic Optimization', 'wp-speed-booster' ); ?></th>
-				<td>
-					<select name="wpsb_options[db_auto_optimize]">
-						<option value="disabled" <?php selected( 'disabled', ! empty( $options['db_auto_optimize'] ) ? $options['db_auto_optimize'] : 'disabled' ); ?>><?php esc_html_e( 'Disabled', 'wp-speed-booster' ); ?></option>
-						<option value="daily" <?php selected( 'daily', ! empty( $options['db_auto_optimize'] ) ? $options['db_auto_optimize'] : '' ); ?>><?php esc_html_e( 'Daily', 'wp-speed-booster' ); ?></option>
-						<option value="weekly" <?php selected( 'weekly', ! empty( $options['db_auto_optimize'] ) ? $options['db_auto_optimize'] : '' ); ?>><?php esc_html_e( 'Weekly', 'wp-speed-booster' ); ?></option>
-						<option value="monthly" <?php selected( 'monthly', ! empty( $options['db_auto_optimize'] ) ? $options['db_auto_optimize'] : '' ); ?>><?php esc_html_e( 'Monthly', 'wp-speed-booster' ); ?></option>
-					</select>
-				</td>
-			</tr>
-		</table>
-
-		<div class="wpsb-quick-actions">
-			<button type="button" class="button button-secondary" id="wpsb-optimize-db-btn">
-				<?php esc_html_e( 'Run Optimization Now', 'wp-speed-booster' ); ?>
-			</button>
-		</div>
-
-		<div id="wpsb-ajax-result" class="notice" style="display:none;"></div>
-		<?php
+		require WPSB_DIR . 'admin/views/tab-database.php';
 	}
 
 	/**
