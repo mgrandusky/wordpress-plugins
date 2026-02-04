@@ -251,6 +251,7 @@ class WP_Speed_Booster_Image_Optimizer {
 
 			case 'image/png':
 				// PNG quality is 0-9 (0 = no compression, 9 = max)
+				// Convert from 0-100 scale to 0-9 scale
 				$png_quality = floor( ( 100 - $quality ) / 11 );
 				imagepng( $image, $file_path, $png_quality );
 				break;
@@ -453,7 +454,7 @@ class WP_Speed_Booster_Image_Optimizer {
 		$webp_url = preg_replace( '/\.(jpe?g|png)$/i', '.webp', $image_url );
 
 		// Check if WebP version exists
-		$upload_dir = wp_get_upload_dir();
+		$upload_dir = wp_upload_dir();
 		$webp_path  = str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $webp_url );
 
 		if ( file_exists( $webp_path ) ) {
@@ -509,7 +510,7 @@ class WP_Speed_Booster_Image_Optimizer {
 		$webp_src     = $this->get_webp_url( $original_src );
 
 		// Check if WebP exists
-		$upload_dir = wp_get_upload_dir();
+		$upload_dir = wp_upload_dir();
 		$webp_path  = str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $webp_src );
 
 		if ( ! file_exists( $webp_path ) ) {
@@ -532,7 +533,9 @@ class WP_Speed_Booster_Image_Optimizer {
 	 * @return array Modified file data.
 	 */
 	public function resize_large_images( $file ) {
-		if ( ! $this->is_enabled() || empty( $this->settings['image_max_width'] ) ) {
+		if ( ! $this->is_enabled() || 
+		     empty( $this->settings['image_resize_on_upload'] ) || 
+		     empty( $this->settings['image_max_width'] ) ) {
 			return $file;
 		}
 
@@ -625,9 +628,11 @@ class WP_Speed_Booster_Image_Optimizer {
 			);
 		}
 
-		// Queue images for optimization
+		// Queue images for optimization with incremental delays to avoid server overload
+		$delay = 10;
 		foreach ( $images as $image ) {
-			wp_schedule_single_event( time() + 10, 'wpspeed_optimize_image', array( $image->ID ) );
+			wp_schedule_single_event( time() + $delay, 'wpspeed_optimize_image', array( $image->ID ) );
+			$delay += 5; // 5 seconds between each image
 		}
 
 		return array(

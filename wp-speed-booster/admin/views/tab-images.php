@@ -431,12 +431,14 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'wpspeed_bulk_optimize',
-				nonce: '<?php echo wp_create_nonce( 'wpspeed-image-optimizer' ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'wpspeed-image-optimizer' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {
 					$('#wpspeed-progress-status').text(response.data.message);
-					// Simulate progress (in real implementation, you'd poll for actual progress)
+					// Note: This is a simplified progress indicator. 
+					// In production, you would poll the server for actual progress.
+					// For now, we simulate progress for better UX.
 					var progress = 0;
 					var interval = setInterval(function() {
 						progress += 5;
