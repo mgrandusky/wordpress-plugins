@@ -74,7 +74,10 @@ class WP_Speed_Booster_Image_Optimizer {
 	 * @return bool
 	 */
 	public function is_image( $file_path ) {
-		$info = getimagesize( $file_path );
+		if ( ! file_exists( $file_path ) ) {
+			return false;
+		}
+		$info = @getimagesize( $file_path );
 		return $info !== false;
 	}
 
@@ -251,8 +254,9 @@ class WP_Speed_Booster_Image_Optimizer {
 
 			case 'image/png':
 				// PNG quality is 0-9 (0 = no compression, 9 = max)
-				// Convert from 0-100 scale to 0-9 scale
-				$png_quality = floor( ( 100 - $quality ) / 11 );
+				// Convert from 0-100 scale to 0-9 scale: (100-quality)/11
+				// Example: quality 85 -> (100-85)/11 = 1.36 -> floor = 1
+				$png_quality = max( 0, min( 9, floor( ( 100 - $quality ) / 11 ) ) );
 				imagepng( $image, $file_path, $png_quality );
 				break;
 
@@ -476,11 +480,12 @@ class WP_Speed_Booster_Image_Optimizer {
 			return $supports;
 		}
 
-		if ( isset( $_SERVER['HTTP_ACCEPT'] ) &&
-			strpos( $_SERVER['HTTP_ACCEPT'], 'image/webp' ) !== false ) {
-			$supports = true;
-		} else {
-			$supports = false;
+		$supports = false;
+		if ( isset( $_SERVER['HTTP_ACCEPT'] ) ) {
+			$accept = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT'] ) );
+			if ( strpos( $accept, 'image/webp' ) !== false ) {
+				$supports = true;
+			}
 		}
 
 		return $supports;
@@ -533,9 +538,9 @@ class WP_Speed_Booster_Image_Optimizer {
 	 * @return array Modified file data.
 	 */
 	public function resize_large_images( $file ) {
-		if ( ! $this->is_enabled() || 
-		     empty( $this->settings['image_resize_on_upload'] ) || 
-		     empty( $this->settings['image_max_width'] ) ) {
+		if ( ! $this->is_enabled() ||
+			empty( $this->settings['image_resize_on_upload'] ) ||
+			empty( $this->settings['image_max_width'] ) ) {
 			return $file;
 		}
 
@@ -543,7 +548,12 @@ class WP_Speed_Booster_Image_Optimizer {
 		$max_height = ! empty( $this->settings['image_max_height'] ) ?
 			intval( $this->settings['image_max_height'] ) : $max_width;
 
-		list($width, $height, $type) = getimagesize( $file['file'] );
+		$image_info = @getimagesize( $file['file'] );
+		if ( ! $image_info ) {
+			return $file;
+		}
+
+		list($width, $height, $type) = $image_info;
 
 		if ( $width <= $max_width && $height <= $max_height ) {
 			return $file;
