@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: WP Speed Booster
- * Plugin URI: https://github.com/mgrandusky/wordpress-plugins
- * Description: Comprehensive page speed optimization plugin with caching, minification, lazy loading, database optimization, and more.
+ * Plugin Name: VelocityWP
+ * Plugin URI: https://velocitywp.com
+ * Description: The ultimate WordPress performance optimization plugin. Boost speed with object caching, lazy loading, critical CSS, image optimization, and more.
  * Version: 1.0.0
  * Author: mgrandusky
  * Author URI: https://github.com/mgrandusky
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wp-speed-booster
+ * Text Domain: velocitywp
  * Domain Path: /languages
  * Requires at least: 5.0
  * Tested up to: 6.5
@@ -21,154 +21,162 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'WPSB_VERSION', '1.0.0' );
-define( 'WPSB_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WPSB_URL', plugin_dir_url( __FILE__ ) );
-define( 'WPSB_BASENAME', plugin_basename( __FILE__ ) );
-define( 'WPSB_CACHE_DIR', WP_CONTENT_DIR . '/cache/wp-speed-booster/' );
+define( 'VELOCITYWP_VERSION', '1.0.0' );
+define( 'VELOCITYWP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'VELOCITYWP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'VELOCITYWP_PLUGIN_FILE', __FILE__ );
+define( 'VELOCITYWP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'VELOCITYWP_CACHE_DIR', WP_CONTENT_DIR . '/cache/velocitywp/' );
+
+// Legacy constants for backward compatibility
+define( 'WPSB_VERSION', VELOCITYWP_VERSION );
+define( 'WPSB_DIR', VELOCITYWP_PLUGIN_DIR );
+define( 'WPSB_URL', VELOCITYWP_PLUGIN_URL );
+define( 'WPSB_BASENAME', VELOCITYWP_PLUGIN_BASENAME );
+define( 'VELOCITYWP_CACHE_DIR', VELOCITYWP_CACHE_DIR );
 
 /**
- * Main WP Speed Booster Plugin Class
+ * Main VelocityWP Plugin Class
  */
-class WP_Speed_Booster {
+class VelocityWP {
 
 	/**
 	 * Instance of this class
 	 *
-	 * @var WP_Speed_Booster
+	 * @var VelocityWP
 	 */
 	private static $instance = null;
 
 	/**
 	 * Cache instance
 	 *
-	 * @var WPSB_Cache
+	 * @var VelocityWP_Cache
 	 */
 	private $cache;
 
 	/**
 	 * Minify instance
 	 *
-	 * @var WPSB_Minify
+	 * @var VelocityWP_Minify
 	 */
 	private $minify;
 
 	/**
 	 * Lazy load instance
 	 *
-	 * @var WPSB_Lazy_Load
+	 * @var VelocityWP_Lazy_Load
 	 */
 	private $lazy_load;
 
 	/**
 	 * Database optimization instance
 	 *
-	 * @var WPSB_Database
+	 * @var VelocityWP_Database
 	 */
 	private $database;
 
 	/**
 	 * Database optimizer instance
 	 *
-	 * @var WP_Speed_Booster_Database_Optimizer
+	 * @var VelocityWP_Database_Optimizer
 	 */
 	private $database_optimizer;
 
 	/**
 	 * CDN instance
 	 *
-	 * @var WPSB_CDN
+	 * @var VelocityWP_CDN
 	 */
 	private $cdn;
 
 	/**
 	 * Preload instance
 	 *
-	 * @var WPSB_Preload
+	 * @var VelocityWP_Preload
 	 */
 	private $preload;
 
 	/**
 	 * Critical CSS instance
 	 *
-	 * @var WPSB_Critical_CSS
+	 * @var VelocityWP_Critical_CSS
 	 */
 	private $critical_css;
 
 	/**
 	 * Admin instance
 	 *
-	 * @var WPSB_Admin
+	 * @var VelocityWP_Admin
 	 */
 	private $admin;
 
 	/**
 	 * WebP instance
 	 *
-	 * @var WPSB_WebP
+	 * @var VelocityWP_WebP
 	 */
 	private $webp;
 
 	/**
 	 * Font Optimizer instance
 	 *
-	 * @var WPSB_Font_Optimizer
+	 * @var VelocityWP_Font_Optimizer
 	 */
 	private $font_optimizer;
 
 	/**
 	 * Object Cache instance
 	 *
-	 * @var WPSB_Object_Cache
+	 * @var VelocityWP_Object_Cache
 	 */
 	private $object_cache;
 
 	/**
 	 * Fragment Cache instance
 	 *
-	 * @var WPSB_Fragment_Cache
+	 * @var VelocityWP_Fragment_Cache
 	 */
 	private $fragment_cache;
 
 	/**
 	 * Resource Hints instance
 	 *
-	 * @var WPSB_Resource_Hints
+	 * @var VelocityWP_Resource_Hints
 	 */
 	private $resource_hints;
 
 	/**
 	 * Cloudflare instance
 	 *
-	 * @var WPSB_Cloudflare
+	 * @var VelocityWP_Cloudflare
 	 */
 	private $cloudflare;
 
 	/**
 	 * Heartbeat instance
 	 *
-	 * @var WPSB_Heartbeat
+	 * @var VelocityWP_Heartbeat
 	 */
 	private $heartbeat;
 
 	/**
 	 * Performance Monitor instance
 	 *
-	 * @var WP_Speed_Booster_Performance_Monitor
+	 * @var VelocityWP_Performance_Monitor
 	 */
 	private $performance_monitor;
 
 	/**
 	 * WooCommerce Optimizer instance
 	 *
-	 * @var WP_Speed_Booster_WooCommerce_Optimizer
+	 * @var VelocityWP_WooCommerce_Optimizer
 	 */
 	private $woocommerce_optimizer;
 
 	/**
 	 * Get singleton instance
 	 *
-	 * @return WP_Speed_Booster
+	 * @return VelocityWP
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -185,31 +193,31 @@ class WP_Speed_Booster {
 		$this->load_dependencies();
 
 		// Initialize components
-		$this->cache     = new WPSB_Cache();
-		$this->minify    = new WPSB_Minify();
-		$this->lazy_load = new WPSB_Lazy_Load();
-		$this->database  = new WPSB_Database();
-		$this->database_optimizer = new WP_Speed_Booster_Database_Optimizer();
-		$this->cdn       = new WPSB_CDN();
-		$this->preload   = new WPSB_Preload();
-		$this->critical_css = new WPSB_Critical_CSS();
-		$this->webp      = new WPSB_WebP();
-		$this->font_optimizer = new WPSB_Font_Optimizer();
-		$this->object_cache = new WPSB_Object_Cache();
-		$this->fragment_cache = new WPSB_Fragment_Cache();
-		$this->resource_hints = new WPSB_Resource_Hints();
-		$this->cloudflare = new WPSB_Cloudflare();
-		$this->heartbeat = new WPSB_Heartbeat();
-		$this->performance_monitor = new WP_Speed_Booster_Performance_Monitor();
+		$this->cache     = new VelocityWP_Cache();
+		$this->minify    = new VelocityWP_Minify();
+		$this->lazy_load = new VelocityWP_Lazy_Load();
+		$this->database  = new VelocityWP_Database();
+		$this->database_optimizer = new VelocityWP_Database_Optimizer();
+		$this->cdn       = new VelocityWP_CDN();
+		$this->preload   = new VelocityWP_Preload();
+		$this->critical_css = new VelocityWP_Critical_CSS();
+		$this->webp      = new VelocityWP_WebP();
+		$this->font_optimizer = new VelocityWP_Font_Optimizer();
+		$this->object_cache = new VelocityWP_Object_Cache();
+		$this->fragment_cache = new VelocityWP_Fragment_Cache();
+		$this->resource_hints = new VelocityWP_Resource_Hints();
+		$this->cloudflare = new VelocityWP_Cloudflare();
+		$this->heartbeat = new VelocityWP_Heartbeat();
+		$this->performance_monitor = new VelocityWP_Performance_Monitor();
 
 		// Initialize WooCommerce optimizer
 		if ( class_exists( 'WooCommerce' ) ) {
-			$this->woocommerce_optimizer = new WP_Speed_Booster_WooCommerce_Optimizer();
+			$this->woocommerce_optimizer = new VelocityWP_WooCommerce_Optimizer();
 		}
 
 		// Initialize admin interface
 		if ( is_admin() ) {
-			$this->admin = new WPSB_Admin();
+			$this->admin = new VelocityWP_Admin();
 		}
 
 		// Register hooks
@@ -220,32 +228,32 @@ class WP_Speed_Booster {
 	 * Load plugin dependencies
 	 */
 	private function load_dependencies() {
-		require_once WPSB_DIR . 'includes/class-cache.php';
-		require_once WPSB_DIR . 'includes/class-minify.php';
-		require_once WPSB_DIR . 'includes/class-lazy-load.php';
-		require_once WPSB_DIR . 'includes/class-database.php';
-		require_once WPSB_DIR . 'includes/class-database-optimizer.php';
-		require_once WPSB_DIR . 'includes/class-cdn.php';
-		require_once WPSB_DIR . 'includes/class-preload.php';
-		require_once WPSB_DIR . 'includes/class-critical-css.php';
-		require_once WPSB_DIR . 'includes/class-webp.php';
-		require_once WPSB_DIR . 'includes/class-performance-metrics.php';
-		require_once WPSB_DIR . 'includes/class-js-delay.php';
-		require_once WPSB_DIR . 'includes/class-font-optimizer.php';
-		require_once WPSB_DIR . 'includes/class-object-cache.php';
-		require_once WPSB_DIR . 'includes/class-fragment-cache.php';
-		require_once WPSB_DIR . 'includes/class-resource-hints.php';
-		require_once WPSB_DIR . 'includes/class-cloudflare.php';
-		require_once WPSB_DIR . 'includes/class-heartbeat.php';
-		require_once WPSB_DIR . 'includes/class-performance-monitor.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-cache.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-minify.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-lazy-load.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-database.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-database-optimizer.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-cdn.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-preload.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-critical-css.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-webp.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-performance-metrics.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-js-delay.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-font-optimizer.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-object-cache.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-fragment-cache.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-resource-hints.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-cloudflare.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-heartbeat.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-performance-monitor.php';
 
 		// Load WooCommerce optimizer if WooCommerce is active
 		if ( class_exists( 'WooCommerce' ) ) {
-			require_once WPSB_DIR . 'includes/class-woocommerce-optimizer.php';
+			require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-woocommerce-optimizer.php';
 		}
 
 		if ( is_admin() ) {
-			require_once WPSB_DIR . 'admin/class-admin.php';
+			require_once VELOCITYWP_PLUGIN_DIR . 'admin/class-admin.php';
 		}
 	}
 
@@ -276,12 +284,16 @@ class WP_Speed_Booster {
 	 * Plugin activation
 	 */
 	public function activate() {
+		// Migrate old options and tables first
+		velocitywp_migrate_options();
+		velocitywp_migrate_tables();
+		
 		// Create cache directory
-		if ( ! file_exists( WPSB_CACHE_DIR ) ) {
-			wp_mkdir_p( WPSB_CACHE_DIR );
+		if ( ! file_exists( VELOCITYWP_CACHE_DIR ) ) {
+			wp_mkdir_p( VELOCITYWP_CACHE_DIR );
 			// Add .htaccess to protect cache directory
 			file_put_contents(
-				WPSB_CACHE_DIR . '.htaccess',
+				VELOCITYWP_CACHE_DIR . '.htaccess',
 				"<IfModule mod_autoindex.c>\n\tOptions -Indexes\n</IfModule>"
 			);
 		}
@@ -409,31 +421,31 @@ class WP_Speed_Booster {
 		);
 
 		// Don't override existing options
-		if ( ! get_option( 'wpsb_options' ) ) {
-			add_option( 'wpsb_options', $default_options );
+		if ( ! get_option( 'velocitywp_options' ) ) {
+			add_option( 'velocitywp_options', $default_options );
 		}
 
 		// Backup .htaccess before modifications
 		$htaccess = ABSPATH . '.htaccess';
-		if ( file_exists( $htaccess ) && ! file_exists( ABSPATH . '.htaccess.wpsb.backup' ) ) {
-			copy( $htaccess, ABSPATH . '.htaccess.wpsb.backup' );
+		if ( file_exists( $htaccess ) && ! file_exists( ABSPATH . '.htaccess.velocitywp.backup' ) ) {
+			copy( $htaccess, ABSPATH . '.htaccess.velocitywp.backup' );
 		}
 
 		// Create performance monitoring table
-		WP_Speed_Booster_Performance_Monitor::create_table();
+		VelocityWP_Performance_Monitor::create_table();
 
 		// Schedule automatic database optimization
-		if ( ! wp_next_scheduled( 'wpsb_auto_db_optimize' ) ) {
-			wp_schedule_event( time(), 'daily', 'wpsb_auto_db_optimize' );
+		if ( ! wp_next_scheduled( 'velocitywp_auto_db_optimize' ) ) {
+			wp_schedule_event( time(), 'daily', 'velocitywp_auto_db_optimize' );
 		}
 
 		// Schedule performance data cleanup
-		if ( ! wp_next_scheduled( 'wpspeed_cleanup_performance_data' ) ) {
-			wp_schedule_event( time(), 'daily', 'wpspeed_cleanup_performance_data' );
+		if ( ! wp_next_scheduled( 'velocitywp_cleanup_performance_data' ) ) {
+			wp_schedule_event( time(), 'daily', 'velocitywp_cleanup_performance_data' );
 		}
 
 		// Setup performance metrics scheduled checks
-		WP_Speed_Booster_Performance_Metrics::activate();
+		VelocityWP_Performance_Metrics::activate();
 	}
 
 	/**
@@ -441,16 +453,16 @@ class WP_Speed_Booster {
 	 */
 	public function deactivate() {
 		// Unschedule events
-		wp_clear_scheduled_hook( 'wpsb_auto_db_optimize' );
-		wp_clear_scheduled_hook( 'wpspeed_cleanup_performance_data' );
-		WP_Speed_Booster_Performance_Metrics::deactivate();
+		wp_clear_scheduled_hook( 'velocitywp_auto_db_optimize' );
+		wp_clear_scheduled_hook( 'velocitywp_cleanup_performance_data' );
+		VelocityWP_Performance_Metrics::deactivate();
 	}
 
 	/**
 	 * Disable emojis
 	 */
 	public function disable_emojis() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( ! empty( $options['disable_emojis'] ) ) {
 			remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 			remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
@@ -466,7 +478,7 @@ class WP_Speed_Booster {
 	 * Disable embeds
 	 */
 	public function disable_embeds() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( ! empty( $options['disable_embeds'] ) ) {
 			remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
 			remove_action( 'wp_head', 'wp_oembed_add_host_js' );
@@ -479,7 +491,7 @@ class WP_Speed_Booster {
 	 * @param WP_Scripts $scripts WP_Scripts object.
 	 */
 	public function remove_jquery_migrate( $scripts ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( ! empty( $options['disable_jquery_migrate'] ) && ! is_admin() ) {
 			if ( isset( $scripts->registered['jquery'] ) ) {
 				$script = $scripts->registered['jquery'];
@@ -494,7 +506,7 @@ class WP_Speed_Booster {
 	 * Add DNS prefetch
 	 */
 	public function add_dns_prefetch() {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( ! empty( $options['dns_prefetch'] ) ) {
 			$domains = explode( "\n", $options['dns_prefetch'] );
 			foreach ( $domains as $domain ) {
@@ -513,7 +525,7 @@ class WP_Speed_Booster {
 	 * @return string
 	 */
 	public function remove_query_strings( $src ) {
-		$options = get_option( 'wpsb_options', array() );
+		$options = get_option( 'velocitywp_options', array() );
 		if ( ! empty( $options['remove_query_strings'] ) ) {
 			if ( strpos( $src, '?ver=' ) !== false ) {
 				$src = remove_query_arg( 'ver', $src );
@@ -524,52 +536,112 @@ class WP_Speed_Booster {
 }
 
 /**
+ * Migrate old options to new names for backward compatibility
+ */
+function velocitywp_migrate_options() {
+	// Migrate main settings option
+	$old_settings = get_option( 'wpsb_options' );
+	if ( $old_settings && ! get_option( 'velocitywp_options' ) ) {
+		update_option( 'velocitywp_options', $old_settings );
+	}
+	
+	// Migrate other old options
+	$options_map = array(
+		'wpspeed_critical_css' => 'velocitywp_critical_css',
+		'wpspeed_heartbeat_stats' => 'velocitywp_heartbeat_stats',
+		'wpspeed_performance_history' => 'velocitywp_performance_history',
+		'wpsb_fragment_stats' => 'velocitywp_fragment_stats',
+		'wpsb_geo_stats' => 'velocitywp_geo_stats',
+		'wpsb_slow_queries' => 'velocitywp_slow_queries',
+		'wpsb_duplicate_queries' => 'velocitywp_duplicate_queries',
+		'wpsb_missing_indexes' => 'velocitywp_missing_indexes',
+		'wpsb_query_history' => 'velocitywp_query_history',
+		'wpsb_preload_progress' => 'velocitywp_preload_progress',
+		'wpsb_ab_results' => 'velocitywp_ab_results',
+		'wpsb_ab_tests' => 'velocitywp_ab_tests',
+		'wpsb_exclusion_stats' => 'velocitywp_exclusion_stats',
+		'wpsb_cache_analytics' => 'velocitywp_cache_analytics',
+		'wpsb_mobile_stats' => 'velocitywp_mobile_stats',
+		'wpsb_cf_last_purge' => 'velocitywp_cf_last_purge',
+	);
+	
+	foreach ( $options_map as $old_key => $new_key ) {
+		$old_value = get_option( $old_key );
+		if ( $old_value && ! get_option( $new_key ) ) {
+			update_option( $new_key, $old_value );
+		}
+	}
+}
+
+/**
+ * Migrate database tables
+ */
+function velocitywp_migrate_tables() {
+	global $wpdb;
+	
+	// Migrate performance table
+	$old_table = $wpdb->prefix . 'wpspeed_performance';
+	$new_table = $wpdb->prefix . 'velocitywp_performance';
+	
+	// Check if old table exists and new doesn't
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $old_table ) ) === $old_table ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$new_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $new_table ) );
+		if ( ! $new_exists ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$wpdb->query( $wpdb->prepare( 'RENAME TABLE %i TO %i', $old_table, $new_table ) );
+		}
+	}
+}
+
+/**
  * Initialize the plugin
  */
-function wpsb_init() {
-	return WP_Speed_Booster::get_instance();
+function velocitywp_init() {
+	return VelocityWP::get_instance();
 }
 
 // Start the plugin
-add_action( 'plugins_loaded', 'wpsb_init' );
+add_action( 'plugins_loaded', 'velocitywp_init' );
 
 /**
  * Uninstall hook
  */
-register_uninstall_hook( __FILE__, 'wpsb_uninstall' );
+register_uninstall_hook( __FILE__, 'velocitywp_uninstall' );
 
 /**
  * Plugin uninstall
  */
-function wpsb_uninstall() {
+function velocitywp_uninstall() {
 	global $wpdb;
 
 	// Remove options
-	delete_option( 'wpsb_options' );
+	delete_option( 'velocitywp_options' );
 
 	// Remove performance monitoring table
-	$table_name = $wpdb->prefix . 'wpspeed_performance';
+	$table_name = $wpdb->prefix . 'velocitywp_performance';
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 	$wpdb->query( "DROP TABLE IF EXISTS `{$table_name}`" );
 
 	// Remove cache directory
-	if ( file_exists( WPSB_CACHE_DIR ) ) {
-		$files = glob( WPSB_CACHE_DIR . '*', GLOB_MARK );
+	if ( file_exists( VELOCITYWP_CACHE_DIR ) ) {
+		$files = glob( VELOCITYWP_CACHE_DIR . '*', GLOB_MARK );
 		foreach ( $files as $file ) {
 			if ( is_file( $file ) ) {
 				unlink( $file );
 			}
 		}
-		rmdir( WPSB_CACHE_DIR );
+		rmdir( VELOCITYWP_CACHE_DIR );
 	}
 
 	// Restore .htaccess backup
-	if ( file_exists( ABSPATH . '.htaccess.wpsb.backup' ) ) {
-		copy( ABSPATH . '.htaccess.wpsb.backup', ABSPATH . '.htaccess' );
-		unlink( ABSPATH . '.htaccess.wpsb.backup' );
+	if ( file_exists( ABSPATH . '.htaccess.velocitywp.backup' ) ) {
+		copy( ABSPATH . '.htaccess.velocitywp.backup', ABSPATH . '.htaccess' );
+		unlink( ABSPATH . '.htaccess.velocitywp.backup' );
 	}
 
 	// Clear scheduled events
-	wp_clear_scheduled_hook( 'wpsb_auto_db_optimize' );
-	wp_clear_scheduled_hook( 'wpspeed_cleanup_performance_data' );
+	wp_clear_scheduled_hook( 'velocitywp_auto_db_optimize' );
+	wp_clear_scheduled_hook( 'velocitywp_cleanup_performance_data' );
 }
