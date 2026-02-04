@@ -71,7 +71,11 @@ class WPSB_Critical_CSS {
 			return false;
 		}
 
-		$current_url = $_SERVER['REQUEST_URI'];
+		$current_url = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
+		if ( empty( $current_url ) ) {
+			return false;
+		}
+
 		$exclude_patterns = explode( "\n", $this->settings['critical_css_exclude'] );
 
 		foreach ( $exclude_patterns as $pattern ) {
@@ -240,10 +244,12 @@ class WPSB_Critical_CSS {
 				return ! empty( $categories ) ? get_category_link( $categories[0]->term_id ) : false;
 			
 			case 'search':
-				return home_url( '/?s=test' );
+				// Use a generic search term that represents typical usage
+				return home_url( '/?s=wordpress' );
 			
 			case '404':
-				return home_url( '/404-test-page-not-found' );
+				// Generate unique 404 path to avoid conflicts
+				return home_url( '/404-page-not-found-' . time() );
 			
 			default:
 				return home_url( '/' );
@@ -624,7 +630,12 @@ class WPSB_Critical_CSS {
 			wp_mkdir_p( $css_dir );
 		}
 		
-		file_put_contents( $css_dir . $template_key . '.css', $css );
+		$file_path = $css_dir . $template_key . '.css';
+		$result = file_put_contents( $file_path, $css );
+		
+		if ( false === $result ) {
+			error_log( 'WPSB Critical CSS: Failed to write CSS file: ' . $file_path );
+		}
 		
 		return true;
 	}
@@ -647,8 +658,13 @@ class WPSB_Critical_CSS {
 			// Delete file
 			$upload_dir = wp_upload_dir();
 			$css_file = $upload_dir['basedir'] . '/wpspeed-critical-css/' . $template_key . '.css';
-			if ( file_exists( $css_file ) ) {
-				unlink( $css_file );
+			
+			// Verify file is in expected directory before deletion
+			$expected_dir = $upload_dir['basedir'] . '/wpspeed-critical-css/';
+			if ( file_exists( $css_file ) && strpos( realpath( $css_file ), realpath( $expected_dir ) ) === 0 ) {
+				if ( ! unlink( $css_file ) ) {
+					error_log( 'WPSB Critical CSS: Failed to delete CSS file: ' . $css_file );
+				}
 			}
 			
 			return true;
@@ -772,8 +788,8 @@ class WPSB_Critical_CSS {
 		
 		// Save critical CSS
 		if ( isset( $_POST['wpsb_critical_css'] ) ) {
-			// Sanitize CSS while preserving newlines
-			$critical_css = wp_kses( $_POST['wpsb_critical_css'], array() );
+			// Sanitize CSS - preserve valid CSS syntax while removing any potential scripts
+			$critical_css = wp_strip_all_tags( $_POST['wpsb_critical_css'] );
 			update_post_meta( $post_id, '_wpsb_critical_css', $critical_css );
 		}
 	}
@@ -921,7 +937,7 @@ class WPSB_Critical_CSS {
 		}
 		
 		$template = isset( $_POST['template'] ) ? sanitize_text_field( $_POST['template'] ) : '';
-		$css = isset( $_POST['css'] ) ? wp_kses( $_POST['css'], array() ) : '';
+		$css = isset( $_POST['css'] ) ? wp_strip_all_tags( $_POST['css'] ) : '';
 		$viewport = isset( $_POST['viewport'] ) ? sanitize_text_field( $_POST['viewport'] ) : 'desktop';
 		
 		if ( empty( $template ) || empty( $css ) ) {

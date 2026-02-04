@@ -534,7 +534,7 @@ jQuery(document).ready(function($) {
 		$stats.text('');
 		
 		// Load from stored data
-		var cssData = <?php echo wp_json_encode( $critical_css_data ); ?>;
+		var cssData = <?php echo wp_json_encode( $critical_css_data, JSON_HEX_TAG | JSON_HEX_AMP ); ?>;
 		var templateKey = template + '_desktop';
 		
 		if (cssData[templateKey]) {
