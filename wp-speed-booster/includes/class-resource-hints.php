@@ -22,6 +22,10 @@ class WPSB_Resource_Hints {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
+		
+		// AJAX handlers
+		add_action( 'wp_ajax_wpsb_detect_resources', array( $this, 'ajax_detect_resources' ) );
+		add_action( 'wp_ajax_wpsb_test_hints', array( $this, 'ajax_test_hints' ) );
 	}
 
 	/**
@@ -30,182 +34,175 @@ class WPSB_Resource_Hints {
 	public function init() {
 		$options = get_option( 'wpsb_options', array() );
 
-		if ( empty( $options['resource_hints'] ) || is_admin() ) {
+		if ( empty( $options['resource_hints_enabled'] ) || is_admin() ) {
 			return;
 		}
 
-		add_action( 'wp_head', array( $this, 'output_resource_hints' ), 1 );
+		add_action( 'wp_head', array( $this, 'inject_resource_hints' ), 1 );
 		add_filter( 'wp_resource_hints', array( $this, 'add_resource_hints' ), 10, 2 );
+	}
+	
+	/**
+	 * Check if resource hints are enabled
+	 *
+	 * @return bool
+	 */
+	public function is_enabled() {
+		$options = get_option( 'wpsb_options', array() );
+		return ! empty( $options['resource_hints_enabled'] );
 	}
 
 	/**
-	 * Output resource hints in head
+	 * Inject resource hints in head
 	 */
-	public function output_resource_hints() {
+	public function inject_resource_hints() {
 		$options = get_option( 'wpsb_options', array() );
 
 		// DNS Prefetch
-		if ( ! empty( $options['dns_prefetch'] ) ) {
-			$this->output_dns_prefetch( $options );
+		if ( ! empty( $options['dns_prefetch_enabled'] ) ) {
+			$domains = $this->get_dns_prefetch_domains();
+			if ( ! empty( $domains ) ) {
+				$this->output_dns_prefetch( $domains );
+			}
 		}
 
-		// Preconnect
-		if ( ! empty( $options['preconnect'] ) ) {
-			$this->output_preconnect( $options );
+		// Preconnect (must come before preload for optimal performance)
+		if ( ! empty( $options['preconnect_enabled'] ) ) {
+			$origins = $this->get_preconnect_origins();
+			if ( ! empty( $origins ) ) {
+				$this->output_preconnect( $origins );
+			}
 		}
 
 		// Preload
-		if ( ! empty( $options['preload_resources'] ) ) {
-			$this->output_preload( $options );
+		if ( ! empty( $options['preload_enabled'] ) ) {
+			$resources = $this->get_preload_resources();
+			if ( ! empty( $resources ) ) {
+				$this->output_preload( $resources );
+			}
 		}
 
 		// Prefetch
-		if ( ! empty( $options['prefetch_resources'] ) ) {
-			$this->output_prefetch( $options );
-		}
-
-		// Prerender
-		if ( ! empty( $options['prerender'] ) ) {
-			$this->output_prerender( $options );
-		}
-	}
-
-	/**
-	 * Output DNS prefetch hints
-	 *
-	 * @param array $options Plugin options.
-	 */
-	private function output_dns_prefetch( $options ) {
-		$domains = $this->get_list_from_option( $options, 'dns_prefetch_urls' );
-
-		// Add common third-party domains
-		$default_domains = array(
-			'//fonts.googleapis.com',
-			'//fonts.gstatic.com',
-			'//ajax.googleapis.com',
-			'//stats.wp.com',
-			'//www.google-analytics.com',
-			'//www.googletagmanager.com',
-		);
-
-		$domains = array_merge( $default_domains, $domains );
-		$domains = array_unique( $domains );
-		$domains = apply_filters( 'wpsb_dns_prefetch_domains', $domains );
-
-		foreach ( $domains as $domain ) {
-			echo '<link rel="dns-prefetch" href="' . esc_url( $domain ) . '">' . "\n";
-		}
-	}
-
-	/**
-	 * Output preconnect hints
-	 *
-	 * @param array $options Plugin options.
-	 */
-	private function output_preconnect( $options ) {
-		$urls = $this->get_list_from_option( $options, 'preconnect_urls' );
-
-		// Add CDN if configured
-		if ( ! empty( $options['cdn_url'] ) ) {
-			$urls[] = $options['cdn_url'];
-		}
-
-		$urls = array_unique( $urls );
-		$urls = apply_filters( 'wpsb_preconnect_urls', $urls );
-
-		foreach ( $urls as $url ) {
-			echo '<link rel="preconnect" href="' . esc_url( $url ) . '" crossorigin>' . "\n";
-		}
-	}
-
-	/**
-	 * Output preload hints
-	 *
-	 * @param array $options Plugin options.
-	 */
-	private function output_preload( $options ) {
-		$resources = $this->get_preload_resources( $options );
-
-		foreach ( $resources as $resource ) {
-			$attributes = array(
-				'rel'  => 'preload',
-				'href' => esc_url( $resource['url'] ),
-				'as'   => esc_attr( $resource['as'] ),
-			);
-
-			// Add type for fonts
-			if ( $resource['as'] === 'font' ) {
-				$attributes['type'] = $this->get_font_type( $resource['url'] );
-				$attributes['crossorigin'] = 'crossorigin';
+		if ( ! empty( $options['prefetch_enabled'] ) ) {
+			$urls = $this->get_prefetch_urls();
+			if ( ! empty( $urls ) ) {
+				$this->output_prefetch( $urls );
 			}
-
-			// Add media query if specified
-			if ( ! empty( $resource['media'] ) ) {
-				$attributes['media'] = esc_attr( $resource['media'] );
-			}
-
-			$tag = '<link';
-			foreach ( $attributes as $key => $value ) {
-				$tag .= ' ' . $key . '="' . $value . '"';
-			}
-			$tag .= '>' . "\n";
-
-			echo $tag;
 		}
 	}
 
 	/**
-	 * Get preload resources
+	 * Detect external domains from enqueued scripts and styles
 	 *
-	 * @param array $options Plugin options.
-	 * @return array Resources to preload.
+	 * @return array External domains.
 	 */
-	private function get_preload_resources( $options ) {
-		$resources = array();
+	public function detect_external_domains() {
+		global $wp_scripts, $wp_styles;
+		$domains = array();
+		$site_url = parse_url( get_site_url(), PHP_URL_HOST );
 
-		// Parse custom preload resources
-		if ( ! empty( $options['preload_resources_list'] ) ) {
-			$lines = explode( "\n", $options['preload_resources_list'] );
-			
-			foreach ( $lines as $line ) {
-				$line = trim( $line );
-				if ( empty( $line ) ) {
-					continue;
-				}
-
-				// Parse: URL|type|media (media is optional)
-				$parts = array_map( 'trim', explode( '|', $line ) );
-				
-				if ( count( $parts ) >= 2 ) {
-					$resource = array(
-						'url' => $parts[0],
-						'as'  => $parts[1],
-					);
-
-					if ( ! empty( $parts[2] ) ) {
-						$resource['media'] = $parts[2];
+		// Check enqueued scripts
+		if ( ! empty( $wp_scripts->queue ) ) {
+			foreach ( $wp_scripts->queue as $handle ) {
+				if ( isset( $wp_scripts->registered[ $handle ] ) ) {
+					$src = $wp_scripts->registered[ $handle ]->src;
+					$domain = $this->extract_domain( $src );
+					if ( $domain && $this->is_external( $domain, $site_url ) ) {
+						$domains[] = $domain;
 					}
-
-					$resources[] = $resource;
 				}
 			}
 		}
 
-		// Auto-detect critical resources
-		if ( ! empty( $options['auto_preload_critical'] ) ) {
-			$critical = $this->get_critical_resources();
-			$resources = array_merge( $resources, $critical );
+		// Check enqueued styles
+		if ( ! empty( $wp_styles->queue ) ) {
+			foreach ( $wp_styles->queue as $handle ) {
+				if ( isset( $wp_styles->registered[ $handle ] ) ) {
+					$src = $wp_styles->registered[ $handle ]->src;
+					$domain = $this->extract_domain( $src );
+					if ( $domain && $this->is_external( $domain, $site_url ) ) {
+						$domains[] = $domain;
+					}
+				}
+			}
 		}
 
-		return apply_filters( 'wpsb_preload_resources', $resources );
+		return array_unique( $domains );
 	}
 
 	/**
-	 * Get critical resources to preload
+	 * Extract domain from URL
+	 *
+	 * @param string $url URL to extract domain from.
+	 * @return string|false Domain or false.
+	 */
+	public function extract_domain( $url ) {
+		if ( empty( $url ) ) {
+			return false;
+		}
+
+		// Handle protocol-relative URLs
+		if ( strpos( $url, '//' ) === 0 ) {
+			$url = 'https:' . $url;
+		}
+
+		$parsed = parse_url( $url );
+		return isset( $parsed['host'] ) ? $parsed['host'] : false;
+	}
+
+	/**
+	 * Check if domain is external
+	 *
+	 * @param string $domain Domain to check.
+	 * @param string $site_domain Current site domain.
+	 * @return bool
+	 */
+	public function is_external( $domain, $site_domain = '' ) {
+		if ( empty( $site_domain ) ) {
+			$site_domain = parse_url( get_site_url(), PHP_URL_HOST );
+		}
+
+		return $domain !== $site_domain && $domain !== 'localhost';
+	}
+
+	/**
+	 * Detect font files from enqueued styles
+	 *
+	 * @return array Font URLs.
+	 */
+	public function detect_font_files() {
+		global $wp_styles;
+		$fonts = array();
+
+		if ( ! empty( $wp_styles->queue ) ) {
+			foreach ( $wp_styles->queue as $handle ) {
+				if ( isset( $wp_styles->registered[ $handle ] ) ) {
+					$src = $wp_styles->registered[ $handle ]->src;
+					
+					// Check if it's a Google Fonts URL
+					if ( strpos( $src, 'fonts.googleapis.com' ) !== false ) {
+						$fonts[] = array(
+							'url' => 'https://fonts.googleapis.com',
+							'type' => 'google-fonts',
+						);
+						$fonts[] = array(
+							'url' => 'https://fonts.gstatic.com',
+							'type' => 'google-fonts',
+						);
+					}
+				}
+			}
+		}
+
+		return array_unique( $fonts, SORT_REGULAR );
+	}
+
+	/**
+	 * Detect critical resources to preload
 	 *
 	 * @return array Critical resources.
 	 */
-	private function get_critical_resources() {
+	public function detect_critical_resources() {
 		$resources = array();
 
 		// Get theme stylesheet
@@ -221,42 +218,254 @@ class WPSB_Resource_Hints {
 	}
 
 	/**
-	 * Output prefetch hints
+	 * Get DNS prefetch domains
 	 *
-	 * @param array $options Plugin options.
+	 * @return array Domains to prefetch.
 	 */
-	private function output_prefetch( $options ) {
-		$urls = $this->get_list_from_option( $options, 'prefetch_urls' );
+	public function get_dns_prefetch_domains() {
+		$options = get_option( 'wpsb_options', array() );
+		$domains = array();
 
-		// Auto-prefetch next pages
-		if ( ! empty( $options['auto_prefetch_next'] ) ) {
-			$next_urls = $this->get_next_page_urls();
-			$urls = array_merge( $urls, $next_urls );
+		// Auto-detect external domains
+		if ( ! empty( $options['dns_prefetch_auto'] ) ) {
+			$detected = $this->detect_external_domains();
+			$domains = array_merge( $domains, $detected );
 		}
 
-		$urls = array_unique( $urls );
-		$urls = apply_filters( 'wpsb_prefetch_urls', $urls );
+		// Manual domains
+		if ( ! empty( $options['dns_prefetch_domains'] ) ) {
+			$manual = array_map( 'trim', explode( "\n", $options['dns_prefetch_domains'] ) );
+			$manual = array_filter( $manual );
+			$domains = array_merge( $domains, $manual );
+		}
 
+		return array_unique( $domains );
+	}
+
+	/**
+	 * Output DNS prefetch tags
+	 *
+	 * @param array $domains Domains to prefetch.
+	 */
+	public function output_dns_prefetch( $domains ) {
+		foreach ( $domains as $domain ) {
+			// Ensure domain has protocol prefix
+			if ( strpos( $domain, '//' ) !== 0 && strpos( $domain, 'http' ) !== 0 ) {
+				$domain = '//' . $domain;
+			}
+			echo '<link rel="dns-prefetch" href="' . esc_attr( $domain ) . '">' . "\n";
+		}
+	}
+
+	/**
+	 * Get preconnect origins
+	 *
+	 * @return array Origins to preconnect.
+	 */
+	public function get_preconnect_origins() {
+		$options = get_option( 'wpsb_options', array() );
+		$origins = array();
+
+		if ( ! empty( $options['preconnect_origins'] ) && is_array( $options['preconnect_origins'] ) ) {
+			foreach ( $options['preconnect_origins'] as $origin ) {
+				if ( ! empty( $origin['url'] ) ) {
+					$origins[] = array(
+						'url' => $origin['url'],
+						'crossorigin' => ! empty( $origin['crossorigin'] ),
+					);
+				}
+			}
+		}
+
+		// Limit to 6 preconnects (browser recommendation)
+		$origins = array_slice( $origins, 0, 6 );
+
+		return $origins;
+	}
+
+	/**
+	 * Output preconnect hints
+	 *
+	 * @param array $origins Origins to preconnect.
+	 */
+	public function output_preconnect( $origins ) {
+		foreach ( $origins as $origin ) {
+			$crossorigin = ! empty( $origin['crossorigin'] ) ? ' crossorigin' : '';
+			echo '<link rel="preconnect" href="' . esc_url( $origin['url'] ) . '"' . $crossorigin . '>' . "\n";
+		}
+	}
+
+	/**
+	 * Get preload resources
+	 *
+	 * @return array Resources to preload.
+	 */
+	public function get_preload_resources() {
+		$options = get_option( 'wpsb_options', array() );
+		$resources = array();
+
+		if ( ! empty( $options['preload_resources'] ) && is_array( $options['preload_resources'] ) ) {
+			foreach ( $options['preload_resources'] as $resource ) {
+				if ( ! empty( $resource['url'] ) && ! empty( $resource['as'] ) ) {
+					$res = array(
+						'url' => $resource['url'],
+						'as' => $resource['as'],
+					);
+					
+					if ( ! empty( $resource['type'] ) ) {
+						$res['type'] = $resource['type'];
+					}
+					
+					if ( ! empty( $resource['crossorigin'] ) ) {
+						$res['crossorigin'] = true;
+					}
+					
+					if ( ! empty( $resource['fetchpriority'] ) ) {
+						$res['fetchpriority'] = $resource['fetchpriority'];
+					}
+					
+					$resources[] = $res;
+				}
+			}
+		}
+
+		return $resources;
+	}
+
+	/**
+	 * Output preload hints
+	 *
+	 * @param array $resources Resources to preload.
+	 */
+	public function output_preload( $resources ) {
+		foreach ( $resources as $resource ) {
+			$as = $resource['as']; // font, style, script, image
+			$type = isset( $resource['type'] ) ? ' type="' . esc_attr( $resource['type'] ) . '"' : '';
+			$crossorigin = isset( $resource['crossorigin'] ) && $resource['crossorigin'] ? ' crossorigin' : '';
+			$fetchpriority = isset( $resource['fetchpriority'] ) ? ' fetchpriority="' . esc_attr( $resource['fetchpriority'] ) . '"' : '';
+			
+			echo '<link rel="preload" href="' . esc_url( $resource['url'] ) . '" as="' . esc_attr( $as ) . '"' . $type . $crossorigin . $fetchpriority . '>' . "\n";
+		}
+	}
+
+	/**
+	 * Preload fonts
+	 *
+	 * @return array Font resources to preload.
+	 */
+	public function preload_fonts() {
+		$detected = $this->detect_font_files();
+		$resources = array();
+
+		foreach ( $detected as $font ) {
+			if ( $font['type'] === 'google-fonts' ) {
+				$resources[] = array(
+					'url' => $font['url'],
+					'as' => 'font',
+					'crossorigin' => true,
+				);
+			}
+		}
+
+		return $resources;
+	}
+
+	/**
+	 * Preload critical CSS
+	 *
+	 * @return array CSS resources to preload.
+	 */
+	public function preload_critical_css() {
+		$resources = array();
+		
+		$theme_url = get_stylesheet_uri();
+		if ( $theme_url ) {
+			$resources[] = array(
+				'url' => $theme_url,
+				'as' => 'style',
+			);
+		}
+
+		return $resources;
+	}
+
+	/**
+	 * Preload critical JS
+	 *
+	 * @return array JS resources to preload.
+	 */
+	public function preload_critical_js() {
+		global $wp_scripts;
+		$resources = array();
+
+		// This could be extended to detect critical JS files
+		return $resources;
+	}
+
+	/**
+	 * Get prefetch URLs
+	 *
+	 * @return array URLs to prefetch.
+	 */
+	public function get_prefetch_urls() {
+		$options = get_option( 'wpsb_options', array() );
+		$urls = array();
+
+		// Auto-prefetch next page
+		if ( ! empty( $options['prefetch_next_page'] ) ) {
+			$next_url = $this->detect_next_page();
+			if ( $next_url ) {
+				$urls[] = $next_url;
+			}
+		}
+
+		// Manual URLs
+		if ( ! empty( $options['prefetch_urls'] ) ) {
+			$manual = array_map( 'trim', explode( "\n", $options['prefetch_urls'] ) );
+			$manual = array_filter( $manual );
+			$urls = array_merge( $urls, $manual );
+		}
+
+		return array_unique( $urls );
+	}
+
+	/**
+	 * Output prefetch hints
+	 *
+	 * @param array $urls URLs to prefetch.
+	 */
+	public function output_prefetch( $urls ) {
 		foreach ( $urls as $url ) {
 			echo '<link rel="prefetch" href="' . esc_url( $url ) . '">' . "\n";
 		}
 	}
 
 	/**
-	 * Output prerender hints
+	 * Detect next page for pagination
 	 *
-	 * @param array $options Plugin options.
+	 * @return string|null Next page URL or null.
 	 */
-	private function output_prerender( $options ) {
-		$urls = $this->get_list_from_option( $options, 'prerender_urls' );
-
-		// Limit to prevent excessive resource usage
-		$urls = array_slice( $urls, 0, 2 );
-		$urls = apply_filters( 'wpsb_prerender_urls', $urls );
-
-		foreach ( $urls as $url ) {
-			echo '<link rel="prerender" href="' . esc_url( $url ) . '">' . "\n";
+	public function detect_next_page() {
+		if ( is_singular() ) {
+			// Get next post in same category
+			$next_post = get_next_post( true );
+			if ( $next_post ) {
+				return get_permalink( $next_post->ID );
+			}
 		}
+
+		if ( is_archive() || is_home() ) {
+			// Get next page of archive
+			global $wp_query;
+			if ( $wp_query->max_num_pages > 1 ) {
+				$current_page = max( 1, get_query_var( 'paged' ) );
+				if ( $current_page < $wp_query->max_num_pages ) {
+					return get_pagenum_link( $current_page + 1 );
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -271,16 +480,18 @@ class WPSB_Resource_Hints {
 
 		switch ( $relation_type ) {
 			case 'dns-prefetch':
-				if ( ! empty( $options['dns_prefetch'] ) ) {
-					$domains = $this->get_list_from_option( $options, 'dns_prefetch_urls' );
+				if ( ! empty( $options['dns_prefetch_enabled'] ) ) {
+					$domains = $this->get_dns_prefetch_domains();
 					$urls = array_merge( $urls, $domains );
 				}
 				break;
 
 			case 'preconnect':
-				if ( ! empty( $options['preconnect'] ) ) {
-					$preconnect = $this->get_list_from_option( $options, 'preconnect_urls' );
-					$urls = array_merge( $urls, $preconnect );
+				if ( ! empty( $options['preconnect_enabled'] ) ) {
+					$origins = $this->get_preconnect_origins();
+					foreach ( $origins as $origin ) {
+						$urls[] = $origin['url'];
+					}
 				}
 				break;
 		}
@@ -289,19 +500,56 @@ class WPSB_Resource_Hints {
 	}
 
 	/**
-	 * Get list from option
-	 *
-	 * @param array  $options Plugin options.
-	 * @param string $key     Option key.
-	 * @return array List items.
+	 * AJAX handler to detect resources
 	 */
-	private function get_list_from_option( $options, $key ) {
-		if ( empty( $options[ $key ] ) ) {
-			return array();
+	public function ajax_detect_resources() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
 		}
 
-		$list = array_map( 'trim', explode( "\n", $options[ $key ] ) );
-		return array_filter( $list );
+		$domains = $this->detect_external_domains();
+		$fonts = $this->detect_font_files();
+		$critical = $this->detect_critical_resources();
+
+		wp_send_json_success( array(
+			'domains' => $domains,
+			'fonts' => $fonts,
+			'critical' => $critical,
+		) );
+	}
+
+	/**
+	 * AJAX handler to test hints
+	 */
+	public function ajax_test_hints() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
+		}
+
+		$options = get_option( 'wpsb_options', array() );
+		$hints = array();
+
+		if ( ! empty( $options['dns_prefetch_enabled'] ) ) {
+			$hints['dns_prefetch'] = $this->get_dns_prefetch_domains();
+		}
+
+		if ( ! empty( $options['preconnect_enabled'] ) ) {
+			$hints['preconnect'] = $this->get_preconnect_origins();
+		}
+
+		if ( ! empty( $options['preload_enabled'] ) ) {
+			$hints['preload'] = $this->get_preload_resources();
+		}
+
+		if ( ! empty( $options['prefetch_enabled'] ) ) {
+			$hints['prefetch'] = $this->get_prefetch_urls();
+		}
+
+		wp_send_json_success( array( 'hints' => $hints ) );
 	}
 
 	/**
@@ -322,32 +570,5 @@ class WPSB_Resource_Hints {
 		}
 
 		return 'font/woff2';
-	}
-
-	/**
-	 * Get URLs of next pages to prefetch
-	 *
-	 * @return array Next page URLs.
-	 */
-	private function get_next_page_urls() {
-		$urls = array();
-
-		// Get next post
-		if ( is_single() ) {
-			$next_post = get_next_post();
-			if ( $next_post ) {
-				$urls[] = get_permalink( $next_post );
-			}
-		}
-
-		// Get next page in pagination
-		if ( is_paged() ) {
-			$next_page = get_next_posts_page_link();
-			if ( $next_page ) {
-				$urls[] = $next_page;
-			}
-		}
-
-		return $urls;
 	}
 }

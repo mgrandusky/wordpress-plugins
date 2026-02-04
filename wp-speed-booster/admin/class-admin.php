@@ -87,6 +87,7 @@ class WPSB_Admin {
 			'js_delay_enabled', 'js_defer_enabled',
 			'font_optimization_enabled', 'local_google_fonts', 'font_preconnect', 'font_dns_prefetch',
 			'fragment_cache_enabled', 'cache_widgets', 'cache_sidebars', 'cache_menus', 'cache_shortcodes', 'fragment_cache_logged_in',
+			'resource_hints_enabled', 'dns_prefetch_enabled', 'dns_prefetch_auto', 'preconnect_enabled', 'preload_enabled', 'prefetch_enabled', 'prefetch_next_page',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -140,6 +141,46 @@ class WPSB_Admin {
 		$sanitized['cached_sidebar_list'] = ! empty( $input['cached_sidebar_list'] ) && is_array( $input['cached_sidebar_list'] ) ? array_map( 'sanitize_text_field', $input['cached_sidebar_list'] ) : array();
 		$sanitized['cached_menu_list'] = ! empty( $input['cached_menu_list'] ) && is_array( $input['cached_menu_list'] ) ? array_map( 'sanitize_text_field', $input['cached_menu_list'] ) : array();
 		$sanitized['cached_shortcode_list'] = ! empty( $input['cached_shortcode_list'] ) ? sanitize_textarea_field( $input['cached_shortcode_list'] ) : '';
+
+		// Resource Hints options
+		$sanitized['dns_prefetch_domains'] = ! empty( $input['dns_prefetch_domains'] ) ? sanitize_textarea_field( $input['dns_prefetch_domains'] ) : '';
+		$sanitized['prefetch_urls'] = ! empty( $input['prefetch_urls'] ) ? sanitize_textarea_field( $input['prefetch_urls'] ) : '';
+		
+		// Preconnect origins (array)
+		$sanitized['preconnect_origins'] = array();
+		if ( ! empty( $input['preconnect_origins'] ) && is_array( $input['preconnect_origins'] ) ) {
+			foreach ( $input['preconnect_origins'] as $origin ) {
+				if ( ! empty( $origin['url'] ) ) {
+					$sanitized['preconnect_origins'][] = array(
+						'url' => esc_url_raw( $origin['url'] ),
+						'crossorigin' => ! empty( $origin['crossorigin'] ) ? 1 : 0,
+					);
+				}
+			}
+		}
+		
+		// Preload resources (array)
+		$sanitized['preload_resources'] = array();
+		if ( ! empty( $input['preload_resources'] ) && is_array( $input['preload_resources'] ) ) {
+			foreach ( $input['preload_resources'] as $resource ) {
+				if ( ! empty( $resource['url'] ) && ! empty( $resource['as'] ) ) {
+					$res = array(
+						'url' => esc_url_raw( $resource['url'] ),
+						'as' => sanitize_text_field( $resource['as'] ),
+					);
+					if ( ! empty( $resource['type'] ) ) {
+						$res['type'] = sanitize_text_field( $resource['type'] );
+					}
+					if ( ! empty( $resource['crossorigin'] ) ) {
+						$res['crossorigin'] = 1;
+					}
+					if ( ! empty( $resource['fetchpriority'] ) ) {
+						$res['fetchpriority'] = sanitize_text_field( $resource['fetchpriority'] );
+					}
+					$sanitized['preload_resources'][] = $res;
+				}
+			}
+		}
 
 		return $sanitized;
 	}
@@ -232,6 +273,9 @@ class WPSB_Admin {
 					<a href="#tab-fonts" class="nav-tab wpspeed-nav-tab" data-tab="fonts">
 						<span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Fonts', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-resource-hints" class="nav-tab wpspeed-nav-tab" data-tab="resource-hints">
+						<span class="dashicons dashicons-networking"></span> <?php esc_html_e( 'Resource Hints', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-fragment-cache" class="nav-tab wpspeed-nav-tab" data-tab="fragment-cache">
 						<span class="dashicons dashicons-editor-table"></span> <?php esc_html_e( 'Fragment Cache', 'wp-speed-booster' ); ?>
 					</a>
@@ -276,6 +320,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-fonts" class="wpspeed-tab-content">
 					<?php $this->render_fonts_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-resource-hints" class="wpspeed-tab-content">
+					<?php $this->render_resource_hints_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-fragment-cache" class="wpspeed-tab-content">
@@ -613,6 +661,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-fonts.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-fonts.php';
+		}
+	}
+
+	/**
+	 * Render resource hints tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_resource_hints_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-resource-hints.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-resource-hints.php';
 		}
 	}
 
