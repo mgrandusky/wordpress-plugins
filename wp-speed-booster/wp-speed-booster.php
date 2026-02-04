@@ -159,6 +159,13 @@ class WP_Speed_Booster {
 	private $performance_monitor;
 
 	/**
+	 * WooCommerce Optimizer instance
+	 *
+	 * @var WP_Speed_Booster_WooCommerce_Optimizer
+	 */
+	private $woocommerce_optimizer;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -195,6 +202,11 @@ class WP_Speed_Booster {
 		$this->heartbeat = new WPSB_Heartbeat();
 		$this->performance_monitor = new WP_Speed_Booster_Performance_Monitor();
 
+		// Initialize WooCommerce optimizer
+		if ( class_exists( 'WooCommerce' ) ) {
+			$this->woocommerce_optimizer = new WP_Speed_Booster_WooCommerce_Optimizer();
+		}
+
 		// Initialize admin interface
 		if ( is_admin() ) {
 			$this->admin = new WPSB_Admin();
@@ -226,6 +238,11 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-cloudflare.php';
 		require_once WPSB_DIR . 'includes/class-heartbeat.php';
 		require_once WPSB_DIR . 'includes/class-performance-monitor.php';
+
+		// Load WooCommerce optimizer if WooCommerce is active
+		if ( class_exists( 'WooCommerce' ) ) {
+			require_once WPSB_DIR . 'includes/class-woocommerce-optimizer.php';
+		}
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
