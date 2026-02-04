@@ -415,6 +415,19 @@ class WP_Speed_Booster {
 			'performance_data_retention' => 30,
 			'performance_debug_comments' => 0,
 			'performance_sample_rate'    => 100,
+			'image_optimization_enabled' => 0,
+			'image_optimization_method'  => 'gd',
+			'image_quality'              => 85,
+			'image_preserve_exif'        => 0,
+			'image_api_key'              => '',
+			'image_api_provider'         => 'tinypng',
+			'image_webp_enabled'         => 0,
+			'image_webp_quality'         => 85,
+			'image_webp_skip_existing'   => 1,
+			'image_use_picture'          => 0,
+			'image_max_width'            => 2000,
+			'image_max_height'           => 2000,
+			'image_resize_on_upload'     => 0,
 		);
 
 		// Don't override existing options
