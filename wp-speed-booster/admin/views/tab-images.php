@@ -435,24 +435,21 @@ jQuery(document).ready(function($) {
 			},
 			success: function(response) {
 				if (response.success) {
-					$('#wpspeed-progress-status').text(response.data.message);
-					// Note: This is a simplified progress indicator. 
-					// In production, you would poll the server for actual progress.
-					// For now, we simulate progress for better UX.
-					var progress = 0;
-					var interval = setInterval(function() {
-						progress += 5;
-						if (progress > 100) progress = 100;
-						$('#wpspeed-progress-bar').css('width', progress + '%');
-						$('#wpspeed-progress-text').text(progress + '%');
-						if (progress >= 100) {
-							clearInterval(interval);
-							$('#wpspeed-progress-status').text('<?php esc_html_e( 'Optimization complete!', 'wp-speed-booster' ); ?>');
-							setTimeout(function() {
-								location.reload();
-							}, 2000);
-						}
-					}, 500);
+					$('#wpspeed-progress-status').text('<?php esc_html_e( 'Images queued for optimization. Processing in background...', 'wp-speed-booster' ); ?>');
+					// Show indeterminate progress since optimization runs in background
+					$('#wpspeed-progress-bar').css('width', '100%');
+					$('#wpspeed-progress-text').text('<?php esc_html_e( 'Processing...', 'wp-speed-booster' ); ?>');
+					
+					setTimeout(function() {
+						$('#wpspeed-progress-status').html(
+							'<strong style="color:#00a32a;">✓ <?php esc_html_e( 'Optimization Started!', 'wp-speed-booster' ); ?></strong><br>' +
+							'<?php esc_html_e( 'Images are being optimized in the background. You can leave this page. Refresh to see updated statistics.', 'wp-speed-booster' ); ?>'
+						);
+						$button.prop('disabled', false).text('<?php esc_html_e( 'Refresh Statistics', 'wp-speed-booster' ); ?>');
+						$button.off('click').on('click', function() {
+							location.reload();
+						});
+					}, 2000);
 				} else {
 					alert(response.data.message);
 					$button.prop('disabled', false);

@@ -628,11 +628,12 @@ class WP_Speed_Booster_Image_Optimizer {
 			);
 		}
 
-		// Queue images for optimization with incremental delays to avoid server overload
-		$delay = 10;
+		// Queue images for optimization with small delays to avoid server overload
+		// Using 2-second increments provides good distribution without excessive delays
+		$delay = 5;
 		foreach ( $images as $image ) {
 			wp_schedule_single_event( time() + $delay, 'wpspeed_optimize_image', array( $image->ID ) );
-			$delay += 5; // 5 seconds between each image
+			$delay += 2; // 2 seconds between each image
 		}
 
 		return array(
