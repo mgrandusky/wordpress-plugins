@@ -152,6 +152,13 @@ class WP_Speed_Booster {
 	private $heartbeat;
 
 	/**
+	 * Performance Monitor instance
+	 *
+	 * @var WP_Speed_Booster_Performance_Monitor
+	 */
+	private $performance_monitor;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -186,6 +193,7 @@ class WP_Speed_Booster {
 		$this->resource_hints = new WPSB_Resource_Hints();
 		$this->cloudflare = new WPSB_Cloudflare();
 		$this->heartbeat = new WPSB_Heartbeat();
+		$this->performance_monitor = new WP_Speed_Booster_Performance_Monitor();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -217,6 +225,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-resource-hints.php';
 		require_once WPSB_DIR . 'includes/class-cloudflare.php';
 		require_once WPSB_DIR . 'includes/class-heartbeat.php';
+		require_once WPSB_DIR . 'includes/class-performance-monitor.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
@@ -369,6 +378,12 @@ class WP_Speed_Booster {
 			'heartbeat_allow_post_locking' => 1,
 			'heartbeat_allow_autosave'   => 1,
 			'heartbeat_track_activity'   => 0,
+			'performance_monitoring_enabled' => 0,
+			'performance_track_rum'      => 1,
+			'performance_track_server'   => 1,
+			'performance_data_retention' => 30,
+			'performance_debug_comments' => 0,
+			'performance_sample_rate'    => 100,
 		);
 
 		// Don't override existing options
@@ -382,9 +397,17 @@ class WP_Speed_Booster {
 			copy( $htaccess, ABSPATH . '.htaccess.wpsb.backup' );
 		}
 
+		// Create performance monitoring table
+		WP_Speed_Booster_Performance_Monitor::create_table();
+
 		// Schedule automatic database optimization
 		if ( ! wp_next_scheduled( 'wpsb_auto_db_optimize' ) ) {
 			wp_schedule_event( time(), 'daily', 'wpsb_auto_db_optimize' );
+		}
+
+		// Schedule performance data cleanup
+		if ( ! wp_next_scheduled( 'wpspeed_cleanup_performance_data' ) ) {
+			wp_schedule_event( time(), 'daily', 'wpspeed_cleanup_performance_data' );
 		}
 
 		// Setup performance metrics scheduled checks
@@ -397,6 +420,7 @@ class WP_Speed_Booster {
 	public function deactivate() {
 		// Unschedule events
 		wp_clear_scheduled_hook( 'wpsb_auto_db_optimize' );
+		wp_clear_scheduled_hook( 'wpspeed_cleanup_performance_data' );
 		WP_Speed_Booster_Performance_Metrics::deactivate();
 	}
 
@@ -496,8 +520,14 @@ register_uninstall_hook( __FILE__, 'wpsb_uninstall' );
  * Plugin uninstall
  */
 function wpsb_uninstall() {
+	global $wpdb;
+
 	// Remove options
 	delete_option( 'wpsb_options' );
+
+	// Remove performance monitoring table
+	$table_name = $wpdb->prefix . 'wpspeed_performance';
+	$wpdb->query( "DROP TABLE IF EXISTS $table_name" );
 
 	// Remove cache directory
 	if ( file_exists( WPSB_CACHE_DIR ) ) {
@@ -518,4 +548,5 @@ function wpsb_uninstall() {
 
 	// Clear scheduled events
 	wp_clear_scheduled_hook( 'wpsb_auto_db_optimize' );
+	wp_clear_scheduled_hook( 'wpspeed_cleanup_performance_data' );
 }

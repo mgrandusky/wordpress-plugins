@@ -94,6 +94,7 @@ class WPSB_Admin {
 			'cloudflare_enabled', 'cloudflare_purge_on_update', 'cloudflare_purge_on_comment', 'cloudflare_restore_ip',
 			'heartbeat_control_enabled', 'heartbeat_disable_completely', 'heartbeat_disable_frontend', 'heartbeat_disable_admin', 'heartbeat_disable_editor',
 			'heartbeat_allow_post_locking', 'heartbeat_allow_autosave', 'heartbeat_track_activity',
+			'performance_monitoring_enabled', 'performance_track_rum', 'performance_track_server', 'performance_debug_comments',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -113,6 +114,8 @@ class WPSB_Admin {
 		$sanitized['heartbeat_frontend_frequency'] = ! empty( $input['heartbeat_frontend_frequency'] ) ? absint( $input['heartbeat_frontend_frequency'] ) : 60;
 		$sanitized['heartbeat_admin_frequency'] = ! empty( $input['heartbeat_admin_frequency'] ) ? absint( $input['heartbeat_admin_frequency'] ) : 60;
 		$sanitized['heartbeat_editor_frequency'] = ! empty( $input['heartbeat_editor_frequency'] ) ? absint( $input['heartbeat_editor_frequency'] ) : 15;
+		$sanitized['performance_data_retention'] = ! empty( $input['performance_data_retention'] ) ? absint( $input['performance_data_retention'] ) : 30;
+		$sanitized['performance_sample_rate'] = ! empty( $input['performance_sample_rate'] ) ? absint( $input['performance_sample_rate'] ) : 100;
 
 		// Text options
 		$sanitized['cache_exclude_urls'] = ! empty( $input['cache_exclude_urls'] ) ? sanitize_textarea_field( $input['cache_exclude_urls'] ) : '';
@@ -312,6 +315,9 @@ class WPSB_Admin {
 					<a href="#tab-performance-metrics" class="nav-tab wpspeed-nav-tab" data-tab="performance-metrics">
 						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-performance" class="nav-tab wpspeed-nav-tab" data-tab="performance">
+						<span class="dashicons dashicons-analytics"></span> <?php esc_html_e( 'Performance Monitor', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-object-cache" class="nav-tab wpspeed-nav-tab" data-tab="object-cache">
 						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Object Cache', 'wp-speed-booster' ); ?>
 					</a>
@@ -376,6 +382,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-performance-metrics" class="wpspeed-tab-content">
 					<?php $this->render_performance_metrics_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-performance" class="wpspeed-tab-content">
+					<?php $this->render_performance_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-object-cache" class="wpspeed-tab-content">
@@ -769,6 +779,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-performance-metrics.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-performance-metrics.php';
+		}
+	}
+
+	/**
+	 * Render Performance Monitor tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_performance_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-performance.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-performance.php';
 		}
 	}
 
