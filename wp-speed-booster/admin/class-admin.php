@@ -137,6 +137,11 @@ class WPSB_Admin {
 		$sanitized['db_optimize_schedule'] = ! empty( $input['db_optimize_schedule'] ) ? sanitize_text_field( $input['db_optimize_schedule'] ) : 'weekly';
 		$sanitized['critical_css_mode'] = ! empty( $input['critical_css_mode'] ) ? sanitize_text_field( $input['critical_css_mode'] ) : 'auto';
 		$sanitized['critical_css_exclude'] = ! empty( $input['critical_css_exclude'] ) ? sanitize_textarea_field( $input['critical_css_exclude'] ) : '';
+		$sanitized['critical_css_api_key'] = ! empty( $input['critical_css_api_key'] ) ? sanitize_text_field( $input['critical_css_api_key'] ) : '';
+		$sanitized['critical_css_api_provider'] = ! empty( $input['critical_css_api_provider'] ) ? sanitize_text_field( $input['critical_css_api_provider'] ) : 'criticalcss';
+		$sanitized['critical_css_exclude_handles'] = ! empty( $input['critical_css_exclude_handles'] ) ? sanitize_text_field( $input['critical_css_exclude_handles'] ) : '';
+		$sanitized['critical_css_defer_method'] = ! empty( $input['critical_css_defer_method'] ) ? sanitize_text_field( $input['critical_css_defer_method'] ) : 'media-print';
+		$sanitized['critical_css_mobile_separate'] = ! empty( $input['critical_css_mobile_separate'] ) ? 1 : 0;
 		// Sanitize CSS while preserving newlines
 		$sanitized['critical_css_manual'] = ! empty( $input['critical_css_manual'] ) ? wp_kses( $input['critical_css_manual'], array() ) : '';
 		

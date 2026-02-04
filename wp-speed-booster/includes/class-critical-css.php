@@ -165,12 +165,6 @@ class WPSB_Critical_CSS {
 			$url = $this->get_template_url( $template );
 			if ( $url ) {
 				$critical_css = $this->generate_critical_css( $url, $template );
-			
-		// Auto-generate if enabled
-		if ( ! empty( $this->settings['critical_css_mode'] ) && 'auto' === $this->settings['critical_css_mode'] ) {
-			$url = $this->get_template_url( $template );
-			if ( $url ) {
-				$critical_css = $this->generate_critical_css( $url, $template );
 				
 				if ( $critical_css ) {
 					return $critical_css;
@@ -372,14 +366,6 @@ class WPSB_Critical_CSS {
 		return false;
 	}
 
-	/**
-	 * Generate critical CSS locally (fallback)
-	 *
-	 * @param string $url URL to generate critical CSS for.
-	 * @param string $template Template type.
-	 * @return string|false Critical CSS or false on failure
-	 */
-	private function generate_local_critical_css( $url, $template = 'home' ) {
 	/**
 	 * Generate critical CSS locally (fallback)
 	 *
