@@ -650,8 +650,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_webp_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-webp.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-webp.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-webp.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-webp.php';
 		}
 	}
 
@@ -662,8 +662,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_lazy_load_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-lazy-load.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-lazy-load.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-lazy-load.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-lazy-load.php';
 		}
 	}
 
@@ -674,8 +674,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_critical_css_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-critical-css.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-critical-css.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-critical-css.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-critical-css.php';
 		}
 	}
 
@@ -686,8 +686,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_fonts_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-fonts.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-fonts.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-fonts.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-fonts.php';
 		}
 	}
 
@@ -698,8 +698,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_resource_hints_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-resource-hints.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-resource-hints.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-resource-hints.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-resource-hints.php';
 		}
 	}
 
@@ -710,8 +710,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_fragment_cache_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-fragment-cache.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-fragment-cache.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-fragment-cache.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-fragment-cache.php';
 		}
 	}
 
@@ -722,8 +722,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_javascript_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-javascript.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-javascript.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-javascript.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-javascript.php';
 		}
 	}
 
@@ -734,8 +734,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_performance_metrics_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-performance-metrics.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-performance-metrics.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-performance-metrics.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-performance-metrics.php';
 		}
 	}
 
@@ -746,8 +746,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_performance_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-performance.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-performance.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-performance.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-performance.php';
 		}
 	}
 
@@ -758,8 +758,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_object_cache_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-object-cache.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-object-cache.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-object-cache.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-object-cache.php';
 		}
 	}
 
@@ -770,8 +770,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_cloudflare_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-cloudflare.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-cloudflare.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-cloudflare.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-cloudflare.php';
 		}
 	}
 
@@ -782,8 +782,8 @@ class VelocityWP_Admin {
 	 */
 	private function render_heartbeat_tab( $options ) {
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-heartbeat.php' ) ) {
-			include VelocityWP_DIR . 'admin/views/tab-heartbeat.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-heartbeat.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-heartbeat.php';
 		}
 	}
 
@@ -800,8 +800,8 @@ class VelocityWP_Admin {
 		}
 
 		// Include the tab view file
-		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-woocommerce.php' ) ) {
-			require VelocityWP_DIR . 'admin/views/tab-woocommerce.php';
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-woocommerce.php' ) ) {
+			require VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-woocommerce.php';
 		} else {
 			echo '<p>' . esc_html__( 'WooCommerce tab content not found.', 'velocitywp' ) . '</p>';
 		}
@@ -813,7 +813,7 @@ class VelocityWP_Admin {
 	 * @param array $options Plugin options.
 	 */
 	private function render_database_tab( $options ) {
-		require VelocityWP_DIR . 'admin/views/tab-database.php';
+		require VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-database.php';
 	}
 
 	/**
