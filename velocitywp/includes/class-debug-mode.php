@@ -319,7 +319,7 @@ class VelocityWP_Debug_Mode {
 			'log'             => $this->debug_log,
 			'php_version'     => PHP_VERSION,
 			'wp_version'      => get_bloginfo( 'version' ),
-			'plugin_version'  => VelocityWP_VERSION,
+			'plugin_version'  => VELOCITYWP_VERSION,
 		);
 
 		return $report;

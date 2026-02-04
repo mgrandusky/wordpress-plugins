@@ -281,7 +281,7 @@ class VelocityWP_API {
 	public function health_check( $request ) {
 		$health = array(
 			'status'  => 'healthy',
-			'version' => VelocityWP_VERSION,
+			'version' => VELOCITYWP_VERSION,
 			'php'     => PHP_VERSION,
 			'wp'      => get_bloginfo( 'version' ),
 			'time'    => current_time( 'mysql' ),
