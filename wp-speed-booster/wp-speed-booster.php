@@ -110,6 +110,13 @@ class WP_Speed_Booster {
 	private $font_optimizer;
 
 	/**
+	 * Object Cache instance
+	 *
+	 * @var WPSB_Object_Cache
+	 */
+	private $object_cache;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -138,6 +145,7 @@ class WP_Speed_Booster {
 		$this->critical_css = new WPSB_Critical_CSS();
 		$this->webp      = new WPSB_WebP();
 		$this->font_optimizer = new WPSB_Font_Optimizer();
+		$this->object_cache = new WPSB_Object_Cache();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -163,6 +171,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-performance-metrics.php';
 		require_once WPSB_DIR . 'includes/class-js-delay.php';
 		require_once WPSB_DIR . 'includes/class-font-optimizer.php';
+		require_once WPSB_DIR . 'includes/class-object-cache.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
