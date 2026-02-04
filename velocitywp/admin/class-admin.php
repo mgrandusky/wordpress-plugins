@@ -46,12 +46,14 @@ class VelocityWP_Admin {
 	 * Add admin menu
 	 */
 	public function add_admin_menu() {
-		add_options_page(
+		add_menu_page(
 			__( 'VelocityWP', 'velocitywp' ),
 			__( 'VelocityWP', 'velocitywp' ),
 			'manage_options',
 			'velocitywp',
-			array( $this, 'render_admin_page' )
+			array( $this, 'render_admin_page' ),
+			'dashicons-performance',
+			59
 		);
 	}
 
@@ -237,7 +239,7 @@ class VelocityWP_Admin {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_admin_assets( $hook ) {
-		if ( 'settings_page_velocitywp' !== $hook ) {
+		if ( 'toplevel_page_velocitywp' !== $hook ) {
 			return;
 		}
 
@@ -288,160 +290,88 @@ class VelocityWP_Admin {
 		}
 
 		$options = get_option( 'velocitywp_options', array() );
+		$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'fonts';
 		?>
-		<div class="wrap velocitywp-admin">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-
-			<!-- Single form wrapping ALL tabs -->
-			<form method="post" action="options.php" class="velocitywp-settings-form" id="velocitywp-settings-form">
-				<?php settings_fields( 'velocitywp_options' ); ?>
-
-				<!-- Tab Navigation -->
-				<nav class="nav-tab-wrapper velocitywp-nav-tab-wrapper">
-					<a href="#tab-dashboard" class="nav-tab velocitywp-nav-tab" data-tab="dashboard">
-						<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-cache" class="nav-tab velocitywp-nav-tab" data-tab="cache">
-						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Cache', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-optimization" class="nav-tab velocitywp-nav-tab" data-tab="optimization">
-						<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Optimization', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-media" class="nav-tab velocitywp-nav-tab" data-tab="media">
-						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Media', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-lazy-load" class="nav-tab velocitywp-nav-tab" data-tab="lazy-load">
-						<span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Lazy Loading', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-webp" class="nav-tab velocitywp-nav-tab" data-tab="webp">
-						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'WebP Images', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-critical-css" class="nav-tab velocitywp-nav-tab" data-tab="critical-css">
-						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-fonts" class="nav-tab velocitywp-nav-tab" data-tab="fonts">
-						<span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Fonts', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-resource-hints" class="nav-tab velocitywp-nav-tab" data-tab="resource-hints">
-						<span class="dashicons dashicons-networking"></span> <?php esc_html_e( 'Resource Hints', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-fragment-cache" class="nav-tab velocitywp-nav-tab" data-tab="fragment-cache">
-						<span class="dashicons dashicons-editor-table"></span> <?php esc_html_e( 'Fragment Cache', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-performance-metrics" class="nav-tab velocitywp-nav-tab" data-tab="performance-metrics">
-						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-performance" class="nav-tab velocitywp-nav-tab" data-tab="performance">
-						<span class="dashicons dashicons-analytics"></span> <?php esc_html_e( 'Performance Monitor', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-object-cache" class="nav-tab velocitywp-nav-tab" data-tab="object-cache">
-						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Object Cache', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-cloudflare" class="nav-tab velocitywp-nav-tab" data-tab="cloudflare">
-						<span class="dashicons dashicons-cloud"></span> <?php esc_html_e( 'Cloudflare', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-heartbeat" class="nav-tab velocitywp-nav-tab" data-tab="heartbeat">
-						<span class="dashicons dashicons-heart"></span> <?php esc_html_e( 'Heartbeat', 'velocitywp' ); ?>
-					</a>
-					<a href="#tab-database" class="nav-tab velocitywp-nav-tab" data-tab="database">
-						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'velocitywp' ); ?>
-					</a>
-					<?php if ( class_exists( 'WooCommerce' ) ) : ?>
-					<a href="#tab-woocommerce" class="nav-tab velocitywp-nav-tab" data-tab="woocommerce">
-						<span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'WooCommerce', 'velocitywp' ); ?>
-					</a>
-					<?php endif; ?>
-					<a href="#tab-advanced" class="nav-tab velocitywp-nav-tab" data-tab="advanced">
-						<span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e( 'Advanced', 'velocitywp' ); ?>
-					</a>
-				</nav>
-
-				<!-- Tab Contents -->
-				<div id="velocitywp-tab-dashboard" class="velocitywp-tab-content">
-					<?php $this->render_dashboard_tab( $options ); ?>
+		<div class="wrap velocitywp-wrap">
+			<div class="velocitywp-container">
+				<!-- Left Navigation Sidebar -->
+				<?php include VELOCITYWP_PLUGIN_DIR . 'admin/partials/admin-navigation.php'; ?>
+				
+				<!-- Main Content Area -->
+				<div class="velocitywp-content">
+					<form method="post" action="options.php" class="velocitywp-form">
+						<?php settings_fields( 'velocitywp_options' ); ?>
+						
+						<!-- Page Header -->
+						<?php include VELOCITYWP_PLUGIN_DIR . 'admin/partials/admin-header.php'; ?>
+						
+						<!-- Tab Content -->
+						<div class="velocitywp-tab-content">
+							<?php $this->render_tab_content($current_tab, $options); ?>
+						</div>
+						
+						<!-- Save Button (Bottom) -->
+						<div class="velocitywp-form-footer">
+							<?php submit_button( __( 'Save Changes', 'velocitywp' ), 'primary large', 'submit' ); ?>
+						</div>
+					</form>
 				</div>
-
-				<div id="velocitywp-tab-cache" class="velocitywp-tab-content">
-					<?php $this->render_cache_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-optimization" class="velocitywp-tab-content">
-					<?php $this->render_optimization_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-media" class="velocitywp-tab-content">
-					<?php $this->render_media_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-lazy-load" class="velocitywp-tab-content">
-					<?php $this->render_lazy_load_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-webp" class="velocitywp-tab-content">
-					<?php $this->render_webp_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-critical-css" class="velocitywp-tab-content">
-					<?php $this->render_critical_css_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-fonts" class="velocitywp-tab-content">
-					<?php $this->render_fonts_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-resource-hints" class="velocitywp-tab-content">
-					<?php $this->render_resource_hints_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-fragment-cache" class="velocitywp-tab-content">
-					<?php $this->render_fragment_cache_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-javascript" class="velocitywp-tab-content">
-					<?php $this->render_javascript_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-performance-metrics" class="velocitywp-tab-content">
-					<?php $this->render_performance_metrics_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-performance" class="velocitywp-tab-content">
-					<?php $this->render_performance_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-object-cache" class="velocitywp-tab-content">
-					<?php $this->render_object_cache_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-cloudflare" class="velocitywp-tab-content">
-					<?php $this->render_cloudflare_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-heartbeat" class="velocitywp-tab-content">
-					<?php $this->render_heartbeat_tab( $options ); ?>
-				</div>
-
-				<div id="velocitywp-tab-database" class="velocitywp-tab-content">
-					<?php $this->render_database_tab( $options ); ?>
-				</div>
-
-				<?php if ( class_exists( 'WooCommerce' ) ) : ?>
-				<div id="velocitywp-tab-woocommerce" class="velocitywp-tab-content">
-					<?php require VelocityWP_DIR . 'admin/views/tab-woocommerce.php'; ?>
-				</div>
-				<?php endif; ?>
-
-				<div id="velocitywp-tab-advanced" class="velocitywp-tab-content">
-					<?php $this->render_advanced_tab( $options ); ?>
-				</div>
-
-				<!-- Single Save Button for All Settings -->
-				<div class="velocitywp-save-settings">
-					<?php submit_button( __( 'Save All Settings', 'velocitywp' ), 'primary large', 'submit' ); ?>
-				</div>
-			</form>
+			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render tab content based on current tab
+	 *
+	 * @param string $tab Current tab.
+	 * @param array $options Plugin options.
+	 */
+	private function render_tab_content($tab, $options) {
+		switch ($tab) {
+			case 'fonts':
+				$this->render_fonts_tab($options);
+				break;
+			case 'object-cache':
+				$this->render_object_cache_tab($options);
+				break;
+			case 'fragment-cache':
+				$this->render_fragment_cache_tab($options);
+				break;
+			case 'resource-hints':
+				$this->render_resource_hints_tab($options);
+				break;
+			case 'cloudflare':
+				$this->render_cloudflare_tab($options);
+				break;
+			case 'database':
+				$this->render_database_tab($options);
+				break;
+			case 'heartbeat':
+				$this->render_heartbeat_tab($options);
+				break;
+			case 'lazy-load':
+				$this->render_lazy_load_tab($options);
+				break;
+			case 'performance':
+				$this->render_performance_tab($options);
+				break;
+			case 'performance-metrics':
+				$this->render_performance_metrics_tab($options);
+				break;
+			case 'woocommerce':
+				$this->render_woocommerce_tab($options);
+				break;
+			case 'critical-css':
+				$this->render_critical_css_tab($options);
+				break;
+			case 'webp':
+				$this->render_webp_tab($options);
+				break;
+			default:
+				$this->render_fonts_tab($options);
+				break;
+		}
 	}
 
 	/**
@@ -854,6 +784,26 @@ class VelocityWP_Admin {
 		// Include the tab view file
 		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-heartbeat.php' ) ) {
 			include VelocityWP_DIR . 'admin/views/tab-heartbeat.php';
+		}
+	}
+
+	/**
+	 * Render WooCommerce tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_woocommerce_tab( $options ) {
+		// Check if WooCommerce is installed
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			echo '<p>' . esc_html__( 'WooCommerce is not installed. This tab is only available when WooCommerce is active.', 'velocitywp' ) . '</p>';
+			return;
+		}
+
+		// Include the tab view file
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-woocommerce.php' ) ) {
+			require VelocityWP_DIR . 'admin/views/tab-woocommerce.php';
+		} else {
+			echo '<p>' . esc_html__( 'WooCommerce tab content not found.', 'velocitywp' ) . '</p>';
 		}
 	}
 

@@ -1,64 +1,49 @@
 /**
- * VelocityWP Admin JavaScript
+ * VelocityWP Admin JavaScript - Left-Handed Navigation
  */
 
 (function($) {
     'use strict';
 
     $(document).ready(function() {
-        // Tab switching without page reload
-        $('.velocitywp-nav-tab').on('click', function(e) {
-            e.preventDefault();
-            
-            var targetTab = $(this).data('tab');
-            
-            // Update active tab styling
-            $('.velocitywp-nav-tab').removeClass('nav-tab-active');
-            $(this).addClass('nav-tab-active');
-            
-            // Hide all tab contents
-            $('.velocitywp-tab-content').removeClass('active').hide();
-            
-            // Show target tab with fade effect
-            $('#velocitywp-tab-' + targetTab).addClass('active').fadeIn(200);
-            
-            // Update URL hash without page reload
-            if (history.pushState) {
-                history.pushState(null, null, '#tab-' + targetTab);
-            } else {
-                window.location.hash = '#tab-' + targetTab;
-            }
-            
-            // Store active tab in session storage
-            sessionStorage.setItem('velocitywp_active_tab', targetTab);
+        
+        // Smooth scroll on navigation click (adds loading state)
+        $('.velocitywp-nav-item').on('click', function(e) {
+            // Add loading state
+            $(this).addClass('loading');
         });
         
-        // Load tab from URL hash or session storage on page load
-        function loadActiveTab() {
-            var hash = window.location.hash.replace('#tab-', '');
-            var sessionTab = sessionStorage.getItem('velocitywp_active_tab');
-            var activeTab = hash || sessionTab || 'dashboard';
-            
-            // Trigger click on the active tab
-            var $tab = $('.velocitywp-nav-tab[data-tab="' + activeTab + '"]');
-            if ($tab.length) {
-                $tab.trigger('click');
+        // Sticky header on scroll
+        var $header = $('.velocitywp-page-header');
+        var $content = $('.velocitywp-content');
+        
+        $content.on('scroll', function() {
+            if ($content.scrollTop() > 50) {
+                $header.addClass('scrolled');
             } else {
-                // Fallback to dashboard if tab not found
-                $('.velocitywp-nav-tab[data-tab="dashboard"]').trigger('click');
+                $header.removeClass('scrolled');
+            }
+        });
+        
+        // Collapsible sections in mobile
+        function handleMobileNav() {
+            if (window.matchMedia('(max-width: 960px)').matches) {
+                $('.velocitywp-nav-section-title').off('click').on('click', function() {
+                    $(this).next('.velocitywp-nav-items').slideToggle();
+                });
+            } else {
+                $('.velocitywp-nav-section-title').off('click');
+                $('.velocitywp-nav-items').show();
             }
         }
         
-        // Handle browser back/forward buttons
-        $(window).on('hashchange', function() {
-            var hash = window.location.hash.replace('#tab-', '');
-            if (hash) {
-                $('.velocitywp-nav-tab[data-tab="' + hash + '"]').trigger('click');
-            }
-        });
+        // Initialize mobile nav
+        handleMobileNav();
         
-        // Initialize on page load
-        loadActiveTab();
+        // Handle window resize
+        $(window).on('resize', function() {
+            handleMobileNav();
+        });
 
         // Clear Cache Button
         $('#velocitywp-clear-cache-btn').on('click', function(e) {
@@ -216,21 +201,13 @@
 
         // Confirm before leaving page with unsaved changes
         var formChanged = false;
-        $('#velocitywp-settings-form').on('change', 'input, select, textarea', function() {
+        $('.velocitywp-form').on('change', 'input, select, textarea', function() {
             formChanged = true;
-            
-            // Add indicator to tabs with changes
-            var tabId = $(this).closest('.velocitywp-tab-content').attr('id');
-            if (tabId) {
-                var tabName = tabId.replace('velocitywp-tab-', '');
-                $('.velocitywp-nav-tab[data-tab="' + tabName + '"]').addClass('has-changes');
-            }
         });
 
         // Reset on form submit
-        $('#velocitywp-settings-form').on('submit', function() {
+        $('.velocitywp-form').on('submit', function() {
             formChanged = false;
-            $('.velocitywp-nav-tab').removeClass('has-changes');
         });
 
         // Warn before leaving with unsaved changes
