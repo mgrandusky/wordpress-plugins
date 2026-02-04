@@ -86,6 +86,7 @@ class WPSB_Admin {
 			'webp_enabled',
 			'js_delay_enabled', 'js_defer_enabled',
 			'font_optimization_enabled', 'local_google_fonts', 'font_preconnect', 'font_dns_prefetch',
+			'fragment_cache_enabled', 'cache_widgets', 'cache_sidebars', 'cache_menus', 'cache_shortcodes', 'fragment_cache_logged_in',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -132,6 +133,13 @@ class WPSB_Admin {
 		$sanitized['redis_password'] = ! empty( $input['redis_password'] ) ? sanitize_text_field( $input['redis_password'] ) : '';
 		$sanitized['redis_database'] = ! empty( $input['redis_database'] ) ? absint( $input['redis_database'] ) : 0;
 		$sanitized['memcached_servers'] = ! empty( $input['memcached_servers'] ) ? sanitize_textarea_field( $input['memcached_servers'] ) : '127.0.0.1:11211';
+
+		// Fragment Cache options
+		$sanitized['fragment_cache_time'] = ! empty( $input['fragment_cache_time'] ) ? absint( $input['fragment_cache_time'] ) : 3600;
+		$sanitized['cached_widget_list'] = ! empty( $input['cached_widget_list'] ) && is_array( $input['cached_widget_list'] ) ? array_map( 'sanitize_text_field', $input['cached_widget_list'] ) : array();
+		$sanitized['cached_sidebar_list'] = ! empty( $input['cached_sidebar_list'] ) && is_array( $input['cached_sidebar_list'] ) ? array_map( 'sanitize_text_field', $input['cached_sidebar_list'] ) : array();
+		$sanitized['cached_menu_list'] = ! empty( $input['cached_menu_list'] ) && is_array( $input['cached_menu_list'] ) ? array_map( 'sanitize_text_field', $input['cached_menu_list'] ) : array();
+		$sanitized['cached_shortcode_list'] = ! empty( $input['cached_shortcode_list'] ) ? sanitize_textarea_field( $input['cached_shortcode_list'] ) : '';
 
 		return $sanitized;
 	}
@@ -224,6 +232,9 @@ class WPSB_Admin {
 					<a href="#tab-fonts" class="nav-tab wpspeed-nav-tab" data-tab="fonts">
 						<span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Fonts', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-fragment-cache" class="nav-tab wpspeed-nav-tab" data-tab="fragment-cache">
+						<span class="dashicons dashicons-editor-table"></span> <?php esc_html_e( 'Fragment Cache', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-performance-metrics" class="nav-tab wpspeed-nav-tab" data-tab="performance-metrics">
 						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'wp-speed-booster' ); ?>
 					</a>
@@ -265,6 +276,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-fonts" class="wpspeed-tab-content">
 					<?php $this->render_fonts_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-fragment-cache" class="wpspeed-tab-content">
+					<?php $this->render_fragment_cache_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-javascript" class="wpspeed-tab-content">
@@ -598,6 +613,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-fonts.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-fonts.php';
+		}
+	}
+
+	/**
+	 * Render fragment cache tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_fragment_cache_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-fragment-cache.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-fragment-cache.php';
 		}
 	}
 

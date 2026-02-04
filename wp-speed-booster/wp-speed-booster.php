@@ -117,6 +117,13 @@ class WP_Speed_Booster {
 	private $object_cache;
 
 	/**
+	 * Fragment Cache instance
+	 *
+	 * @var WPSB_Fragment_Cache
+	 */
+	private $fragment_cache;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -146,6 +153,7 @@ class WP_Speed_Booster {
 		$this->webp      = new WPSB_WebP();
 		$this->font_optimizer = new WPSB_Font_Optimizer();
 		$this->object_cache = new WPSB_Object_Cache();
+		$this->fragment_cache = new WPSB_Fragment_Cache();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -172,6 +180,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-js-delay.php';
 		require_once WPSB_DIR . 'includes/class-font-optimizer.php';
 		require_once WPSB_DIR . 'includes/class-object-cache.php';
+		require_once WPSB_DIR . 'includes/class-fragment-cache.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
