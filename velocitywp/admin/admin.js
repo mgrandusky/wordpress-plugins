@@ -26,11 +26,24 @@
         });
         
         // Collapsible sections in mobile
-        if ($(window).width() < 960) {
-            $('.velocitywp-nav-section-title').on('click', function() {
-                $(this).next('.velocitywp-nav-items').slideToggle();
-            });
+        function handleMobileNav() {
+            if (window.matchMedia('(max-width: 960px)').matches) {
+                $('.velocitywp-nav-section-title').off('click').on('click', function() {
+                    $(this).next('.velocitywp-nav-items').slideToggle();
+                });
+            } else {
+                $('.velocitywp-nav-section-title').off('click');
+                $('.velocitywp-nav-items').show();
+            }
         }
+        
+        // Initialize mobile nav
+        handleMobileNav();
+        
+        // Handle window resize
+        $(window).on('resize', function() {
+            handleMobileNav();
+        });
 
         // Clear Cache Button
         $('#velocitywp-clear-cache-btn').on('click', function(e) {

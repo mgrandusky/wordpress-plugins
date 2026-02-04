@@ -360,11 +360,7 @@ class VelocityWP_Admin {
 				$this->render_performance_metrics_tab($options);
 				break;
 			case 'woocommerce':
-				if ( class_exists( 'WooCommerce' ) && file_exists( VelocityWP_DIR . 'admin/views/tab-woocommerce.php' ) ) {
-					require VelocityWP_DIR . 'admin/views/tab-woocommerce.php';
-				} else {
-					echo '<p>' . __( 'WooCommerce is not installed or tab content not found.', 'velocitywp' ) . '</p>';
-				}
+				$this->render_woocommerce_tab($options);
 				break;
 			case 'critical-css':
 				$this->render_critical_css_tab($options);
@@ -788,6 +784,26 @@ class VelocityWP_Admin {
 		// Include the tab view file
 		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-heartbeat.php' ) ) {
 			include VelocityWP_DIR . 'admin/views/tab-heartbeat.php';
+		}
+	}
+
+	/**
+	 * Render WooCommerce tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_woocommerce_tab( $options ) {
+		// Check if WooCommerce is installed
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			echo '<p>' . esc_html__( 'WooCommerce is not installed. This tab is only available when WooCommerce is active.', 'velocitywp' ) . '</p>';
+			return;
+		}
+
+		// Include the tab view file
+		if ( file_exists( VelocityWP_DIR . 'admin/views/tab-woocommerce.php' ) ) {
+			require VelocityWP_DIR . 'admin/views/tab-woocommerce.php';
+		} else {
+			echo '<p>' . esc_html__( 'WooCommerce tab content not found.', 'velocitywp' ) . '</p>';
 		}
 	}
 

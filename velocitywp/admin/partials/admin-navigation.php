@@ -129,7 +129,7 @@ $nav_items = array(
                         ?>
                         <li>
                             <a href="<?php echo esc_url($url); ?>" class="<?php echo esc_attr($class); ?>">
-                                <span class="velocitywp-nav-icon"><?php echo $item['icon']; ?></span>
+                                <span class="velocitywp-nav-icon"><?php echo esc_html($item['icon']); ?></span>
                                 <span class="velocitywp-nav-label">
                                     <span class="velocitywp-nav-title"><?php echo esc_html($item['label']); ?></span>
                                     <span class="velocitywp-nav-desc"><?php echo esc_html($item['description']); ?></span>
