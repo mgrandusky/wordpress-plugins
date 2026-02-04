@@ -125,6 +125,14 @@ class WPSB_Admin {
 		$sanitized['font_display'] = ! empty( $input['font_display'] ) ? sanitize_text_field( $input['font_display'] ) : 'swap';
 		$sanitized['font_preload_urls'] = ! empty( $input['font_preload_urls'] ) ? sanitize_textarea_field( $input['font_preload_urls'] ) : '';
 
+		// Object Cache options
+		$sanitized['object_cache_backend'] = ! empty( $input['object_cache_backend'] ) ? sanitize_text_field( $input['object_cache_backend'] ) : 'auto';
+		$sanitized['redis_host'] = ! empty( $input['redis_host'] ) ? sanitize_text_field( $input['redis_host'] ) : '127.0.0.1';
+		$sanitized['redis_port'] = ! empty( $input['redis_port'] ) ? absint( $input['redis_port'] ) : 6379;
+		$sanitized['redis_password'] = ! empty( $input['redis_password'] ) ? sanitize_text_field( $input['redis_password'] ) : '';
+		$sanitized['redis_database'] = ! empty( $input['redis_database'] ) ? absint( $input['redis_database'] ) : 0;
+		$sanitized['memcached_servers'] = ! empty( $input['memcached_servers'] ) ? sanitize_textarea_field( $input['memcached_servers'] ) : '127.0.0.1:11211';
+
 		return $sanitized;
 	}
 
@@ -219,6 +227,9 @@ class WPSB_Admin {
 					<a href="#tab-performance-metrics" class="nav-tab wpspeed-nav-tab" data-tab="performance-metrics">
 						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-object-cache" class="nav-tab wpspeed-nav-tab" data-tab="object-cache">
+						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Object Cache', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
 						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'wp-speed-booster' ); ?>
 					</a>
@@ -262,6 +273,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-performance-metrics" class="wpspeed-tab-content">
 					<?php $this->render_performance_metrics_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-object-cache" class="wpspeed-tab-content">
+					<?php $this->render_object_cache_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-database" class="wpspeed-tab-content">
@@ -607,6 +622,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-performance-metrics.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-performance-metrics.php';
+		}
+	}
+
+	/**
+	 * Render object cache tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_object_cache_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-object-cache.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-object-cache.php';
 		}
 	}
 
