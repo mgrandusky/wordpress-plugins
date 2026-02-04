@@ -1,0 +1,347 @@
+/* VelocityWP Admin Styles */
+
+.velocitywp-admin {
+    margin-right: 20px;
+}
+
+/* Tab navigation */
+.velocitywp-admin .nav-tab-wrapper,
+.velocitywp-nav-tab-wrapper {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+.velocitywp-nav-tab,
+.velocitywp-admin .nav-tab {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.velocitywp-nav-tab:hover,
+.velocitywp-admin .nav-tab:hover {
+    background-color: #f0f0f1;
+}
+
+.velocitywp-nav-tab.nav-tab-active,
+.velocitywp-admin .nav-tab.nav-tab-active {
+    border-bottom-color: #f0f0f1;
+}
+
+/* Visual indicator for tabs with unsaved changes */
+.velocitywp-nav-tab.has-changes::after {
+    content: ' •';
+    color: #d63638;
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Tab content */
+.velocitywp-tab-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    border-top: 0;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.velocitywp-tab-content.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Smooth fade effect */
+.velocitywp-tab-content {
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Settings form styling */
+.velocitywp-settings-form {
+    max-width: 1200px;
+}
+
+/* Save button always visible */
+.velocitywp-save-settings {
+    position: sticky;
+    bottom: 20px;
+    z-index: 100;
+    margin-top: 30px;
+}
+
+.velocitywp-tab-content {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    border-top: 0;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+/* Dashboard */
+.velocitywp-dashboard {
+    max-width: 1200px;
+}
+
+.velocitywp-welcome {
+    margin-bottom: 30px;
+}
+
+.velocitywp-welcome h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.velocitywp-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.velocitywp-stat-box {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+}
+
+.velocitywp-stat-box h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.velocitywp-stat-box .stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #0073aa;
+    margin-bottom: 10px;
+}
+
+.velocitywp-stat-box p {
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+}
+
+.status-enabled {
+    color: #46b450;
+}
+
+.status-disabled {
+    color: #dc3232;
+}
+
+/* Quick Actions */
+.velocitywp-quick-actions {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.velocitywp-quick-actions h3 {
+    margin-top: 0;
+}
+
+.velocitywp-quick-actions .button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+/* Cache Stats */
+.velocitywp-cache-stats {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.velocitywp-cache-stats h3 {
+    margin-top: 0;
+}
+
+.velocitywp-cache-stats p {
+    margin: 10px 0;
+}
+
+/* Database Stats */
+.velocitywp-db-stats {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.velocitywp-db-stats h3 {
+    margin-top: 0;
+}
+
+.velocitywp-db-stats p {
+    margin: 10px 0;
+}
+
+/* Form Table Enhancements */
+.form-table th {
+    width: 200px;
+    padding: 20px 10px 20px 0;
+}
+
+.form-table td {
+    padding: 15px 10px;
+}
+
+.form-table input[type="number"],
+.form-table input[type="text"],
+.form-table input[type="url"] {
+    padding: 6px 8px;
+}
+
+.form-table textarea {
+    padding: 6px 8px;
+}
+
+/* Section Headers */
+.velocitywp-tab-content h2 {
+    font-size: 20px;
+    margin: 30px 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.velocitywp-tab-content h2:first-child {
+    margin-top: 0;
+}
+
+/* AJAX Result Messages */
+#velocitywp-ajax-result {
+    margin-top: 20px;
+}
+
+#velocitywp-ajax-result.notice-success {
+    border-left-color: #46b450;
+}
+
+#velocitywp-ajax-result.notice-error {
+    border-left-color: #dc3232;
+}
+
+#velocitywp-ajax-result.notice-warning {
+    border-left-color: #ffb900;
+}
+
+/* Loading Animation */
+.velocitywp-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0073aa;
+    border-radius: 50%;
+    animation: velocitywp-spin 1s linear infinite;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes velocitywp-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Buttons */
+.button.velocitywp-processing {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .velocitywp-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-table th,
+    .form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .form-table th {
+        padding-bottom: 5px;
+    }
+    
+    .velocitywp-quick-actions .button {
+        display: block;
+        margin: 10px 0;
+    }
+}
+
+/* Descriptions */
+.description {
+    color: #666;
+    font-size: 13px;
+    margin-top: 5px !important;
+}
+
+/* Toggle Sections */
+.velocitywp-toggle-section {
+    margin-bottom: 20px;
+}
+
+.velocitywp-toggle-header {
+    cursor: pointer;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.velocitywp-toggle-header:hover {
+    background: #f0f0f0;
+}
+
+.velocitywp-toggle-content {
+    display: none;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+.velocitywp-toggle-content.active {
+    display: block;
+}
+
+/* Info Boxes */
+.velocitywp-info-box {
+    background: #e5f5fa;
+    border-left: 4px solid #00a0d2;
+    padding: 12px;
+    margin: 15px 0;
+}
+
+.velocitywp-warning-box {
+    background: #fff8e5;
+    border-left: 4px solid #ffb900;
+    padding: 12px;
+    margin: 15px 0;
+}
+
+.velocitywp-error-box {
+    background: #fef7f7;
+    border-left: 4px solid #dc3232;
+    padding: 12px;
+    margin: 15px 0;
+}
