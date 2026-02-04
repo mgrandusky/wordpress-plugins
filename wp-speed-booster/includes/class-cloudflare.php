@@ -39,6 +39,20 @@ class WPSB_Cloudflare {
 	private $api_key = '';
 
 	/**
+	 * API token (Bearer auth)
+	 *
+	 * @var string
+	 */
+	private $api_token = '';
+
+	/**
+	 * Authentication type (token or key)
+	 *
+	 * @var string
+	 */
+	private $auth_type = 'token';
+
+	/**
 	 * Zone ID
 	 *
 	 * @var string
@@ -52,6 +66,12 @@ class WPSB_Cloudflare {
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'wp_ajax_wpsb_cloudflare_purge', array( $this, 'ajax_purge_cache' ) );
 		add_action( 'wp_ajax_wpsb_cloudflare_test', array( $this, 'ajax_test_connection' ) );
+		add_action( 'wp_ajax_wpsb_cf_test_connection', array( $this, 'ajax_cf_test_connection' ) );
+		add_action( 'wp_ajax_wpsb_cf_get_zones', array( $this, 'ajax_cf_get_zones' ) );
+		add_action( 'wp_ajax_wpsb_cf_purge_cache', array( $this, 'ajax_cf_purge_cache' ) );
+		add_action( 'wp_ajax_wpsb_cf_toggle_dev_mode', array( $this, 'ajax_cf_toggle_dev_mode' ) );
+		add_action( 'wp_ajax_wpsb_cf_update_setting', array( $this, 'ajax_cf_update_setting' ) );
+		add_action( 'wp_ajax_wpsb_cf_get_analytics', array( $this, 'ajax_cf_get_analytics' ) );
 	}
 
 	/**
@@ -60,20 +80,34 @@ class WPSB_Cloudflare {
 	public function init() {
 		$options = get_option( 'wpsb_options', array() );
 
-		if ( empty( $options['cloudflare_enable'] ) ) {
+		if ( empty( $options['cloudflare_enabled'] ) ) {
 			return;
 		}
 
-		// Set API credentials
-		$this->api_email = ! empty( $options['cloudflare_email'] ) ? $options['cloudflare_email'] : '';
-		$this->api_key = ! empty( $options['cloudflare_api_key'] ) ? $options['cloudflare_api_key'] : '';
+		// Set authentication type
+		$this->auth_type = ! empty( $options['cloudflare_auth_type'] ) ? $options['cloudflare_auth_type'] : 'key';
+
+		// Set API credentials based on auth type
+		if ( $this->auth_type === 'token' ) {
+			$this->api_token = ! empty( $options['cloudflare_api_token'] ) ? $options['cloudflare_api_token'] : '';
+		} else {
+			$this->api_email = ! empty( $options['cloudflare_email'] ) ? $options['cloudflare_email'] : '';
+			$this->api_key = ! empty( $options['cloudflare_api_key'] ) ? $options['cloudflare_api_key'] : '';
+		}
+
 		$this->zone_id = ! empty( $options['cloudflare_zone_id'] ) ? $options['cloudflare_zone_id'] : '';
 
 		// Auto-purge on content update
-		if ( ! empty( $options['cloudflare_auto_purge'] ) ) {
+		if ( ! empty( $options['cloudflare_purge_on_update'] ) ) {
 			add_action( 'save_post', array( $this, 'auto_purge_post' ), 10, 2 );
 			add_action( 'deleted_post', array( $this, 'auto_purge_cache' ) );
+		}
+
+		// Auto-purge on comments
+		if ( ! empty( $options['cloudflare_purge_on_comment'] ) ) {
 			add_action( 'comment_post', array( $this, 'auto_purge_comment' ) );
+			add_action( 'edit_comment', array( $this, 'auto_purge_comment' ) );
+			add_action( 'transition_comment_status', array( $this, 'auto_purge_comment_status' ), 10, 3 );
 		}
 
 		// Restore real visitor IP
@@ -91,19 +125,34 @@ class WPSB_Cloudflare {
 	 * @return array|WP_Error Response or error.
 	 */
 	private function api_request( $endpoint, $method = 'GET', $data = array() ) {
-		if ( empty( $this->api_email ) || empty( $this->api_key ) ) {
-			return new WP_Error( 'missing_credentials', __( 'Cloudflare API credentials not configured', 'wp-speed-booster' ) );
+		// Check credentials based on auth type
+		if ( $this->auth_type === 'token' ) {
+			if ( empty( $this->api_token ) ) {
+				return new WP_Error( 'missing_credentials', __( 'Cloudflare API token not configured', 'wp-speed-booster' ) );
+			}
+		} else {
+			if ( empty( $this->api_email ) || empty( $this->api_key ) ) {
+				return new WP_Error( 'missing_credentials', __( 'Cloudflare API credentials not configured', 'wp-speed-booster' ) );
+			}
 		}
 
 		$url = $this->api_endpoint . $endpoint;
 
+		$headers = array(
+			'Content-Type' => 'application/json',
+		);
+
+		// Add authentication headers based on type
+		if ( $this->auth_type === 'token' ) {
+			$headers['Authorization'] = 'Bearer ' . $this->api_token;
+		} else {
+			$headers['X-Auth-Email'] = $this->api_email;
+			$headers['X-Auth-Key'] = $this->api_key;
+		}
+
 		$args = array(
 			'method'  => $method,
-			'headers' => array(
-				'X-Auth-Email' => $this->api_email,
-				'X-Auth-Key'   => $this->api_key,
-				'Content-Type' => 'application/json',
-			),
+			'headers' => $headers,
 			'timeout' => 30,
 		);
 
@@ -248,6 +297,20 @@ class WPSB_Cloudflare {
 	}
 
 	/**
+	 * Auto purge cache on comment status change
+	 *
+	 * @param string $new_status New comment status.
+	 * @param string $old_status Old comment status.
+	 * @param object $comment Comment object.
+	 */
+	public function auto_purge_comment_status( $new_status, $old_status, $comment ) {
+		if ( $new_status === 'approved' ) {
+			$urls = $this->get_post_urls( $comment->comment_post_ID );
+			$this->purge_urls( $urls );
+		}
+	}
+
+	/**
 	 * Auto purge entire cache
 	 */
 	public function auto_purge_cache() {
@@ -341,13 +404,137 @@ class WPSB_Cloudflare {
 	 * @return bool|WP_Error Success or error.
 	 */
 	public function test_connection() {
-		$result = $this->api_request( 'user' );
+		// Use appropriate endpoint based on auth type
+		$endpoint = ( $this->auth_type === 'token' ) ? 'user/tokens/verify' : 'user';
+		$result = $this->api_request( $endpoint );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get list of zones
+	 *
+	 * @return array|WP_Error Zones or error.
+	 */
+	public function get_zones() {
+		return $this->api_request( 'zones' );
+	}
+
+	/**
+	 * Get zone settings
+	 *
+	 * @return array|WP_Error Settings or error.
+	 */
+	public function get_zone_settings() {
+		if ( empty( $this->zone_id ) ) {
+			return new WP_Error( 'missing_zone_id', __( 'Cloudflare Zone ID not configured', 'wp-speed-booster' ) );
+		}
+
+		return $this->api_request( "zones/{$this->zone_id}/settings" );
+	}
+
+	/**
+	 * Update zone setting
+	 *
+	 * @param string $setting Setting ID.
+	 * @param mixed  $value   Setting value.
+	 * @return array|WP_Error Result or error.
+	 */
+	public function update_zone_setting( $setting, $value ) {
+		if ( empty( $this->zone_id ) ) {
+			return new WP_Error( 'missing_zone_id', __( 'Cloudflare Zone ID not configured', 'wp-speed-booster' ) );
+		}
+
+		return $this->api_request( "zones/{$this->zone_id}/settings/{$setting}", 'PATCH', $value );
+	}
+
+	/**
+	 * Enable development mode
+	 *
+	 * @return array|WP_Error Result or error.
+	 */
+	public function enable_dev_mode() {
+		return $this->update_zone_setting( 'development_mode', array( 'value' => 'on' ) );
+	}
+
+	/**
+	 * Disable development mode
+	 *
+	 * @return array|WP_Error Result or error.
+	 */
+	public function disable_dev_mode() {
+		return $this->update_zone_setting( 'development_mode', array( 'value' => 'off' ) );
+	}
+
+	/**
+	 * Get development mode status
+	 *
+	 * @return array|WP_Error Status or error.
+	 */
+	public function get_dev_mode_status() {
+		$settings = $this->get_zone_settings();
+
+		if ( is_wp_error( $settings ) ) {
+			return $settings;
+		}
+
+		if ( ! empty( $settings['result'] ) ) {
+			foreach ( $settings['result'] as $setting ) {
+				if ( $setting['id'] === 'development_mode' ) {
+					return array(
+						'enabled'        => $setting['value'] === 'on',
+						'time_remaining' => ! empty( $setting['time_remaining'] ) ? $setting['time_remaining'] : 0,
+					);
+				}
+			}
+		}
+
+		return new WP_Error( 'setting_not_found', __( 'Development mode setting not found', 'wp-speed-booster' ) );
+	}
+
+	/**
+	 * Check if APO is enabled
+	 *
+	 * @return bool
+	 */
+	public function is_apo_enabled() {
+		// Check for Cloudflare APO plugin
+		if ( defined( 'CLOUDFLARE_APO_VERSION' ) ) {
+			return true;
+		}
+
+		// Check via API
+		$settings = $this->get_zone_settings();
+		if ( ! is_wp_error( $settings ) && ! empty( $settings['result'] ) ) {
+			foreach ( $settings['result'] as $setting ) {
+				if ( $setting['id'] === 'automatic_platform_optimization' ) {
+					return ! empty( $setting['value']['enabled'] );
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get analytics
+	 *
+	 * @param int $period Number of days.
+	 * @return array|WP_Error Analytics or error.
+	 */
+	public function get_analytics( $period = 30 ) {
+		if ( empty( $this->zone_id ) ) {
+			return new WP_Error( 'missing_zone_id', __( 'Cloudflare Zone ID not configured', 'wp-speed-booster' ) );
+		}
+
+		$since = gmdate( 'Y-m-d\TH:i:s\Z', strtotime( "-{$period} days" ) );
+		$until = gmdate( 'Y-m-d\TH:i:s\Z' );
+
+		return $this->api_request( "zones/{$this->zone_id}/analytics/dashboard?since={$since}&until={$until}" );
 	}
 
 	/**
@@ -386,5 +573,186 @@ class WPSB_Cloudflare {
 		}
 
 		wp_send_json_success( array( 'message' => __( 'Cloudflare connection successful', 'wp-speed-booster' ) ) );
+	}
+
+	/**
+	 * AJAX: Test connection with provided credentials
+	 */
+	public function ajax_cf_test_connection() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+		}
+
+		// Temporarily set credentials from POST
+		$post_data = wp_unslash( $_POST );
+		$auth_type = sanitize_text_field( $post_data['auth_type'] ?? 'token' );
+		$saved_auth_type = $this->auth_type;
+		$saved_token = $this->api_token;
+		$saved_email = $this->api_email;
+		$saved_key = $this->api_key;
+
+		$this->auth_type = $auth_type;
+
+		if ( $auth_type === 'token' ) {
+			$this->api_token = sanitize_text_field( $post_data['api_token'] ?? '' );
+		} else {
+			$this->api_email = sanitize_email( $post_data['email'] ?? '' );
+			$this->api_key = sanitize_text_field( $post_data['api_key'] ?? '' );
+		}
+
+		$result = $this->test_connection();
+
+		// Restore original credentials
+		$this->auth_type = $saved_auth_type;
+		$this->api_token = $saved_token;
+		$this->api_email = $saved_email;
+		$this->api_key = $saved_key;
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Connection successful!', 'wp-speed-booster' ) ) );
+	}
+
+	/**
+	 * AJAX: Get zones
+	 */
+	public function ajax_cf_get_zones() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+		}
+
+		$result = $this->get_zones();
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( $result );
+	}
+
+	/**
+	 * AJAX: Purge cache with options
+	 */
+	public function ajax_cf_purge_cache() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+		}
+
+		$post_data = wp_unslash( $_POST );
+		$type = sanitize_text_field( $post_data['type'] ?? 'everything' );
+		$result = null;
+
+		switch ( $type ) {
+			case 'everything':
+				$result = $this->purge_everything();
+				break;
+
+			case 'urls':
+				$urls_text = sanitize_textarea_field( $post_data['urls'] ?? '' );
+				$urls = array_filter( array_map( 'trim', explode( "\n", $urls_text ) ) );
+				$result = $this->purge_urls( $urls );
+				break;
+
+			case 'tags':
+				$tags_text = sanitize_textarea_field( $post_data['tags'] ?? '' );
+				$tags = array_filter( array_map( 'trim', explode( "\n", $tags_text ) ) );
+				$result = $this->purge_by_tags( $tags );
+				break;
+
+			default:
+				wp_send_json_error( array( 'message' => __( 'Invalid purge type', 'wp-speed-booster' ) ) );
+				return;
+		}
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		// Update last purge time
+		update_option( 'wpsb_cf_last_purge', current_time( 'timestamp' ) );
+
+		wp_send_json_success( array( 'message' => __( 'Cache purged successfully', 'wp-speed-booster' ) ) );
+	}
+
+	/**
+	 * AJAX: Toggle development mode
+	 */
+	public function ajax_cf_toggle_dev_mode() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+		}
+
+		$post_data = wp_unslash( $_POST );
+		$action = sanitize_text_field( $post_data['action_type'] ?? 'enable' );
+
+		if ( $action === 'enable' ) {
+			$result = $this->enable_dev_mode();
+		} else {
+			$result = $this->disable_dev_mode();
+		}
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Development mode updated', 'wp-speed-booster' ) ) );
+	}
+
+	/**
+	 * AJAX: Update zone setting
+	 */
+	public function ajax_cf_update_setting() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+		}
+
+		$post_data = wp_unslash( $_POST );
+		$setting_id = sanitize_text_field( $post_data['setting_id'] ?? '' );
+		$value = isset( $post_data['value'] ) ? sanitize_text_field( $post_data['value'] ) : '';
+
+		if ( empty( $setting_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Setting ID required', 'wp-speed-booster' ) ) );
+		}
+
+		$result = $this->update_zone_setting( $setting_id, array( 'value' => $value ) );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Setting updated successfully', 'wp-speed-booster' ) ) );
+	}
+
+	/**
+	 * AJAX: Get analytics
+	 */
+	public function ajax_cf_get_analytics() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
+		}
+
+		$post_data = wp_unslash( $_POST );
+		$period = absint( $post_data['period'] ?? 30 );
+		$result = $this->get_analytics( $period );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( $result );
 	}
 }

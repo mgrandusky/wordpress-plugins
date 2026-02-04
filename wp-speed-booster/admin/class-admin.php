@@ -88,6 +88,7 @@ class WPSB_Admin {
 			'font_optimization_enabled', 'local_google_fonts', 'font_preconnect', 'font_dns_prefetch',
 			'fragment_cache_enabled', 'cache_widgets', 'cache_sidebars', 'cache_menus', 'cache_shortcodes', 'fragment_cache_logged_in',
 			'resource_hints_enabled', 'dns_prefetch_enabled', 'dns_prefetch_auto', 'preconnect_enabled', 'preload_enabled', 'prefetch_enabled', 'prefetch_next_page',
+			'cloudflare_enabled', 'cloudflare_purge_on_update', 'cloudflare_purge_on_comment', 'cloudflare_restore_ip',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -145,6 +146,13 @@ class WPSB_Admin {
 		// Resource Hints options
 		$sanitized['dns_prefetch_domains'] = ! empty( $input['dns_prefetch_domains'] ) ? sanitize_textarea_field( $input['dns_prefetch_domains'] ) : '';
 		$sanitized['prefetch_urls'] = ! empty( $input['prefetch_urls'] ) ? sanitize_textarea_field( $input['prefetch_urls'] ) : '';
+
+		// Cloudflare options
+		$sanitized['cloudflare_auth_type'] = ! empty( $input['cloudflare_auth_type'] ) ? sanitize_text_field( $input['cloudflare_auth_type'] ) : 'token';
+		$sanitized['cloudflare_api_token'] = ! empty( $input['cloudflare_api_token'] ) ? sanitize_text_field( $input['cloudflare_api_token'] ) : '';
+		$sanitized['cloudflare_email'] = ! empty( $input['cloudflare_email'] ) ? sanitize_email( $input['cloudflare_email'] ) : '';
+		$sanitized['cloudflare_api_key'] = ! empty( $input['cloudflare_api_key'] ) ? sanitize_text_field( $input['cloudflare_api_key'] ) : '';
+		$sanitized['cloudflare_zone_id'] = ! empty( $input['cloudflare_zone_id'] ) ? sanitize_text_field( $input['cloudflare_zone_id'] ) : '';
 		
 		// Preconnect origins (array)
 		$sanitized['preconnect_origins'] = array();
@@ -285,6 +293,9 @@ class WPSB_Admin {
 					<a href="#tab-object-cache" class="nav-tab wpspeed-nav-tab" data-tab="object-cache">
 						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Object Cache', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-cloudflare" class="nav-tab wpspeed-nav-tab" data-tab="cloudflare">
+						<span class="dashicons dashicons-cloud"></span> <?php esc_html_e( 'Cloudflare', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
 						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'wp-speed-booster' ); ?>
 					</a>
@@ -340,6 +351,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-object-cache" class="wpspeed-tab-content">
 					<?php $this->render_object_cache_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-cloudflare" class="wpspeed-tab-content">
+					<?php $this->render_cloudflare_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-database" class="wpspeed-tab-content">
@@ -721,6 +736,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-object-cache.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-object-cache.php';
+		}
+	}
+
+	/**
+	 * Render Cloudflare tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_cloudflare_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-cloudflare.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-cloudflare.php';
 		}
 	}
 
