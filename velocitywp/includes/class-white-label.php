@@ -132,7 +132,7 @@ class VelocityWP_White_Label {
 	 * @return array Modified plugins.
 	 */
 	public function hide_plugin( $plugins ) {
-		$plugin_file = plugin_basename( VelocityWP_FILE );
+		$plugin_file = plugin_basename( VELOCITYWP_PLUGIN_FILE );
 
 		if ( isset( $plugins[ $plugin_file ] ) ) {
 			unset( $plugins[ $plugin_file ] );
