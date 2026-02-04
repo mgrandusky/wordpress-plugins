@@ -191,10 +191,10 @@ $cf_last_purge = get_option( 'velocitywp_cf_last_purge', 0 );
 
 		<tr>
 			<th scope="row">
-				<label for="wpsb-cf-purge-urls"><?php esc_html_e( 'Purge Specific URLs', 'velocitywp' ); ?></label>
+				<label for="velocitywp-cf-purge-urls"><?php esc_html_e( 'Purge Specific URLs', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<textarea id="velocitywp-cf-purge-urls" rows="5" class="large-text" placeholder="https://example.com/page1&#10;https://example.com/page2" aria-describedby="wpsb-cf-purge-urls-desc"></textarea>
+				<textarea id="velocitywp-cf-purge-urls" rows="5" class="large-text" placeholder="https://example.com/page1&#10;https://example.com/page2" aria-describedby="velocitywp-cf-purge-urls-desc"></textarea>
 				<br>
 				<button type="button" id="velocitywp-cf-purge-urls-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
 					<?php esc_html_e( 'Purge URLs', 'velocitywp' ); ?>
@@ -205,10 +205,10 @@ $cf_last_purge = get_option( 'velocitywp_cf_last_purge', 0 );
 
 		<tr>
 			<th scope="row">
-				<label for="wpsb-cf-purge-tags"><?php esc_html_e( 'Purge by Cache Tags', 'velocitywp' ); ?></label>
+				<label for="velocitywp-cf-purge-tags"><?php esc_html_e( 'Purge by Cache Tags', 'velocitywp' ); ?></label>
 			</th>
 			<td>
-				<textarea id="velocitywp-cf-purge-tags" rows="3" class="large-text" placeholder="tag1&#10;tag2" aria-describedby="wpsb-cf-purge-tags-desc"></textarea>
+				<textarea id="velocitywp-cf-purge-tags" rows="3" class="large-text" placeholder="tag1&#10;tag2" aria-describedby="velocitywp-cf-purge-tags-desc"></textarea>
 				<br>
 				<button type="button" id="velocitywp-cf-purge-tags-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
 					<?php esc_html_e( 'Purge Tags', 'velocitywp' ); ?>
@@ -387,7 +387,7 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'velocitywp_cf_test_connection',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				auth_type: authType,
 				api_token: apiToken,
 				email: email,
@@ -422,7 +422,7 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'velocitywp_cf_get_zones',
-				nonce: wpsbAdmin.nonce
+				nonce: velocitywpAdmin.nonce
 			},
 			success: function(response) {
 				if (response.success && response.data.result) {
@@ -469,7 +469,7 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'velocitywp_cf_purge_cache',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				type: 'everything'
 			},
 			success: function(response) {
@@ -505,7 +505,7 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'velocitywp_cf_purge_cache',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				type: 'urls',
 				urls: urls
 			},
@@ -542,7 +542,7 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'velocitywp_cf_purge_cache',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				type: 'tags',
 				tags: tags
 			},
@@ -576,7 +576,7 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'velocitywp_cf_toggle_dev_mode',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				action_type: 'enable'
 			},
 			success: function(response) {
@@ -608,7 +608,7 @@ jQuery(document).ready(function($) {
 			type: 'POST',
 			data: {
 				action: 'velocitywp_cf_toggle_dev_mode',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				action_type: 'disable'
 			},
 			success: function(response) {

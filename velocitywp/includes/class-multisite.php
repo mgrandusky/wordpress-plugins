@@ -59,7 +59,7 @@ class VelocityWP_Multisite {
 			__( 'VelocityWP Network', 'velocitywp' ),
 			__( 'Speed Booster', 'velocitywp' ),
 			'manage_network_options',
-			'wpsb-network',
+			'velocitywp-network',
 			array( $this, 'render_network_page' ),
 			'dashicons-performance',
 			80
@@ -106,7 +106,7 @@ class VelocityWP_Multisite {
 				$active_sites++;
 			}
 
-			$cache_dir = WP_CONTENT_DIR . '/cache/wpsb/';
+			$cache_dir = WP_CONTENT_DIR . '/cache/velocitywp/';
 			if ( is_dir( $cache_dir ) ) {
 				$total_cache_size += $this->get_directory_size( $cache_dir );
 			}
@@ -155,7 +155,7 @@ class VelocityWP_Multisite {
 					$options = get_option( 'velocitywp_options', array() );
 					$cache_enabled = ! empty( $options['cache_enable'] );
 					
-					$cache_dir = WP_CONTENT_DIR . '/cache/wpsb/';
+					$cache_dir = WP_CONTENT_DIR . '/cache/velocitywp/';
 					$cache_size = is_dir( $cache_dir ) ? $this->get_directory_size( $cache_dir ) : 0;
 					
 					restore_current_blog();
@@ -172,7 +172,7 @@ class VelocityWP_Multisite {
 					</td>
 					<td><?php echo size_format( $cache_size ); ?></td>
 					<td>
-						<button type="button" class="button button-small wpsb-purge-site-cache" data-site-id="<?php echo esc_attr( $site->blog_id ); ?>">
+						<button type="button" class="button button-small velocitywp-purge-site-cache" data-site-id="<?php echo esc_attr( $site->blog_id ); ?>">
 							<?php esc_html_e( 'Purge Cache', 'velocitywp' ); ?>
 						</button>
 					</td>
@@ -250,7 +250,7 @@ class VelocityWP_Multisite {
 	 * AJAX handler to purge network cache
 	 */
 	public function ajax_network_purge_cache() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_network_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

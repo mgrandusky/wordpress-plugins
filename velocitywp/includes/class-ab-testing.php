@@ -257,7 +257,7 @@ class VelocityWP_AB_Testing {
 	 * AJAX handler to get tests
 	 */
 	public function ajax_get_tests() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -278,7 +278,7 @@ class VelocityWP_AB_Testing {
 	 * AJAX handler to create test
 	 */
 	public function ajax_create_test() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -302,7 +302,7 @@ class VelocityWP_AB_Testing {
 	 * AJAX handler to end test
 	 */
 	public function ajax_end_test() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

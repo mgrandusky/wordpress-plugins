@@ -704,7 +704,7 @@ class VelocityWP_Fragment_Cache {
 	 * AJAX handler to clear fragment cache
 	 */
 	public function ajax_clear_cache() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -719,7 +719,7 @@ class VelocityWP_Fragment_Cache {
 	 * AJAX handler to get fragment statistics
 	 */
 	public function ajax_get_fragment_stats() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -734,7 +734,7 @@ class VelocityWP_Fragment_Cache {
 	 * AJAX handler to clear specific fragment type
 	 */
 	public function ajax_clear_fragment_type() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

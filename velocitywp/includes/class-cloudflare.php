@@ -541,7 +541,7 @@ class VelocityWP_Cloudflare {
 	 * AJAX handler to purge cache
 	 */
 	public function ajax_purge_cache() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -560,7 +560,7 @@ class VelocityWP_Cloudflare {
 	 * AJAX handler to test connection
 	 */
 	public function ajax_test_connection() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

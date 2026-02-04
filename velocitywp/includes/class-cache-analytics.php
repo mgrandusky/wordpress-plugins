@@ -217,7 +217,7 @@ class VelocityWP_Cache_Analytics {
 	 * @return int Size in bytes.
 	 */
 	private function get_cache_size() {
-		$cache_dir = WP_CONTENT_DIR . '/cache/wpsb/';
+		$cache_dir = WP_CONTENT_DIR . '/cache/velocitywp/';
 
 		if ( ! file_exists( $cache_dir ) ) {
 			return 0;
@@ -332,7 +332,7 @@ class VelocityWP_Cache_Analytics {
 	 * AJAX handler to get cache stats
 	 */
 	public function ajax_get_cache_stats() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -352,7 +352,7 @@ class VelocityWP_Cache_Analytics {
 	 * AJAX handler to reset cache stats
 	 */
 	public function ajax_reset_cache_stats() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

@@ -164,8 +164,8 @@ class VelocityWP_White_Label {
 			?>
 			<style>
 			:root {
-				--wpsb-primary-color: <?php echo esc_attr( $colors['primary'] ); ?>;
-				--wpsb-secondary-color: <?php echo esc_attr( $colors['secondary'] ); ?>;
+				--velocitywp-primary-color: <?php echo esc_attr( $colors['primary'] ); ?>;
+				--velocitywp-secondary-color: <?php echo esc_attr( $colors['secondary'] ); ?>;
 			}
 			</style>
 			<?php

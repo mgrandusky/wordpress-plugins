@@ -179,14 +179,14 @@ $critical_css_data = get_option( 'velocitywp_critical_css', array() );
 					<td><?php echo esc_html( $size ); ?></td>
 					<td><?php echo esc_html( $date ); ?></td>
 					<td>
-						<button type="button" class="button button-small wpspeed-generate-template" data-template="<?php echo esc_attr( $template_key ); ?>">
+						<button type="button" class="button button-small velocitywp-generate-template" data-template="<?php echo esc_attr( $template_key ); ?>">
 							<?php echo $has_desktop ? esc_html__( 'Regenerate', 'velocitywp' ) : esc_html__( 'Generate', 'velocitywp' ); ?>
 						</button>
 						<?php if ( $has_desktop ) : ?>
-							<button type="button" class="button button-small wpspeed-view-template-css" data-template="<?php echo esc_attr( $template_key ); ?>">
+							<button type="button" class="button button-small velocitywp-view-template-css" data-template="<?php echo esc_attr( $template_key ); ?>">
 								<?php esc_html_e( 'View', 'velocitywp' ); ?>
 							</button>
-							<button type="button" class="button button-small button-link-delete wpspeed-delete-template" data-template="<?php echo esc_attr( $template_key ); ?>">
+							<button type="button" class="button button-small button-link-delete velocitywp-delete-template" data-template="<?php echo esc_attr( $template_key ); ?>">
 								<?php esc_html_e( 'Delete', 'velocitywp' ); ?>
 							</button>
 						<?php endif; ?>
@@ -408,7 +408,7 @@ $critical_css_data = get_option( 'velocitywp_critical_css', array() );
 <script>
 jQuery(document).ready(function($) {
 	// Generate single template
-	$('.wpspeed-generate-template').on('click', function() {
+	$('.velocitywp-generate-template').on('click', function() {
 		var $btn = $(this);
 		var template = $btn.data('template');
 		
@@ -435,14 +435,14 @@ jQuery(document).ready(function($) {
 	});
 	
 	// View template CSS
-	$('.wpspeed-view-template-css').on('click', function() {
+	$('.velocitywp-view-template-css').on('click', function() {
 		var template = $(this).data('template');
 		$('#velocitywp-preview-template').val(template);
 		$('#velocitywp-load-preview').click();
 	});
 	
 	// Delete template CSS
-	$('.wpspeed-delete-template').on('click', function() {
+	$('.velocitywp-delete-template').on('click', function() {
 		if (!confirm('<?php esc_html_e( 'Delete critical CSS for this template?', 'velocitywp' ); ?>')) return;
 		
 		var $btn = $(this);

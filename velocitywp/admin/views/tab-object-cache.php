@@ -274,7 +274,7 @@ jQuery(document).ready(function($) {
 	// Show/hide settings based on cache type selection
 	function toggleCacheSettings() {
 		var cacheType = $('#velocitywp-cache-type').val();
-		$('.wpspeed-cache-settings').hide();
+		$('.velocitywp-cache-settings').hide();
 		
 		if (cacheType === 'redis') {
 			$('#redis-settings').show();
@@ -305,7 +305,7 @@ jQuery(document).ready(function($) {
 			data: {
 				action: 'velocitywp_test_object_cache',
 				backend: 'redis',
-				nonce: '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {
@@ -337,7 +337,7 @@ jQuery(document).ready(function($) {
 			data: {
 				action: 'velocitywp_test_object_cache',
 				backend: 'memcached',
-				nonce: '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {
@@ -369,7 +369,7 @@ jQuery(document).ready(function($) {
 			data: {
 				action: 'velocitywp_test_object_cache',
 				backend: 'apcu',
-				nonce: '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {
@@ -404,7 +404,7 @@ jQuery(document).ready(function($) {
 			method: 'POST',
 			data: {
 				action: 'velocitywp_install_dropin',
-				nonce: '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {
@@ -439,7 +439,7 @@ jQuery(document).ready(function($) {
 			method: 'POST',
 			data: {
 				action: 'velocitywp_remove_dropin',
-				nonce: '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {
@@ -474,7 +474,7 @@ jQuery(document).ready(function($) {
 			method: 'POST',
 			data: {
 				action: 'velocitywp_flush_object_cache',
-				nonce: '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {
@@ -502,7 +502,7 @@ jQuery(document).ready(function($) {
 			method: 'POST',
 			data: {
 				action: 'velocitywp_get_cache_stats',
-				nonce: '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>'
+				nonce: '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>'
 			},
 			success: function(response) {
 				if (response.success) {

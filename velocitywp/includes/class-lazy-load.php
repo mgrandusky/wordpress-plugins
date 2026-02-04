@@ -84,7 +84,7 @@ class VelocityWP_Lazy_Load {
 		}
 
 		wp_enqueue_style(
-			'wpsb-frontend',
+			'velocitywp-frontend',
 			WPSB_URL . 'assets/frontend.css',
 			array(),
 			WPSB_VERSION
@@ -218,7 +218,7 @@ class VelocityWP_Lazy_Load {
 		
 		// Add class
 		if ( strpos( $after_src, 'class=' ) !== false ) {
-			$after_src = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 wpspeed-lazy"', $after_src );
+			$after_src = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 velocitywp-lazy"', $after_src );
 		} else {
 			$new_img .= ' class="velocitywp-lazy"';
 		}
@@ -273,7 +273,7 @@ class VelocityWP_Lazy_Load {
 		
 		// Add class
 		if ( strpos( $after_srcset, 'class=' ) !== false ) {
-			$after_srcset = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 wpspeed-lazy"', $after_srcset );
+			$after_srcset = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 velocitywp-lazy"', $after_srcset );
 		} else {
 			$new_img .= ' class="velocitywp-lazy"';
 		}
@@ -472,7 +472,7 @@ class VelocityWP_Lazy_Load {
 
 		// Add class
 		if ( strpos( $matches[3], 'class=' ) !== false ) {
-			$matches[3] = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 wpspeed-lazy-iframe"', $matches[3] );
+			$matches[3] = preg_replace( '/class=["\']([^"\']*)["\']/i', 'class="$1 velocitywp-lazy-iframe"', $matches[3] );
 		} else {
 			$new_iframe .= ' class="velocitywp-lazy-iframe"';
 		}
@@ -539,7 +539,7 @@ class VelocityWP_Lazy_Load {
 						if (entry.isIntersecting) {
 							var element = entry.target;
 							element.style.backgroundImage = 'url(' + element.dataset.bg + ')';
-							element.classList.add('wpspeed-bg-loaded');
+							element.classList.add('velocitywp-bg-loaded');
 							lazyBackgroundObserver.unobserve(element);
 						}
 					});
@@ -621,7 +621,7 @@ class VelocityWP_Lazy_Load {
 			// Check for IntersectionObserver support
 			if (!('IntersectionObserver' in window)) {
 				// Load all images immediately
-				var lazyImages = document.querySelectorAll('.wpspeed-lazy');
+				var lazyImages = document.querySelectorAll('.velocitywp-lazy');
 				lazyImages.forEach(function(img) {
 					if (img.dataset.src) {
 						img.src = img.dataset.src;
@@ -631,7 +631,7 @@ class VelocityWP_Lazy_Load {
 					}
 				});
 				
-				var lazyIframes = document.querySelectorAll('.wpspeed-lazy-iframe');
+				var lazyIframes = document.querySelectorAll('.velocitywp-lazy-iframe');
 				lazyIframes.forEach(function(iframe) {
 					if (iframe.dataset.src) {
 						iframe.src = iframe.dataset.src;
@@ -654,8 +654,8 @@ class VelocityWP_Lazy_Load {
 							lazyImage.srcset = lazyImage.dataset.srcset;
 						}
 						
-						lazyImage.classList.remove('wpspeed-lazy');
-						lazyImage.classList.add('wpspeed-lazy-loaded');
+						lazyImage.classList.remove('velocitywp-lazy');
+						lazyImage.classList.add('velocitywp-lazy-loaded');
 						lazyImageObserver.unobserve(lazyImage);
 					}
 				});
@@ -663,7 +663,7 @@ class VelocityWP_Lazy_Load {
 				rootMargin: '<?php echo intval( $threshold ); ?>px'
 			});
 			
-			var lazyImages = document.querySelectorAll('.wpspeed-lazy');
+			var lazyImages = document.querySelectorAll('.velocitywp-lazy');
 			lazyImages.forEach(function(lazyImage) {
 				lazyImageObserver.observe(lazyImage);
 			});
@@ -678,8 +678,8 @@ class VelocityWP_Lazy_Load {
 							lazyIframe.src = lazyIframe.dataset.src;
 						}
 						
-						lazyIframe.classList.remove('wpspeed-lazy-iframe');
-						lazyIframe.classList.add('wpspeed-lazy-loaded');
+						lazyIframe.classList.remove('velocitywp-lazy-iframe');
+						lazyIframe.classList.add('velocitywp-lazy-loaded');
 						lazyIframeObserver.unobserve(lazyIframe);
 					}
 				});
@@ -687,15 +687,15 @@ class VelocityWP_Lazy_Load {
 				rootMargin: '<?php echo intval( $threshold ); ?>px'
 			});
 			
-			var lazyIframes = document.querySelectorAll('.wpspeed-lazy-iframe');
+			var lazyIframes = document.querySelectorAll('.velocitywp-lazy-iframe');
 			lazyIframes.forEach(function(lazyIframe) {
 				lazyIframeObserver.observe(lazyIframe);
 			});
 			
 			// YouTube lazy load
-			var lazyYouTubes = document.querySelectorAll('.wpspeed-lazy-youtube');
+			var lazyYouTubes = document.querySelectorAll('.velocitywp-lazy-youtube');
 			lazyYouTubes.forEach(function(element) {
-				var playButton = element.querySelector('.wpspeed-play-button');
+				var playButton = element.querySelector('.velocitywp-play-button');
 				if (playButton) {
 					playButton.addEventListener('click', function() {
 						var iframe = document.createElement('iframe');
@@ -716,9 +716,9 @@ class VelocityWP_Lazy_Load {
 			});
 			
 			// Vimeo lazy load
-			var lazyVimeos = document.querySelectorAll('.wpspeed-lazy-vimeo');
+			var lazyVimeos = document.querySelectorAll('.velocitywp-lazy-vimeo');
 			lazyVimeos.forEach(function(element) {
-				var playButton = element.querySelector('.wpspeed-play-button');
+				var playButton = element.querySelector('.velocitywp-play-button');
 				if (playButton) {
 					playButton.addEventListener('click', function() {
 						var iframe = document.createElement('iframe');
@@ -738,9 +738,9 @@ class VelocityWP_Lazy_Load {
 			});
 			
 			// Google Maps lazy load
-			var lazyMaps = document.querySelectorAll('.wpspeed-lazy-maps');
+			var lazyMaps = document.querySelectorAll('.velocitywp-lazy-maps');
 			lazyMaps.forEach(function(element) {
-				var loadButton = element.querySelector('.wpspeed-load-map');
+				var loadButton = element.querySelector('.velocitywp-load-map');
 				if (loadButton) {
 					loadButton.addEventListener('click', function() {
 						var iframe = document.createElement('iframe');
@@ -775,17 +775,17 @@ class VelocityWP_Lazy_Load {
 			intval( $this->settings['lazy_load_fade_duration'] ) : 300;
 		?>
 		<style>
-		.wpspeed-lazy {
+		.velocitywp-lazy {
 			opacity: 0;
 			transition: opacity <?php echo $fade_in ? $fade_duration : 0; ?>ms ease-in;
 		}
-		.wpspeed-lazy-loaded {
+		.velocitywp-lazy-loaded {
 			opacity: 1;
 		}
-		.wpspeed-play-button:hover {
+		.velocitywp-play-button:hover {
 			opacity: 0.9;
 		}
-		.wpspeed-load-map:hover {
+		.velocitywp-load-map:hover {
 			background: #3367d6;
 		}
 		</style>

@@ -389,7 +389,7 @@ $assigned_menus = get_nav_menu_locations();
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-	var nonce = '<?php echo esc_js( wp_create_nonce( 'wpsb-admin-nonce' ) ); ?>';
+	var nonce = '<?php echo esc_js( wp_create_nonce( 'velocitywp-admin-nonce' ) ); ?>';
 	
 	// Clear all fragments
 	$('#velocitywp-clear-all-fragments').on('click', function() {
@@ -462,10 +462,10 @@ jQuery(document).ready(function($) {
 		});
 	}
 	
-	clearFragmentType('widget', 'wpspeed-clear-widget-cache');
-	clearFragmentType('sidebar', 'wpspeed-clear-sidebar-cache');
-	clearFragmentType('menu', 'wpspeed-clear-menu-cache');
-	clearFragmentType('shortcode', 'wpspeed-clear-shortcode-cache');
+	clearFragmentType('widget', 'velocitywp-clear-widget-cache');
+	clearFragmentType('sidebar', 'velocitywp-clear-sidebar-cache');
+	clearFragmentType('menu', 'velocitywp-clear-menu-cache');
+	clearFragmentType('shortcode', 'velocitywp-clear-shortcode-cache');
 	
 	// Refresh statistics
 	function refreshStats() {

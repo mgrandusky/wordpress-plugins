@@ -494,16 +494,16 @@ jQuery(document).ready(function($) {
 </script>
 
 <style>
-.wpspeed-resource-hints-table {
+.velocitywp-resource-hints-table {
 	margin-top: 20px;
 }
 
-.wpspeed-resource-hints-table table {
+.velocitywp-resource-hints-table table {
 	margin-bottom: 10px;
 }
 
-.wpspeed-resource-hints-table input[type="url"],
-.wpspeed-resource-hints-table input[type="text"] {
+.velocitywp-resource-hints-table input[type="url"],
+.velocitywp-resource-hints-table input[type="text"] {
 	width: 100%;
 }
 

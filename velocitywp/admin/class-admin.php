@@ -242,14 +242,14 @@ class VelocityWP_Admin {
 		}
 
 		wp_enqueue_style(
-			'wpsb-admin',
+			'velocitywp-admin',
 			WPSB_URL . 'admin/admin.css',
 			array(),
 			WPSB_VERSION
 		);
 
 		wp_enqueue_script(
-			'wpsb-admin',
+			'velocitywp-admin',
 			WPSB_URL . 'admin/admin.js',
 			array( 'jquery' ),
 			WPSB_VERSION,
@@ -265,7 +265,7 @@ class VelocityWP_Admin {
 			true
 		);
 
-		wp_localize_script( 'wpsb-admin', 'wpsbAdmin', array(
+		wp_localize_script( 'velocitywp-admin', 'velocitywpAdmin', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'velocitywp_admin_nonce' ),
 			'performance_nonce' => wp_create_nonce( 'velocitywp_performance' ),
@@ -289,7 +289,7 @@ class VelocityWP_Admin {
 
 		$options = get_option( 'velocitywp_options', array() );
 		?>
-		<div class="wrap wpsb-admin">
+		<div class="wrap velocitywp-admin">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 			<!-- Single form wrapping ALL tabs -->
@@ -297,61 +297,61 @@ class VelocityWP_Admin {
 				<?php settings_fields( 'velocitywp_options' ); ?>
 
 				<!-- Tab Navigation -->
-				<nav class="nav-tab-wrapper wpspeed-nav-tab-wrapper">
-					<a href="#tab-dashboard" class="nav-tab wpspeed-nav-tab" data-tab="dashboard">
+				<nav class="nav-tab-wrapper velocitywp-nav-tab-wrapper">
+					<a href="#tab-dashboard" class="nav-tab velocitywp-nav-tab" data-tab="dashboard">
 						<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-cache" class="nav-tab wpspeed-nav-tab" data-tab="cache">
+					<a href="#tab-cache" class="nav-tab velocitywp-nav-tab" data-tab="cache">
 						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Cache', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-optimization" class="nav-tab wpspeed-nav-tab" data-tab="optimization">
+					<a href="#tab-optimization" class="nav-tab velocitywp-nav-tab" data-tab="optimization">
 						<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Optimization', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-media" class="nav-tab wpspeed-nav-tab" data-tab="media">
+					<a href="#tab-media" class="nav-tab velocitywp-nav-tab" data-tab="media">
 						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Media', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-lazy-load" class="nav-tab wpspeed-nav-tab" data-tab="lazy-load">
+					<a href="#tab-lazy-load" class="nav-tab velocitywp-nav-tab" data-tab="lazy-load">
 						<span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Lazy Loading', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-webp" class="nav-tab wpspeed-nav-tab" data-tab="webp">
+					<a href="#tab-webp" class="nav-tab velocitywp-nav-tab" data-tab="webp">
 						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'WebP Images', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-critical-css" class="nav-tab wpspeed-nav-tab" data-tab="critical-css">
+					<a href="#tab-critical-css" class="nav-tab velocitywp-nav-tab" data-tab="critical-css">
 						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-fonts" class="nav-tab wpspeed-nav-tab" data-tab="fonts">
+					<a href="#tab-fonts" class="nav-tab velocitywp-nav-tab" data-tab="fonts">
 						<span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Fonts', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-resource-hints" class="nav-tab wpspeed-nav-tab" data-tab="resource-hints">
+					<a href="#tab-resource-hints" class="nav-tab velocitywp-nav-tab" data-tab="resource-hints">
 						<span class="dashicons dashicons-networking"></span> <?php esc_html_e( 'Resource Hints', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-fragment-cache" class="nav-tab wpspeed-nav-tab" data-tab="fragment-cache">
+					<a href="#tab-fragment-cache" class="nav-tab velocitywp-nav-tab" data-tab="fragment-cache">
 						<span class="dashicons dashicons-editor-table"></span> <?php esc_html_e( 'Fragment Cache', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-performance-metrics" class="nav-tab wpspeed-nav-tab" data-tab="performance-metrics">
+					<a href="#tab-performance-metrics" class="nav-tab velocitywp-nav-tab" data-tab="performance-metrics">
 						<span class="dashicons dashicons-chart-line"></span> <?php esc_html_e( 'Performance Metrics', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-performance" class="nav-tab wpspeed-nav-tab" data-tab="performance">
+					<a href="#tab-performance" class="nav-tab velocitywp-nav-tab" data-tab="performance">
 						<span class="dashicons dashicons-analytics"></span> <?php esc_html_e( 'Performance Monitor', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-object-cache" class="nav-tab wpspeed-nav-tab" data-tab="object-cache">
+					<a href="#tab-object-cache" class="nav-tab velocitywp-nav-tab" data-tab="object-cache">
 						<span class="dashicons dashicons-performance"></span> <?php esc_html_e( 'Object Cache', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-cloudflare" class="nav-tab wpspeed-nav-tab" data-tab="cloudflare">
+					<a href="#tab-cloudflare" class="nav-tab velocitywp-nav-tab" data-tab="cloudflare">
 						<span class="dashicons dashicons-cloud"></span> <?php esc_html_e( 'Cloudflare', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-heartbeat" class="nav-tab wpspeed-nav-tab" data-tab="heartbeat">
+					<a href="#tab-heartbeat" class="nav-tab velocitywp-nav-tab" data-tab="heartbeat">
 						<span class="dashicons dashicons-heart"></span> <?php esc_html_e( 'Heartbeat', 'velocitywp' ); ?>
 					</a>
-					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
+					<a href="#tab-database" class="nav-tab velocitywp-nav-tab" data-tab="database">
 						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'velocitywp' ); ?>
 					</a>
 					<?php if ( class_exists( 'WooCommerce' ) ) : ?>
-					<a href="#tab-woocommerce" class="nav-tab wpspeed-nav-tab" data-tab="woocommerce">
+					<a href="#tab-woocommerce" class="nav-tab velocitywp-nav-tab" data-tab="woocommerce">
 						<span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'WooCommerce', 'velocitywp' ); ?>
 					</a>
 					<?php endif; ?>
-					<a href="#tab-advanced" class="nav-tab wpspeed-nav-tab" data-tab="advanced">
+					<a href="#tab-advanced" class="nav-tab velocitywp-nav-tab" data-tab="advanced">
 						<span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e( 'Advanced', 'velocitywp' ); ?>
 					</a>
 				</nav>

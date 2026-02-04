@@ -1545,7 +1545,7 @@ PHP;
 			<div class="notice notice-warning">
 				<p>
 					<?php esc_html_e( 'VelocityWP: Object cache is enabled but the drop-in file is not installed.', 'velocitywp' ); ?>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wpsb-settings&tab=advanced' ) ); ?>">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=velocitywp-settings&tab=advanced' ) ); ?>">
 						<?php esc_html_e( 'Install now', 'velocitywp' ); ?>
 					</a>
 				</p>
@@ -1568,7 +1568,7 @@ PHP;
 	 * AJAX handler to test cache connection
 	 */
 	public function ajax_test_cache() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -1600,7 +1600,7 @@ PHP;
 	 * AJAX handler to flush cache
 	 */
 	public function ajax_flush_cache() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -1619,7 +1619,7 @@ PHP;
 	 * AJAX handler to install dropin
 	 */
 	public function ajax_install_dropin() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -1638,7 +1638,7 @@ PHP;
 	 * AJAX handler to remove dropin
 	 */
 	public function ajax_remove_dropin() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -1657,7 +1657,7 @@ PHP;
 	 * AJAX handler to get cache stats
 	 */
 	public function ajax_get_stats() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

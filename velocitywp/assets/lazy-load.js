@@ -57,17 +57,17 @@
         }
 
         // Add loading class
-        img.classList.add('wpsb-loading');
+        img.classList.add('velocitywp-loading');
 
         // Load image
         img.onload = function() {
-            img.classList.remove('wpsb-loading');
-            img.classList.add('wpsb-loaded');
+            img.classList.remove('velocitywp-loading');
+            img.classList.add('velocitywp-loaded');
         };
 
         img.onerror = function() {
-            img.classList.remove('wpsb-loading');
-            img.classList.add('wpsb-error');
+            img.classList.remove('velocitywp-loading');
+            img.classList.add('velocitywp-error');
         };
 
         // Set src
@@ -134,7 +134,7 @@
         }
 
         // Add loading class
-        iframe.classList.add('wpsb-loading');
+        iframe.classList.add('velocitywp-loading');
 
         // Set src
         iframe.src = src;
@@ -144,8 +144,8 @@
 
         // Remove loading class after load
         iframe.onload = function() {
-            iframe.classList.remove('wpsb-loading');
-            iframe.classList.add('wpsb-loaded');
+            iframe.classList.remove('velocitywp-loading');
+            iframe.classList.add('velocitywp-loaded');
         };
     }
 
@@ -175,7 +175,7 @@
     init();
 
     // Expose function for manual triggering (for dynamic content)
-    window.wpsbLazyLoad = {
+    window.velocitywpLazyLoad = {
         loadImages: lazyLoadImages,
         loadIframes: lazyLoadIframes,
         init: init

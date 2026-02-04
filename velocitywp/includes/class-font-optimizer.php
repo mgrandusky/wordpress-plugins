@@ -45,8 +45,8 @@ class VelocityWP_Font_Optimizer {
 		$this->settings = get_option( 'velocitywp_options', array() );
 
 		$upload_dir = wp_upload_dir();
-		$this->fonts_dir = $upload_dir['basedir'] . '/wpsb-fonts/';
-		$this->fonts_url = $upload_dir['baseurl'] . '/wpsb-fonts/';
+		$this->fonts_dir = $upload_dir['basedir'] . '/velocitywp-fonts/';
+		$this->fonts_url = $upload_dir['baseurl'] . '/velocitywp-fonts/';
 
 		// Create fonts directory
 		if ( ! file_exists( $this->fonts_dir ) ) {

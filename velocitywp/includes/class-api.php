@@ -22,7 +22,7 @@ class VelocityWP_API {
 	 *
 	 * @var string
 	 */
-	private $namespace = 'wpsb/v1';
+	private $namespace = 'velocitywp/v1';
 
 	/**
 	 * Constructor

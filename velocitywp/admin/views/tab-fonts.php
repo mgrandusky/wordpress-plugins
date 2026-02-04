@@ -164,7 +164,7 @@ $font_preload_urls         = ! empty( $options['font_preload_urls'] ) ? $options
 						<?php
 						$css_filename = 'google-fonts-' . md5( $font['url'] ) . '.css';
 						$upload_dir   = wp_upload_dir();
-						$fonts_dir    = $upload_dir['basedir'] . '/wpsb-fonts/';
+						$fonts_dir    = $upload_dir['basedir'] . '/velocitywp-fonts/';
 						$local_css    = $fonts_dir . $css_filename;
 						if ( file_exists( $local_css ) ) :
 							?>
@@ -174,7 +174,7 @@ $font_preload_urls         = ! empty( $options['font_preload_urls'] ) ? $options
 						<?php endif; ?>
 					</td>
 					<td>
-						<button type="button" class="button button-small wpsb-download-font"
+						<button type="button" class="button button-small velocitywp-download-font"
 							data-url="<?php echo esc_attr( $font['url'] ); ?>"
 							data-handle="<?php echo esc_attr( $font['handle'] ); ?>">
 							<?php esc_html_e( 'Download Locally', 'velocitywp' ); ?>
@@ -253,7 +253,7 @@ jQuery(document).ready(function($) {
 
 		$.post(ajaxurl, {
 			action: 'velocitywp_download_google_fonts',
-			nonce: wpsbAdmin.nonce,
+			nonce: velocitywpAdmin.nonce,
 			url: url
 		}, function(response) {
 			if (response.success) {
@@ -287,7 +287,7 @@ jQuery(document).ready(function($) {
 
 			$.post(ajaxurl, {
 				action: 'velocitywp_download_google_fonts',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				url: url
 			}, function(response) {
 				completed++;
@@ -312,7 +312,7 @@ jQuery(document).ready(function($) {
 
 		$.post(ajaxurl, {
 			action: 'velocitywp_clear_local_fonts',
-			nonce: wpsbAdmin.nonce
+			nonce: velocitywpAdmin.nonce
 		}, function(response) {
 			if (response.success) {
 				alert(response.data.message);

@@ -177,7 +177,7 @@ class VelocityWP_Cron_Manager {
 	 * AJAX handler to get cron jobs
 	 */
 	public function ajax_get_cron_jobs() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -192,7 +192,7 @@ class VelocityWP_Cron_Manager {
 	 * AJAX handler to run cron job
 	 */
 	public function ajax_run_cron_job() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );
@@ -217,7 +217,7 @@ class VelocityWP_Cron_Manager {
 	 * AJAX handler to delete cron job
 	 */
 	public function ajax_delete_cron_job() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

@@ -1,4 +1,4 @@
-=== WP Speed Booster ===
+=== VelocityWP ===
 Contributors: mgrandusky
 Tags: cache, performance, speed, optimization, minify, lazy-load
 Requires at least: 5.0
@@ -12,7 +12,7 @@ Comprehensive page speed optimization plugin with caching, minification, lazy lo
 
 == Description ==
 
-WP Speed Booster is a powerful performance optimization plugin that helps you speed up your WordPress website. It includes features similar to premium plugins like WP Rocket, providing:
+VelocityWP is a powerful performance optimization plugin that helps you speed up your WordPress website. It includes features similar to premium plugins like WP Rocket, providing:
 
 * **Page Caching** - Advanced file-based caching with separate mobile cache
 * **HTML/CSS/JS Minification** - Reduce file sizes with optional file combining
@@ -87,7 +87,7 @@ WP Speed Booster is a powerful performance optimization plugin that helps you sp
 
 1. Upload the `wp-speed-booster` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to Settings → WP Speed Booster to configure the plugin
+3. Go to Settings → VelocityWP to configure the plugin
 4. Enable desired optimization features
 5. Clear cache and test your site
 
@@ -95,11 +95,11 @@ WP Speed Booster is a powerful performance optimization plugin that helps you sp
 
 = Will this plugin break my site? =
 
-WP Speed Booster is designed with safety in mind. It includes automatic .htaccess backups and safe defaults. However, it's always recommended to test on a staging site first and backup your site before making changes.
+VelocityWP is designed with safety in mind. It includes automatic .htaccess backups and safe defaults. However, it's always recommended to test on a staging site first and backup your site before making changes.
 
 = How do I clear the cache? =
 
-Go to Settings → WP Speed Booster → Cache tab and click the "Clear Cache" button. You can also use WP-CLI: `wp cache flush`
+Go to Settings → VelocityWP → Cache tab and click the "Clear Cache" button. You can also use WP-CLI: `wp cache flush`
 
 = Can I exclude specific pages from caching? =
 
@@ -107,7 +107,7 @@ Yes, go to the Cache tab and add URL patterns to the "Exclude URLs" field, one p
 
 = Does this work with WooCommerce? =
 
-Yes, WP Speed Booster is compatible with WooCommerce and other popular plugins. It automatically excludes cart and checkout pages from caching.
+Yes, VelocityWP is compatible with WooCommerce and other popular plugins. It automatically excludes cart and checkout pages from caching.
 
 = How do I enable CDN? =
 
@@ -145,11 +145,11 @@ It depends on your site activity. Weekly or monthly is usually sufficient for mo
 == Upgrade Notice ==
 
 = 1.0.0 =
-Initial release of WP Speed Booster.
+Initial release of VelocityWP.
 
 == Developer Hooks ==
 
-WP Speed Booster provides several hooks for developers:
+VelocityWP provides several hooks for developers:
 
 * `wpsb_before_cache_save` - Before cache file is saved
 * `wpsb_after_cache_save` - After cache file is saved

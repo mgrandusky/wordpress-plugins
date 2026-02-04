@@ -170,15 +170,15 @@ $alert_threshold = !empty($options['performance_alert_threshold']) ? $options['p
 </div>
 
 <style>
-.wpspeed-metric-box { background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:15px; }
-.wpspeed-cwv-box { background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:15px; }
-.wpspeed-rating { padding:5px 10px;border-radius:3px;display:inline-block;font-weight:bold;margin-top:5px; }
-.wpspeed-rating.good { background:#00a32a;color:#fff; }
-.wpspeed-rating.needs-improvement { background:#f0a600;color:#fff; }
-.wpspeed-rating.poor { background:#d63638;color:#fff; }
-.wpspeed-score-good { color:#00a32a; }
-.wpspeed-score-average { color:#f0a600; }
-.wpspeed-score-poor { color:#d63638; }
+.velocitywp-metric-box { background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:15px; }
+.velocitywp-cwv-box { background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:15px; }
+.velocitywp-rating { padding:5px 10px;border-radius:3px;display:inline-block;font-weight:bold;margin-top:5px; }
+.velocitywp-rating.good { background:#00a32a;color:#fff; }
+.velocitywp-rating.needs-improvement { background:#f0a600;color:#fff; }
+.velocitywp-rating.poor { background:#d63638;color:#fff; }
+.velocitywp-score-good { color:#00a32a; }
+.velocitywp-score-average { color:#f0a600; }
+.velocitywp-score-poor { color:#d63638; }
 </style>
 
 <script>
@@ -197,7 +197,7 @@ jQuery(document).ready(function($) {
         
         $.post(ajaxurl, {
             action: 'velocitywp_run_pagespeed',
-            nonce: wpsbAdmin.performance_nonce,
+            nonce: velocitywpAdmin.performance_nonce,
             url: url,
             strategy: strategy
         }, function(response) {
@@ -220,20 +220,20 @@ jQuery(document).ready(function($) {
     function displayResults(data) {
         // Score
         var score = data.score;
-        var scoreClass = score >= 90 ? 'wpspeed-score-good' : (score >= 50 ? 'wpspeed-score-average' : 'wpspeed-score-poor');
+        var scoreClass = score >= 90 ? 'velocitywp-score-good' : (score >= 50 ? 'velocitywp-score-average' : 'velocitywp-score-poor');
         $('#velocitywp-score-circle').text(score).attr('class', scoreClass);
         
         // Core Web Vitals
         var cwv = data.core_web_vitals;
         
         $('#velocitywp-lcp-value').text(cwv.lcp.displayValue);
-        $('#velocitywp-lcp-rating').text(cwv.lcp.rating).attr('class', 'wpspeed-rating ' + cwv.lcp.rating);
+        $('#velocitywp-lcp-rating').text(cwv.lcp.rating).attr('class', 'velocitywp-rating ' + cwv.lcp.rating);
         
         $('#velocitywp-fid-value').text(cwv.fid.displayValue);
-        $('#velocitywp-fid-rating').text(cwv.fid.rating).attr('class', 'wpspeed-rating ' + cwv.fid.rating);
+        $('#velocitywp-fid-rating').text(cwv.fid.rating).attr('class', 'velocitywp-rating ' + cwv.fid.rating);
         
         $('#velocitywp-cls-value').text(cwv.cls.displayValue);
-        $('#velocitywp-cls-rating').text(cwv.cls.rating).attr('class', 'wpspeed-rating ' + cwv.cls.rating);
+        $('#velocitywp-cls-rating').text(cwv.cls.rating).attr('class', 'velocitywp-rating ' + cwv.cls.rating);
         
         $('#velocitywp-fcp-value').text(cwv.fcp.displayValue);
         $('#velocitywp-ttfb-value').text(cwv.ttfb.displayValue);
@@ -258,7 +258,7 @@ jQuery(document).ready(function($) {
         return item.score;
     });
     
-    var ctx = document.getElementById('wpspeed-performance-chart').getContext('2d');
+    var ctx = document.getElementById('velocitywp-performance-chart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
         data: {

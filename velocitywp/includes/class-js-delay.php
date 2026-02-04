@@ -39,7 +39,7 @@ class VelocityWP_JS_Delay {
         $default_excluded = array(
             'jquery-core',
             'jquery',
-            'wpspeed-', // Our own scripts
+            'velocitywp-', // Our own scripts
         );
         
         // User-defined excluded scripts
@@ -103,9 +103,9 @@ class VelocityWP_JS_Delay {
         
         // Delay mode - add special data attribute
         if (!empty($this->settings['js_delay_enabled'])) {
-            // Replace src with data-wpspeed-src for delayed loading
-            $tag = str_replace(' src=', ' data-wpspeed-src=', $tag);
-            $tag = str_replace('<script ', '<script type="wpspeed-delayed" ', $tag);
+            // Replace src with data-velocitywp-src for delayed loading
+            $tag = str_replace(' src=', ' data-velocitywp-src=', $tag);
+            $tag = str_replace('<script ', '<script type="velocitywp-delayed" ', $tag);
         }
         
         return $tag;
@@ -134,10 +134,10 @@ class VelocityWP_JS_Delay {
             
             // Collect all delayed scripts
             function collectDelayedScripts() {
-                var scripts = document.querySelectorAll('script[type="wpspeed-delayed"]');
+                var scripts = document.querySelectorAll('script[type="velocitywp-delayed"]');
                 scripts.forEach(function(script) {
                     var copy = {
-                        src: script.getAttribute('data-wpspeed-src'),
+                        src: script.getAttribute('data-velocitywp-src'),
                         code: script.textContent,
                         async: script.hasAttribute('async'),
                         defer: script.hasAttribute('defer')

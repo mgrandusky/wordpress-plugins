@@ -26,7 +26,7 @@ if ( ! in_array( $period, $valid_periods, true ) ) {
 }
 
 // Initialize performance monitor if enabled
-if ( $performance_monitoring_enabled && class_exists( 'WP_Speed_Booster_Performance_Monitor' ) ) {
+if ( $performance_monitoring_enabled && class_exists( 'VelocityWP_Performance_Monitor' ) ) {
 	$monitor   = new VelocityWP_Performance_Monitor();
 	$analytics = $monitor->get_analytics( $period );
 } else {
@@ -152,7 +152,7 @@ $averages = $analytics['averages'];
 	
 	<div style="margin-bottom: 20px;">
 		<label for="performance-period-selector"><strong><?php esc_html_e( 'Time Period:', 'velocitywp' ); ?></strong></label>
-		<select id="performance-period-selector" onchange="window.location.href='<?php echo esc_url( admin_url( 'options-general.php?page=wp-speed-booster&tab=performance&period=' ) ); ?>' + this.value;">
+		<select id="performance-period-selector" onchange="window.location.href='<?php echo esc_url( admin_url( 'options-general.php?page=velocitywp&tab=performance&period=' ) ); ?>' + this.value;">
 			<option value="1" <?php selected( $period, 1 ); ?>><?php esc_html_e( 'Last 24 Hours', 'velocitywp' ); ?></option>
 			<option value="7" <?php selected( $period, 7 ); ?>><?php esc_html_e( 'Last 7 Days', 'velocitywp' ); ?></option>
 			<option value="30" <?php selected( $period, 30 ); ?>><?php esc_html_e( 'Last 30 Days', 'velocitywp' ); ?></option>
@@ -177,7 +177,7 @@ $averages = $analytics['averages'];
 		<?php
 		$lcp_value  = round( $averages->avg_lcp );
 		$lcp_rating = $monitor->get_cwv_rating( $lcp_value, 'lcp' );
-		$lcp_class  = 'wpspeed-metric-' . $lcp_rating;
+		$lcp_class  = 'velocitywp-metric-' . $lcp_rating;
 		?>
 		<div class="velocitywp-metric-card <?php echo esc_attr( $lcp_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">LCP</h3>
@@ -192,7 +192,7 @@ $averages = $analytics['averages'];
 		<?php
 		$fid_value  = round( $averages->avg_fid );
 		$fid_rating = $monitor->get_cwv_rating( $fid_value, 'fid' );
-		$fid_class  = 'wpspeed-metric-' . $fid_rating;
+		$fid_class  = 'velocitywp-metric-' . $fid_rating;
 		?>
 		<div class="velocitywp-metric-card <?php echo esc_attr( $fid_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">FID</h3>
@@ -207,7 +207,7 @@ $averages = $analytics['averages'];
 		<?php
 		$cls_value  = round( $averages->avg_cls, 3 );
 		$cls_rating = $monitor->get_cwv_rating( $cls_value, 'cls' );
-		$cls_class  = 'wpspeed-metric-' . $cls_rating;
+		$cls_class  = 'velocitywp-metric-' . $cls_rating;
 		?>
 		<div class="velocitywp-metric-card <?php echo esc_attr( $cls_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">CLS</h3>
@@ -222,7 +222,7 @@ $averages = $analytics['averages'];
 		<?php
 		$overall_score = $monitor->get_cwv_score( $lcp_value, $fid_value, $cls_value );
 		$score_rating  = $overall_score >= 80 ? 'good' : ( $overall_score >= 50 ? 'needs-improvement' : 'poor' );
-		$score_class   = 'wpspeed-metric-' . $score_rating;
+		$score_class   = 'velocitywp-metric-' . $score_rating;
 		?>
 		<div class="velocitywp-metric-card <?php echo esc_attr( $score_class ); ?>" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid;">
 			<h3 style="margin: 0 0 10px 0; color: #666;">Performance Score</h3>
@@ -273,7 +273,7 @@ $averages = $analytics['averages'];
 	
 	<script>
 	(function() {
-		var ctx = document.getElementById('wpspeed-performance-chart');
+		var ctx = document.getElementById('velocitywp-performance-chart');
 		if (!ctx) return;
 		
 		var dates = <?php echo wp_json_encode( array_column( $analytics['daily_trend'], 'date' ) ); ?>;
@@ -496,10 +496,10 @@ $averages = $analytics['averages'];
 		<tr>
 			<th scope="row"><?php esc_html_e( 'Export Format', 'velocitywp' ); ?></th>
 			<td>
-				<button type="button" class="button" onclick="wpspeedExportPerformanceData('csv', <?php echo $period; ?>)">
+				<button type="button" class="button" onclick="velocitywpExportPerformanceData('csv', <?php echo $period; ?>)">
 					<?php esc_html_e( 'Export as CSV', 'velocitywp' ); ?>
 				</button>
-				<button type="button" class="button" onclick="wpspeedExportPerformanceData('json', <?php echo $period; ?>)">
+				<button type="button" class="button" onclick="velocitywpExportPerformanceData('json', <?php echo $period; ?>)">
 					<?php esc_html_e( 'Export as JSON', 'velocitywp' ); ?>
 				</button>
 				<p class="description"><?php esc_html_e( 'Download performance data for external analysis', 'velocitywp' ); ?></p>
@@ -520,39 +520,39 @@ $averages = $analytics['averages'];
 <?php endif; ?>
 
 <style>
-.wpspeed-metric-good {
+.velocitywp-metric-good {
 	border-left-color: #0f9d58 !important;
 }
-.wpspeed-metric-good > div:nth-child(2) {
+.velocitywp-metric-good > div:nth-child(2) {
 	color: #0f9d58;
 }
-.wpspeed-metric-good > div:nth-child(3) {
+.velocitywp-metric-good > div:nth-child(3) {
 	color: #0f9d58;
 }
 
-.wpspeed-metric-needs-improvement {
+.velocitywp-metric-needs-improvement {
 	border-left-color: #ff9800 !important;
 }
-.wpspeed-metric-needs-improvement > div:nth-child(2) {
+.velocitywp-metric-needs-improvement > div:nth-child(2) {
 	color: #ff9800;
 }
-.wpspeed-metric-needs-improvement > div:nth-child(3) {
+.velocitywp-metric-needs-improvement > div:nth-child(3) {
 	color: #ff9800;
 }
 
-.wpspeed-metric-poor {
+.velocitywp-metric-poor {
 	border-left-color: #f44336 !important;
 }
-.wpspeed-metric-poor > div:nth-child(2) {
+.velocitywp-metric-poor > div:nth-child(2) {
 	color: #f44336;
 }
-.wpspeed-metric-poor > div:nth-child(3) {
+.velocitywp-metric-poor > div:nth-child(3) {
 	color: #f44336;
 }
 </style>
 
 <script>
-function wpspeedExportPerformanceData(format, period) {
+function velocitywpExportPerformanceData(format, period) {
 	var data = new FormData();
 	data.append('action', 'velocitywp_export_data');
 	data.append('format', format);

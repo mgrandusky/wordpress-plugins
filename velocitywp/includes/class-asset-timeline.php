@@ -249,8 +249,8 @@ class VelocityWP_Asset_Timeline {
 
 					// Send to admin if enabled
 					<?php if ( current_user_can( 'manage_options' ) ) : ?>
-					if (window.wpsbAdminAjax) {
-						wpsbAdminAjax.saveTimeline(timeline);
+					if (window.velocitywpAdminAjax) {
+						velocitywpAdminAjax.saveTimeline(timeline);
 					}
 					<?php endif; ?>
 				}, 1000);
@@ -395,7 +395,7 @@ class VelocityWP_Asset_Timeline {
 	 * AJAX handler to get timeline
 	 */
 	public function ajax_get_timeline() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-admin-nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'velocitywp' ) ) );

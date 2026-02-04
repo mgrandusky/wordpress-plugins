@@ -242,7 +242,7 @@ class VelocityWP_Debug_Mode {
 			<div class="velocitywp-debug-content">
 				<div class="velocitywp-debug-item">
 					<span class="velocitywp-debug-label">Cache:</span>
-					<span class="velocitywp-debug-value wpsb-cache-<?php echo esc_attr( strtolower( $cache_status ) ); ?>">
+					<span class="velocitywp-debug-value velocitywp-cache-<?php echo esc_attr( strtolower( $cache_status ) ); ?>">
 						<?php echo esc_html( $cache_status ); ?>
 					</span>
 				</div>
@@ -269,7 +269,7 @@ class VelocityWP_Debug_Mode {
 		<script>
 		// Make debug bar draggable
 		(function() {
-			var bar = document.getElementById('wpsb-debug-bar');
+			var bar = document.getElementById('velocitywp-debug-bar');
 			var isDragging = false;
 			var currentX;
 			var currentY;
@@ -277,7 +277,7 @@ class VelocityWP_Debug_Mode {
 			var initialY;
 
 			bar.addEventListener('mousedown', function(e) {
-				if (e.target.classList.contains('wpsb-debug-toggle')) {
+				if (e.target.classList.contains('velocitywp-debug-toggle')) {
 					initialX = e.clientX - bar.offsetLeft;
 					initialY = e.clientY - bar.offsetTop;
 					isDragging = true;

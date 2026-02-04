@@ -624,7 +624,7 @@ class VelocityWP_Critical_CSS {
 		
 		// Also save to file for faster access
 		$upload_dir = wp_upload_dir();
-		$css_dir = $upload_dir['basedir'] . '/wpspeed-critical-css/';
+		$css_dir = $upload_dir['basedir'] . '/velocitywp-critical-css/';
 		
 		if ( ! file_exists( $css_dir ) ) {
 			wp_mkdir_p( $css_dir );
@@ -657,10 +657,10 @@ class VelocityWP_Critical_CSS {
 			
 			// Delete file
 			$upload_dir = wp_upload_dir();
-			$css_file = $upload_dir['basedir'] . '/wpspeed-critical-css/' . $template_key . '.css';
+			$css_file = $upload_dir['basedir'] . '/velocitywp-critical-css/' . $template_key . '.css';
 			
 			// Verify file is in expected directory before deletion
-			$expected_dir = $upload_dir['basedir'] . '/wpspeed-critical-css/';
+			$expected_dir = $upload_dir['basedir'] . '/velocitywp-critical-css/';
 			if ( file_exists( $css_file ) && strpos( realpath( $css_file ), realpath( $expected_dir ) ) === 0 ) {
 				if ( ! unlink( $css_file ) ) {
 					error_log( 'WPSB Critical CSS: Failed to delete CSS file: ' . $css_file );

@@ -471,7 +471,7 @@ $woo_disable_geolocation = ! empty( $options['woo_disable_geolocation'] ) ? 1 : 
 		
 		<div class="velocitywp-stat-box">
 			<h4><?php esc_html_e( 'Estimated Savings', 'velocitywp' ); ?></h4>
-			<p class="velocitywp-stat-value wpsb-stat-highlight" id="stat-savings">
+			<p class="velocitywp-stat-value velocitywp-stat-highlight" id="stat-savings">
 				<?php
 				$savings = 0;
 				if ( $woo_disable_cart_fragments ) {

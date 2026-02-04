@@ -67,29 +67,29 @@
             var originalText = $btn.text();
 
             // Disable button and show loading
-            $btn.prop('disabled', true).addClass('wpsb-processing');
-            $btn.text(wpsbAdmin.strings.clearing);
+            $btn.prop('disabled', true).addClass('velocitywp-processing');
+            $btn.text(velocitywpAdmin.strings.clearing);
 
             // Send AJAX request
             $.ajax({
-                url: wpsbAdmin.ajax_url,
+                url: velocitywpAdmin.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'velocitywp_clear_cache',
-                    nonce: wpsbAdmin.nonce
+                    nonce: velocitywpAdmin.nonce
                 },
                 success: function(response) {
                     if (response.success) {
                         showNotice('success', response.data.message);
                     } else {
-                        showNotice('error', response.data.message || wpsbAdmin.strings.error);
+                        showNotice('error', response.data.message || velocitywpAdmin.strings.error);
                     }
                 },
                 error: function() {
-                    showNotice('error', wpsbAdmin.strings.error);
+                    showNotice('error', velocitywpAdmin.strings.error);
                 },
                 complete: function() {
-                    $btn.prop('disabled', false).removeClass('wpsb-processing');
+                    $btn.prop('disabled', false).removeClass('velocitywp-processing');
                     $btn.text(originalText);
                 }
             });
@@ -106,16 +106,16 @@
             }
 
             // Disable button and show loading
-            $btn.prop('disabled', true).addClass('wpsb-processing');
-            $btn.text(wpsbAdmin.strings.optimizing);
+            $btn.prop('disabled', true).addClass('velocitywp-processing');
+            $btn.text(velocitywpAdmin.strings.optimizing);
 
             // Send AJAX request
             $.ajax({
-                url: wpsbAdmin.ajax_url,
+                url: velocitywpAdmin.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'velocitywp_optimize_database',
-                    nonce: wpsbAdmin.nonce
+                    nonce: velocitywpAdmin.nonce
                 },
                 success: function(response) {
                     if (response.success) {
@@ -125,14 +125,14 @@
                             location.reload();
                         }, 2000);
                     } else {
-                        showNotice('error', response.data.message || wpsbAdmin.strings.error);
+                        showNotice('error', response.data.message || velocitywpAdmin.strings.error);
                     }
                 },
                 error: function() {
-                    showNotice('error', wpsbAdmin.strings.error);
+                    showNotice('error', velocitywpAdmin.strings.error);
                 },
                 complete: function() {
-                    $btn.prop('disabled', false).removeClass('wpsb-processing');
+                    $btn.prop('disabled', false).removeClass('velocitywp-processing');
                     $btn.text(originalText);
                 }
             });
@@ -149,34 +149,34 @@
             }
 
             // Disable button and show loading
-            $btn.prop('disabled', true).addClass('wpsb-processing');
-            $btn.text(wpsbAdmin.strings.preloading);
+            $btn.prop('disabled', true).addClass('velocitywp-processing');
+            $btn.text(velocitywpAdmin.strings.preloading);
 
             // Send AJAX request
             $.ajax({
-                url: wpsbAdmin.ajax_url,
+                url: velocitywpAdmin.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'velocitywp_preload_cache',
-                    nonce: wpsbAdmin.nonce
+                    nonce: velocitywpAdmin.nonce
                 },
                 timeout: 300000, // 5 minutes
                 success: function(response) {
                     if (response.success) {
                         showNotice('success', response.data.message);
                     } else {
-                        showNotice('error', response.data.message || wpsbAdmin.strings.error);
+                        showNotice('error', response.data.message || velocitywpAdmin.strings.error);
                     }
                 },
                 error: function(xhr, status, error) {
                     if (status === 'timeout') {
                         showNotice('warning', 'Cache preloading is taking longer than expected. It may still be running in the background.');
                     } else {
-                        showNotice('error', wpsbAdmin.strings.error);
+                        showNotice('error', velocitywpAdmin.strings.error);
                     }
                 },
                 complete: function() {
-                    $btn.prop('disabled', false).removeClass('wpsb-processing');
+                    $btn.prop('disabled', false).removeClass('velocitywp-processing');
                     $btn.text(originalText);
                 }
             });

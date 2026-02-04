@@ -175,7 +175,7 @@ jQuery(document).ready(function($) {
 		function convertBatch(offset) {
 			$.post(ajaxurl, {
 				action: 'velocitywp_bulk_convert_webp',
-				nonce: wpsbAdmin.nonce,
+				nonce: velocitywpAdmin.nonce,
 				offset: offset
 			}, function(response) {
 				if (response.success) {

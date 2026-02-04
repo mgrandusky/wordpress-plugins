@@ -53,16 +53,16 @@ class VelocityWP_Dynamic_Content {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script(
-			'wpsb-dynamic-content',
+			'velocitywp-dynamic-content',
 			WPSB_URL . 'assets/dynamic-content.js',
 			array( 'jquery' ),
 			WPSB_VERSION,
 			true
 		);
 
-		wp_localize_script( 'wpsb-dynamic-content', 'wpsbDynamic', array(
+		wp_localize_script( 'velocitywp-dynamic-content', 'velocitywpDynamic', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'wpsb-dynamic-nonce' ),
+			'nonce'   => wp_create_nonce( 'velocitywp-dynamic-nonce' ),
 		) );
 	}
 
@@ -89,7 +89,7 @@ class VelocityWP_Dynamic_Content {
 	private function replace_cart_widget( $content ) {
 		// Look for cart widgets
 		if ( strpos( $content, 'woocommerce-mini-cart' ) !== false ) {
-			$placeholder = '<div class="velocitywp-dynamic-cart" data-wpsb-type="cart"></div>';
+			$placeholder = '<div class="velocitywp-dynamic-cart" data-velocitywp-type="cart"></div>';
 			$content = preg_replace( '/<div[^>]*woocommerce-mini-cart[^>]*>.*?<\/div>/s', $placeholder, $content );
 		}
 
@@ -106,7 +106,7 @@ class VelocityWP_Dynamic_Content {
 		// Replace logged-in user elements
 		if ( is_user_logged_in() ) {
 			$user = wp_get_current_user();
-			$placeholder = '<span class="velocitywp-dynamic-user" data-wpsb-type="username" data-wpsb-user="' . esc_attr( $user->ID ) . '"></span>';
+			$placeholder = '<span class="velocitywp-dynamic-user" data-velocitywp-type="username" data-velocitywp-user="' . esc_attr( $user->ID ) . '"></span>';
 			
 			// This is a simplified example
 			$content = str_replace( $user->display_name, $placeholder, $content );
@@ -197,7 +197,7 @@ class VelocityWP_Dynamic_Content {
 	 * AJAX handler to get dynamic content
 	 */
 	public function ajax_get_dynamic_content() {
-		check_ajax_referer( 'wpsb-dynamic-nonce', 'nonce' );
+		check_ajax_referer( 'velocitywp-dynamic-nonce', 'nonce' );
 
 		$type = isset( $_POST['type'] ) ? sanitize_text_field( $_POST['type'] ) : '';
 		$data = array();

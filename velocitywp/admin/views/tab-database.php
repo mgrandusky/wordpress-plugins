@@ -25,14 +25,14 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 ?>
 
 <style>
-.wpspeed-db-stats-grid {
+.velocitywp-db-stats-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 	gap: 20px;
 	margin: 20px 0;
 }
 
-.wpspeed-db-stat-box {
+.velocitywp-db-stat-box {
 	background: #fff;
 	border: 1px solid #c3c4c7;
 	border-radius: 4px;
@@ -40,25 +40,25 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	text-align: center;
 }
 
-.wpspeed-db-stat-box h3 {
+.velocitywp-db-stat-box h3 {
 	margin: 0 0 10px 0;
 	font-size: 14px;
 	color: #646970;
 }
 
-.wpspeed-db-stat-value {
+.velocitywp-db-stat-value {
 	font-size: 32px;
 	font-weight: bold;
 	color: #2271b1;
 	margin: 10px 0;
 }
 
-.wpspeed-db-stat-label {
+.velocitywp-db-stat-label {
 	font-size: 12px;
 	color: #646970;
 }
 
-.wpspeed-cleanup-section {
+.velocitywp-cleanup-section {
 	background: #fff;
 	border: 1px solid #c3c4c7;
 	border-radius: 4px;
@@ -66,13 +66,13 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	margin: 20px 0;
 }
 
-.wpspeed-cleanup-section h3 {
+.velocitywp-cleanup-section h3 {
 	margin-top: 0;
 	border-bottom: 1px solid #c3c4c7;
 	padding-bottom: 10px;
 }
 
-.wpspeed-cleanup-item {
+.velocitywp-cleanup-item {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -80,53 +80,53 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	border-bottom: 1px solid #f0f0f1;
 }
 
-.wpspeed-cleanup-item:last-child {
+.velocitywp-cleanup-item:last-child {
 	border-bottom: none;
 }
 
-.wpspeed-cleanup-info {
+.velocitywp-cleanup-info {
 	flex: 1;
 }
 
-.wpspeed-cleanup-info h4 {
+.velocitywp-cleanup-info h4 {
 	margin: 0 0 5px 0;
 	font-size: 14px;
 }
 
-.wpspeed-cleanup-count {
+.velocitywp-cleanup-count {
 	color: #d63638;
 	font-weight: bold;
 }
 
-.wpspeed-cleanup-actions {
+.velocitywp-cleanup-actions {
 	display: flex;
 	gap: 10px;
 	align-items: center;
 }
 
-.wpspeed-table-list {
+.velocitywp-table-list {
 	width: 100%;
 	border-collapse: collapse;
 	margin: 20px 0;
 }
 
-.wpspeed-table-list th,
-.wpspeed-table-list td {
+.velocitywp-table-list th,
+.velocitywp-table-list td {
 	padding: 10px;
 	text-align: left;
 	border-bottom: 1px solid #c3c4c7;
 }
 
-.wpspeed-table-list th {
+.velocitywp-table-list th {
 	background: #f6f7f7;
 	font-weight: 600;
 }
 
-.wpspeed-table-list tr:hover {
+.velocitywp-table-list tr:hover {
 	background: #f6f7f7;
 }
 
-.wpspeed-progress {
+.velocitywp-progress {
 	display: none;
 	margin: 20px 0;
 	padding: 15px;
@@ -135,7 +135,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	border-radius: 4px;
 }
 
-.wpspeed-progress-bar {
+.velocitywp-progress-bar {
 	width: 100%;
 	height: 30px;
 	background: #f0f0f1;
@@ -144,7 +144,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	margin: 10px 0;
 }
 
-.wpspeed-progress-fill {
+.velocitywp-progress-fill {
 	height: 100%;
 	background: #2271b1;
 	transition: width 0.3s ease;
@@ -155,7 +155,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	font-weight: bold;
 }
 
-.wpspeed-results {
+.velocitywp-results {
 	display: none;
 	margin: 20px 0;
 	padding: 15px;
@@ -164,17 +164,17 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	border-radius: 4px;
 }
 
-.wpspeed-results h3 {
+.velocitywp-results h3 {
 	margin-top: 0;
 	color: #00a32a;
 }
 
-.wpspeed-results ul {
+.velocitywp-results ul {
 	margin: 10px 0;
 	padding-left: 20px;
 }
 
-.wpspeed-warning {
+.velocitywp-warning {
 	background: #fcf9e8;
 	border-left: 4px solid #dba617;
 	padding: 15px;
@@ -182,11 +182,11 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	border-radius: 4px;
 }
 
-.wpspeed-warning strong {
+.velocitywp-warning strong {
 	color: #dba617;
 }
 
-.wpspeed-one-click {
+.velocitywp-one-click {
 	text-align: center;
 	padding: 30px;
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -195,12 +195,12 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	margin: 20px 0;
 }
 
-.wpspeed-one-click h3 {
+.velocitywp-one-click h3 {
 	color: #fff;
 	margin-top: 0;
 }
 
-.wpspeed-one-click .button {
+.velocitywp-one-click .button {
 	background: #fff;
 	color: #667eea;
 	border: none;
@@ -212,7 +212,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 	transition: all 0.3s ease;
 }
 
-.wpspeed-one-click .button:hover {
+.velocitywp-one-click .button:hover {
 	transform: scale(1.05);
 	box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
@@ -326,7 +326,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				</div>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="revisions">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="revisions">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -338,7 +338,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove auto-draft posts older than 7 days', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['auto_drafts'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="auto_drafts">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="auto_drafts">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -350,7 +350,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Permanently delete trashed posts', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['trashed_posts'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="trashed_posts">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="trashed_posts">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -362,7 +362,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove post meta for deleted posts', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['orphaned_postmeta'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="orphaned_postmeta">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="orphaned_postmeta">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -379,7 +379,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove spam comments', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['spam_comments'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="spam_comments">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="spam_comments">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -391,7 +391,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove trashed comments', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['trashed_comments'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="trashed_comments">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="trashed_comments">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -406,7 +406,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				</p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="pending_comments">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="pending_comments">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -418,7 +418,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove all pingbacks and trackbacks', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['pingbacks'] + $stats['trackbacks'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="pingbacks_trackbacks">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="pingbacks_trackbacks">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -430,7 +430,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove comment meta for deleted comments', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['orphaned_commentmeta'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="orphaned_commentmeta">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="orphaned_commentmeta">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -447,7 +447,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove expired transient options (safe)', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['expired_transients'] ); ?> <?php esc_html_e( 'expired', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="expired_transients">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="expired_transients">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -459,7 +459,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p style="color: #d63638;"><?php esc_html_e( '⚠️ Warning: This will delete all transients including active ones. They will be regenerated as needed.', 'velocitywp' ); ?></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-secondary wpspeed-cleanup-btn" data-operation="all_transients" data-confirm="<?php esc_attr_e( 'Are you sure you want to delete ALL transients? This cannot be undone!', 'velocitywp' ); ?>">
+				<button type="button" class="button button-secondary velocitywp-cleanup-btn" data-operation="all_transients" data-confirm="<?php esc_attr_e( 'Are you sure you want to delete ALL transients? This cannot be undone!', 'velocitywp' ); ?>">
 					<?php esc_html_e( 'Clean All', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -476,7 +476,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove term meta for deleted terms', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['orphaned_termmeta'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="orphaned_termmeta">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="orphaned_termmeta">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -488,7 +488,7 @@ $db_optimize_email_report = ! empty( $options['db_optimize_email_report'] ) ? 1 
 				<p><?php esc_html_e( 'Remove user meta for deleted users', 'velocitywp' ); ?> - <span class="velocitywp-cleanup-count"><?php echo number_format( $stats['orphaned_usermeta'] ); ?> <?php esc_html_e( 'found', 'velocitywp' ); ?></span></p>
 			</div>
 			<div class="velocitywp-cleanup-actions">
-				<button type="button" class="button button-primary wpspeed-cleanup-btn" data-operation="orphaned_usermeta">
+				<button type="button" class="button button-primary velocitywp-cleanup-btn" data-operation="orphaned_usermeta">
 					<?php esc_html_e( 'Clean', 'velocitywp' ); ?>
 				</button>
 			</div>
@@ -638,7 +638,7 @@ jQuery(document).ready(function($) {
 	var nonce = '<?php echo wp_create_nonce( 'velocitywp_db_nonce' ); ?>';
 	
 	// Cleanup button click handler
-	$('.wpspeed-cleanup-btn').on('click', function() {
+	$('.velocitywp-cleanup-btn').on('click', function() {
 		var $btn = $(this);
 		var operation = $btn.data('operation');
 		var confirmMsg = $btn.data('confirm');
