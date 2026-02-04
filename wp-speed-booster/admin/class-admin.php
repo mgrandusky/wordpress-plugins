@@ -95,6 +95,11 @@ class WPSB_Admin {
 			'heartbeat_control_enabled', 'heartbeat_disable_completely', 'heartbeat_disable_frontend', 'heartbeat_disable_admin', 'heartbeat_disable_editor',
 			'heartbeat_allow_post_locking', 'heartbeat_allow_autosave', 'heartbeat_track_activity',
 			'performance_monitoring_enabled', 'performance_track_rum', 'performance_track_server', 'performance_debug_comments',
+			// WooCommerce options
+			'woo_optimization_enabled', 'woo_disable_cart_fragments', 'woo_remove_scripts', 'woo_load_everywhere',
+			'woo_optimize_checkout', 'woo_disable_password_strength', 'woo_disable_blocks', 'woo_disable_reviews',
+			'woo_remove_generator', 'woo_disable_admin_bar_cart', 'woo_optimize_widgets', 'woo_optimize_transients',
+			'woo_optimize_sessions', 'woo_disable_geolocation',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -116,6 +121,9 @@ class WPSB_Admin {
 		$sanitized['heartbeat_editor_frequency'] = ! empty( $input['heartbeat_editor_frequency'] ) ? absint( $input['heartbeat_editor_frequency'] ) : 15;
 		$sanitized['performance_data_retention'] = ! empty( $input['performance_data_retention'] ) ? absint( $input['performance_data_retention'] ) : 30;
 		$sanitized['performance_sample_rate'] = ! empty( $input['performance_sample_rate'] ) ? absint( $input['performance_sample_rate'] ) : 100;
+
+		// WooCommerce integer options
+		$sanitized['woo_cart_fragment_lifetime'] = ! empty( $input['woo_cart_fragment_lifetime'] ) ? absint( $input['woo_cart_fragment_lifetime'] ) : 86400;
 
 		// Text options
 		$sanitized['cache_exclude_urls'] = ! empty( $input['cache_exclude_urls'] ) ? sanitize_textarea_field( $input['cache_exclude_urls'] ) : '';
@@ -139,6 +147,9 @@ class WPSB_Admin {
 		// JavaScript Delay options
 		$sanitized['js_delay_exclude'] = ! empty( $input['js_delay_exclude'] ) ? sanitize_textarea_field( $input['js_delay_exclude'] ) : '';
 		$sanitized['js_delay_events'] = ! empty( $input['js_delay_events'] ) ? sanitize_text_field( $input['js_delay_events'] ) : 'mousemove,scroll,touchstart,click,keydown';
+
+		// WooCommerce text options
+		$sanitized['woo_disable_cart_fragments_on'] = ! empty( $input['woo_disable_cart_fragments_on'] ) ? sanitize_text_field( $input['woo_disable_cart_fragments_on'] ) : '';
 
 		// Performance Metrics options
 		$sanitized['pagespeed_api_key'] = ! empty( $input['pagespeed_api_key'] ) ? sanitize_text_field( $input['pagespeed_api_key'] ) : '';
@@ -330,6 +341,11 @@ class WPSB_Admin {
 					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
 						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'wp-speed-booster' ); ?>
 					</a>
+					<?php if ( class_exists( 'WooCommerce' ) ) : ?>
+					<a href="#tab-woocommerce" class="nav-tab wpspeed-nav-tab" data-tab="woocommerce">
+						<span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'WooCommerce', 'wp-speed-booster' ); ?>
+					</a>
+					<?php endif; ?>
 					<a href="#tab-advanced" class="nav-tab wpspeed-nav-tab" data-tab="advanced">
 						<span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e( 'Advanced', 'wp-speed-booster' ); ?>
 					</a>
@@ -403,6 +419,12 @@ class WPSB_Admin {
 				<div id="wpspeed-tab-database" class="wpspeed-tab-content">
 					<?php $this->render_database_tab( $options ); ?>
 				</div>
+
+				<?php if ( class_exists( 'WooCommerce' ) ) : ?>
+				<div id="wpspeed-tab-woocommerce" class="wpspeed-tab-content">
+					<?php require WPSB_DIR . 'admin/views/tab-woocommerce.php'; ?>
+				</div>
+				<?php endif; ?>
 
 				<div id="wpspeed-tab-advanced" class="wpspeed-tab-content">
 					<?php $this->render_advanced_tab( $options ); ?>
