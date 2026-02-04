@@ -1,0 +1,87 @@
+/**
+ * VelocityWP Frontend Styles
+ */
+
+/* Lazy loading images */
+img.velocitywp-lazy {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+img.velocitywp-lazy.velocitywp-loaded {
+    opacity: 1;
+}
+
+img.velocitywp-lazy.velocitywp-loading {
+    opacity: 0.5;
+}
+
+/* Lazy loading iframes */
+iframe.velocitywp-lazy-iframe {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+iframe.velocitywp-lazy-iframe.velocitywp-loaded {
+    opacity: 1;
+}
+
+iframe.velocitywp-lazy-iframe.velocitywp-loading {
+    opacity: 0.5;
+}
+
+/* Blur effect while loading (optional) */
+img.velocitywp-lazy:not(.velocitywp-loaded) {
+    filter: blur(5px);
+}
+
+img.velocitywp-lazy.velocitywp-loaded {
+    filter: none;
+}
+
+/* Loading placeholder animation */
+@keyframes velocitywp-pulse {
+    0%, 100% {
+        background-color: #f0f0f0;
+    }
+    50% {
+        background-color: #e0e0e0;
+    }
+}
+
+img.velocitywp-lazy.velocitywp-loading {
+    animation: velocitywp-pulse 1.5s ease-in-out infinite;
+}
+
+/* Ensure images don't jump during loading */
+img.velocitywp-lazy {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Error state */
+img.velocitywp-lazy.velocitywp-error {
+    opacity: 1;
+    filter: grayscale(100%);
+}
+
+/* Responsive images */
+@media (prefers-reduced-motion: reduce) {
+    img.velocitywp-lazy,
+    iframe.velocitywp-lazy-iframe {
+        transition: none;
+    }
+    
+    img.velocitywp-lazy.velocitywp-loading {
+        animation: none;
+    }
+}
+
+/* Print styles - ensure all images are visible when printing */
+@media print {
+    img.velocitywp-lazy {
+        opacity: 1 !important;
+        filter: none !important;
+    }
+}
