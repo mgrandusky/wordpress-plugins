@@ -32,317 +32,423 @@ class WPSB_Font_Optimizer {
 	private $fonts_url;
 
 	/**
+	 * Settings
+	 *
+	 * @var array
+	 */
+	private $settings;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
+		$this->settings = get_option( 'wpsb_options', array() );
+
 		$upload_dir = wp_upload_dir();
 		$this->fonts_dir = $upload_dir['basedir'] . '/wpsb-fonts/';
 		$this->fonts_url = $upload_dir['baseurl'] . '/wpsb-fonts/';
 
-		add_action( 'init', array( $this, 'init' ) );
-		add_action( 'wp_ajax_wpsb_download_fonts', array( $this, 'ajax_download_fonts' ) );
-	}
-
-	/**
-	 * Initialize font optimization
-	 */
-	public function init() {
-		$options = get_option( 'wpsb_options', array() );
-
-		if ( empty( $options['font_optimize'] ) || is_admin() ) {
-			return;
-		}
-
 		// Create fonts directory
-		$this->maybe_create_fonts_dir();
-
-		// Local Google Fonts
-		if ( ! empty( $options['local_google_fonts'] ) ) {
-			add_filter( 'style_loader_tag', array( $this, 'localize_google_fonts' ), 10, 4 );
-			add_action( 'wp_head', array( $this, 'output_local_fonts' ), 1 );
-		}
-
-		// Font display swap
-		if ( ! empty( $options['font_display_swap'] ) ) {
-			add_filter( 'style_loader_tag', array( $this, 'add_font_display' ), 10, 4 );
-		}
-
-		// Preload fonts
-		if ( ! empty( $options['preload_fonts'] ) ) {
-			add_action( 'wp_head', array( $this, 'preload_fonts' ), 1 );
-		}
-
-		// Remove unused fonts
-		if ( ! empty( $options['remove_unused_fonts'] ) ) {
-			add_action( 'wp_enqueue_scripts', array( $this, 'remove_unused_fonts' ), 999 );
-		}
-	}
-
-	/**
-	 * Create fonts directory
-	 */
-	private function maybe_create_fonts_dir() {
 		if ( ! file_exists( $this->fonts_dir ) ) {
 			wp_mkdir_p( $this->fonts_dir );
-			
-			// Add index.php for security
-			$index_file = $this->fonts_dir . 'index.php';
-			if ( ! file_exists( $index_file ) ) {
-				file_put_contents( $index_file, '<?php // Silence is golden' );
+		}
+
+		// Hooks
+		if ( $this->is_enabled() && ! is_admin() ) {
+			add_action( 'wp_head', array( $this, 'inject_font_optimizations' ), 1 );
+			add_filter( 'style_loader_tag', array( $this, 'optimize_font_stylesheets' ), 10, 4 );
+		}
+
+		// Local Google Fonts
+		if ( $this->is_local_fonts_enabled() && ! is_admin() ) {
+			add_filter( 'style_loader_src', array( $this, 'replace_google_fonts_url' ), 10, 2 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_local_fonts' ), 999 );
+		}
+
+		// AJAX handlers
+		add_action( 'wp_ajax_wpsb_download_google_fonts', array( $this, 'ajax_download_google_fonts' ) );
+		add_action( 'wp_ajax_wpsb_detect_google_fonts', array( $this, 'ajax_detect_google_fonts' ) );
+		add_action( 'wp_ajax_wpsb_clear_local_fonts', array( $this, 'ajax_clear_local_fonts' ) );
+	}
+
+	/**
+	 * Check if font optimization is enabled
+	 */
+	public function is_enabled() {
+		return ! empty( $this->settings['font_optimization_enabled'] );
+	}
+
+	/**
+	 * Check if local Google Fonts is enabled
+	 */
+	public function is_local_fonts_enabled() {
+		return ! empty( $this->settings['local_google_fonts'] );
+	}
+
+	/**
+	 * Inject font optimizations in head
+	 */
+	public function inject_font_optimizations() {
+		$this->add_dns_prefetch();
+		$this->add_preconnect();
+		$this->add_font_preload();
+		$this->add_font_display_css();
+	}
+
+	/**
+	 * Add DNS prefetch for font domains
+	 */
+	private function add_dns_prefetch() {
+		if ( empty( $this->settings['font_dns_prefetch'] ) ) {
+			return;
+		}
+
+		echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . "\n";
+		echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . "\n";
+	}
+
+	/**
+	 * Add preconnect for font domains
+	 */
+	private function add_preconnect() {
+		if ( empty( $this->settings['font_preconnect'] ) ) {
+			return;
+		}
+
+		echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+		echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+	}
+
+	/**
+	 * Add font preload
+	 */
+	private function add_font_preload() {
+		$preload_fonts = ! empty( $this->settings['font_preload_urls'] ) ?
+			explode( "\n", $this->settings['font_preload_urls'] ) : array();
+
+		foreach ( $preload_fonts as $font_url ) {
+			$font_url = trim( $font_url );
+			if ( empty( $font_url ) ) {
+				continue;
+			}
+
+			$format = $this->get_font_format( $font_url );
+			echo '<link rel="preload" href="' . esc_url( $font_url ) . '" as="font" type="font/' . esc_attr( $format ) . '" crossorigin>' . "\n";
+		}
+	}
+
+	/**
+	 * Add font-display CSS
+	 */
+	private function add_font_display_css() {
+		$font_display = ! empty( $this->settings['font_display'] ) ? $this->settings['font_display'] : 'swap';
+
+		if ( 'auto' === $font_display ) {
+			return;
+		}
+
+		?>
+		<style id="wpsb-font-display">
+		@font-face {
+			font-display: <?php echo esc_attr( $font_display ); ?>;
+		}
+		</style>
+		<?php
+	}
+
+	/**
+	 * Get font format from URL
+	 */
+	private function get_font_format( $url ) {
+		if ( strpos( $url, '.woff2' ) !== false ) {
+			return 'woff2';
+		}
+		if ( strpos( $url, '.woff' ) !== false ) {
+			return 'woff';
+		}
+		if ( strpos( $url, '.ttf' ) !== false ) {
+			return 'truetype';
+		}
+		if ( strpos( $url, '.otf' ) !== false ) {
+			return 'opentype';
+		}
+		return 'woff2'; // Default
+	}
+
+	/**
+	 * Optimize font stylesheets
+	 */
+	public function optimize_font_stylesheets( $html, $handle, $href, $media ) {
+		// Check if it's a Google Fonts stylesheet
+		if ( strpos( $href, 'fonts.googleapis.com' ) === false ) {
+			return $html;
+		}
+
+		// Add font-display parameter if not present
+		if ( strpos( $href, 'display=' ) === false ) {
+			$font_display = ! empty( $this->settings['font_display'] ) ? $this->settings['font_display'] : 'swap';
+			$href = add_query_arg( 'display', $font_display, $href );
+			$html = str_replace( $href, $href, $html );
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Detect Google Fonts in use
+	 */
+	public function detect_google_fonts() {
+		global $wp_styles;
+
+		$google_fonts = array();
+
+		if ( ! is_object( $wp_styles ) ) {
+			return $google_fonts;
+		}
+
+		foreach ( $wp_styles->registered as $handle => $style ) {
+			if ( strpos( $style->src, 'fonts.googleapis.com' ) !== false ) {
+				$google_fonts[] = array(
+					'handle'   => $handle,
+					'url'      => $style->src,
+					'families' => $this->parse_google_fonts_url( $style->src ),
+				);
 			}
 		}
+
+		return $google_fonts;
 	}
 
 	/**
-	 * Localize Google Fonts
-	 *
-	 * @param string $tag    Style tag.
-	 * @param string $handle Style handle.
-	 * @param string $href   Style URL.
-	 * @param string $media  Style media.
-	 * @return string Modified tag.
+	 * Parse Google Fonts URL to get families
 	 */
-	public function localize_google_fonts( $tag, $handle, $href, $media ) {
-		// Check if it's a Google Fonts URL
-		if ( strpos( $href, 'fonts.googleapis.com' ) === false ) {
-			return $tag;
+	private function parse_google_fonts_url( $url ) {
+		$families = array();
+
+		// Parse URL
+		$parsed = wp_parse_url( $url );
+		if ( isset( $parsed['query'] ) ) {
+			parse_str( $parsed['query'], $params );
+
+			if ( isset( $params['family'] ) ) {
+				// Can be single or multiple families
+				$family_string = $params['family'];
+				$family_parts  = explode( '|', $family_string );
+
+				foreach ( $family_parts as $family ) {
+					// Extract font name and weights
+					if ( strpos( $family, ':' ) !== false ) {
+						list($name, $weights) = explode( ':', $family, 2 );
+						$families[]           = array(
+							'name'    => str_replace( '+', ' ', $name ),
+							'weights' => explode( ',', $weights ),
+						);
+					} else {
+						$families[] = array(
+							'name'    => str_replace( '+', ' ', $family ),
+							'weights' => array( '400' ),
+						);
+					}
+				}
+			}
 		}
 
-		// Get local font CSS
-		$local_css = $this->get_local_font_css( $href );
-		
-		if ( empty( $local_css ) ) {
-			return $tag;
-		}
-
-		// Replace with local font URL
-		$local_url = $this->fonts_url . md5( $href ) . '.css';
-		$tag = str_replace( $href, $local_url, $tag );
-
-		return $tag;
+		return $families;
 	}
 
 	/**
-	 * Get local font CSS
-	 *
-	 * @param string $url Google Fonts URL.
-	 * @return string Local CSS file path.
+	 * Download Google Fonts locally
 	 */
-	private function get_local_font_css( $url ) {
-		$css_file = $this->fonts_dir . md5( $url ) . '.css';
-
-		// Return if already cached
-		if ( file_exists( $css_file ) ) {
-			return $css_file;
-		}
-
-		// Download Google Fonts CSS
-		$response = wp_remote_get( $url, array(
-			'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-			'timeout'    => 30,
-		) );
+	public function download_google_fonts( $url ) {
+		// Get CSS from Google Fonts
+		$response = wp_remote_get(
+			$url,
+			array(
+				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
-			return '';
+			return false;
 		}
 
-		$css_content = wp_remote_retrieve_body( $response );
+		$css = wp_remote_retrieve_body( $response );
 
-		if ( empty( $css_content ) ) {
-			return '';
-		}
+		// Extract font URLs from CSS
+		preg_match_all( '/url\((https?:\/\/[^)]+)\)/', $css, $matches );
 
-		// Download font files and update CSS
-		$css_content = $this->download_font_files( $css_content );
-
-		// Save CSS file
-		file_put_contents( $css_file, $css_content );
-
-		return $css_file;
-	}
-
-	/**
-	 * Download font files and update CSS
-	 *
-	 * @param string $css CSS content.
-	 * @return string Updated CSS.
-	 */
-	private function download_font_files( $css ) {
-		// Find all font URLs in CSS
-		preg_match_all( '/url\((https:\/\/fonts\.gstatic\.com[^)]+)\)/', $css, $matches );
-
-		if ( empty( $matches[1] ) ) {
-			return $css;
-		}
+		$font_files = array();
 
 		foreach ( $matches[1] as $font_url ) {
-			$font_file = $this->download_font_file( $font_url );
-			
-			if ( $font_file ) {
-				$local_url = $this->fonts_url . basename( $font_file );
-				$css = str_replace( $font_url, $local_url, $css );
-			}
-		}
+			$font_url = trim( $font_url );
 
-		return $css;
-	}
-
-	/**
-	 * Download individual font file
-	 *
-	 * @param string $url Font file URL.
-	 * @return string|false Local font file path or false on failure.
-	 */
-	private function download_font_file( $url ) {
-		$filename = basename( parse_url( $url, PHP_URL_PATH ) );
-		$font_file = $this->fonts_dir . $filename;
-
-		// Return if already exists
-		if ( file_exists( $font_file ) ) {
-			return $font_file;
-		}
-
-		// Download font file
-		$response = wp_remote_get( $url, array(
-			'timeout' => 30,
-		) );
-
-		if ( is_wp_error( $response ) ) {
-			return false;
-		}
-
-		$font_data = wp_remote_retrieve_body( $response );
-
-		if ( empty( $font_data ) ) {
-			return false;
-		}
-
-		// Save font file
-		file_put_contents( $font_file, $font_data );
-
-		return $font_file;
-	}
-
-	/**
-	 * Output local fonts in head
-	 */
-	public function output_local_fonts() {
-		$options = get_option( 'wpsb_options', array() );
-		
-		if ( empty( $options['custom_local_fonts'] ) ) {
-			return;
-		}
-
-		$fonts = explode( "\n", $options['custom_local_fonts'] );
-		
-		foreach ( $fonts as $font ) {
-			$font = trim( $font );
-			if ( empty( $font ) ) {
+			// Download font file
+			$font_data = wp_remote_get( $font_url );
+			if ( is_wp_error( $font_data ) ) {
 				continue;
 			}
 
-			$local_css = $this->get_local_font_css( $font );
-			
+			$font_content = wp_remote_retrieve_body( $font_data );
+
+			// Generate local filename
+			$filename   = basename( wp_parse_url( $font_url, PHP_URL_PATH ) );
+			$local_path = $this->fonts_dir . $filename;
+
+			// Save font file
+			file_put_contents( $local_path, $font_content );
+
+			// Replace URL in CSS
+			$local_url = $this->fonts_url . $filename;
+			$css       = str_replace( $font_url, $local_url, $css );
+
+			$font_files[] = array(
+				'original' => $font_url,
+				'local'    => $local_url,
+				'path'     => $local_path,
+			);
+		}
+
+		// Save CSS file
+		$css_filename = 'google-fonts-' . md5( $url ) . '.css';
+		$css_path     = $this->fonts_dir . $css_filename;
+		file_put_contents( $css_path, $css );
+
+		return array(
+			'css_url'  => $this->fonts_url . $css_filename,
+			'css_path' => $css_path,
+			'fonts'    => $font_files,
+		);
+	}
+
+	/**
+	 * Replace Google Fonts URL with local version
+	 */
+	public function replace_google_fonts_url( $src, $handle ) {
+		if ( strpos( $src, 'fonts.googleapis.com' ) === false ) {
+			return $src;
+		}
+
+		$local_css = $this->get_local_fonts_css( $src );
+
+		if ( $local_css ) {
+			return $local_css;
+		}
+
+		return $src;
+	}
+
+	/**
+	 * Get local fonts CSS URL
+	 */
+	private function get_local_fonts_css( $original_url ) {
+		$css_filename = 'google-fonts-' . md5( $original_url ) . '.css';
+		$css_path     = $this->fonts_dir . $css_filename;
+
+		if ( file_exists( $css_path ) ) {
+			return $this->fonts_url . $css_filename;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Enqueue local fonts
+	 */
+	public function enqueue_local_fonts() {
+		$google_fonts = $this->detect_google_fonts();
+
+		foreach ( $google_fonts as $font ) {
+			$local_css = $this->get_local_fonts_css( $font['url'] );
 			if ( $local_css ) {
-				$local_url = $this->fonts_url . md5( $font ) . '.css';
-				echo '<link rel="stylesheet" href="' . esc_url( $local_url ) . '" media="all">' . "\n";
+				wp_deregister_style( $font['handle'] );
+				wp_enqueue_style( $font['handle'] . '-local', $local_css, array(), null );
 			}
 		}
 	}
 
 	/**
-	 * Add font-display: swap to font-face declarations
-	 *
-	 * @param string $tag    Style tag.
-	 * @param string $handle Style handle.
-	 * @param string $href   Style URL.
-	 * @param string $media  Style media.
-	 * @return string Modified tag.
+	 * AJAX: Download Google Fonts
 	 */
-	public function add_font_display( $tag, $handle, $href, $media ) {
-		if ( strpos( $href, 'fonts.googleapis.com' ) !== false ) {
-			$href = add_query_arg( 'display', 'swap', $href );
-			$tag = str_replace( $tag, '<link rel="stylesheet" href="' . esc_url( $href ) . '" media="' . esc_attr( $media ) . '">', $tag );
-		}
-
-		return $tag;
-	}
-
-	/**
-	 * Preload critical fonts
-	 */
-	public function preload_fonts() {
-		$options = get_option( 'wpsb_options', array() );
-		
-		if ( empty( $options['preload_fonts_list'] ) ) {
-			return;
-		}
-
-		$fonts = explode( "\n", $options['preload_fonts_list'] );
-		
-		foreach ( $fonts as $font ) {
-			$font = trim( $font );
-			if ( empty( $font ) ) {
-				continue;
-			}
-
-			// Determine font type
-			$type = 'font/woff2';
-			if ( strpos( $font, '.woff' ) !== false ) {
-				$type = 'font/woff';
-			} elseif ( strpos( $font, '.ttf' ) !== false ) {
-				$type = 'font/ttf';
-			} elseif ( strpos( $font, '.otf' ) !== false ) {
-				$type = 'font/otf';
-			}
-
-			echo '<link rel="preload" href="' . esc_url( $font ) . '" as="font" type="' . esc_attr( $type ) . '" crossorigin>' . "\n";
-		}
-	}
-
-	/**
-	 * Remove unused fonts
-	 */
-	public function remove_unused_fonts() {
-		$options = get_option( 'wpsb_options', array() );
-		
-		if ( empty( $options['remove_fonts_list'] ) ) {
-			return;
-		}
-
-		$fonts = array_map( 'trim', explode( "\n", $options['remove_fonts_list'] ) );
-		
-		foreach ( $fonts as $handle ) {
-			if ( ! empty( $handle ) ) {
-				wp_dequeue_style( $handle );
-				wp_deregister_style( $handle );
-			}
-		}
-	}
-
-	/**
-	 * AJAX handler to download fonts manually
-	 */
-	public function ajax_download_fonts() {
-		check_ajax_referer( 'wpsb-admin-nonce', 'nonce' );
+	public function ajax_download_google_fonts() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => 'Permission denied' ) );
 		}
 
-		$url = isset( $_POST['url'] ) ? sanitize_text_field( $_POST['url'] ) : '';
+		$url = isset( $_POST['url'] ) ? esc_url_raw( $_POST['url'] ) : '';
 
 		if ( empty( $url ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid URL', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => 'URL is required' ) );
 		}
 
-		$result = $this->get_local_font_css( $url );
+		$result = $this->download_google_fonts( $url );
 
 		if ( $result ) {
-			wp_send_json_success( array( 'message' => __( 'Fonts downloaded successfully', 'wp-speed-booster' ) ) );
+			wp_send_json_success(
+				array(
+					'message'     => 'Fonts downloaded successfully',
+					'css_url'     => $result['css_url'],
+					'fonts_count' => count( $result['fonts'] ),
+				)
+			);
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Failed to download fonts', 'wp-speed-booster' ) ) );
+			wp_send_json_error( array( 'message' => 'Failed to download fonts' ) );
 		}
+	}
+
+	/**
+	 * AJAX: Detect Google Fonts
+	 */
+	public function ajax_detect_google_fonts() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => 'Permission denied' ) );
+		}
+
+		$fonts = $this->detect_google_fonts();
+
+		wp_send_json_success( array( 'fonts' => $fonts ) );
+	}
+
+	/**
+	 * AJAX: Clear local fonts
+	 */
+	public function ajax_clear_local_fonts() {
+		check_ajax_referer( 'wpsb_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => 'Permission denied' ) );
+		}
+
+		$result = $this->clear_font_cache();
+
+		if ( $result ) {
+			wp_send_json_success( array( 'message' => 'Local fonts cleared successfully' ) );
+		} else {
+			wp_send_json_error( array( 'message' => 'Failed to clear local fonts' ) );
+		}
+	}
+
+	/**
+	 * Get statistics
+	 */
+	public function get_stats() {
+		$font_files = glob( $this->fonts_dir . '*' );
+		$total_size = 0;
+
+		foreach ( $font_files as $file ) {
+			if ( is_file( $file ) ) {
+				$total_size += filesize( $file );
+			}
+		}
+
+		return array(
+			'files'           => count( $font_files ),
+			'size'            => $total_size,
+			'size_formatted'  => size_format( $total_size ),
+		);
 	}
 
 	/**
@@ -354,7 +460,7 @@ class WPSB_Font_Optimizer {
 		}
 
 		$files = glob( $this->fonts_dir . '*' );
-		
+
 		foreach ( $files as $file ) {
 			if ( is_file( $file ) && basename( $file ) !== 'index.php' ) {
 				unlink( $file );
