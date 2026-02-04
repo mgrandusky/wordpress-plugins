@@ -639,7 +639,7 @@ class WP_Speed_Booster_Image_Optimizer {
 		}
 
 		// Queue images for optimization with small delays to avoid server overload
-		// Using 2-second increments provides good distribution without excessive delays
+		// Starting at 5 seconds, then 2-second increments between images
 		$delay = 5;
 		foreach ( $images as $image ) {
 			wp_schedule_single_event( time() + $delay, 'wpspeed_optimize_image', array( $image->ID ) );
