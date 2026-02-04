@@ -166,6 +166,13 @@ class WP_Speed_Booster {
 	private $woocommerce_optimizer;
 
 	/**
+	 * Image Optimizer instance
+	 *
+	 * @var WP_Speed_Booster_Image_Optimizer
+	 */
+	private $image_optimizer;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -201,6 +208,7 @@ class WP_Speed_Booster {
 		$this->cloudflare = new WPSB_Cloudflare();
 		$this->heartbeat = new WPSB_Heartbeat();
 		$this->performance_monitor = new WP_Speed_Booster_Performance_Monitor();
+		$this->image_optimizer = new WP_Speed_Booster_Image_Optimizer();
 
 		// Initialize WooCommerce optimizer
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -238,6 +246,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-cloudflare.php';
 		require_once WPSB_DIR . 'includes/class-heartbeat.php';
 		require_once WPSB_DIR . 'includes/class-performance-monitor.php';
+		require_once WPSB_DIR . 'includes/class-image-optimizer.php';
 
 		// Load WooCommerce optimizer if WooCommerce is active
 		if ( class_exists( 'WooCommerce' ) ) {
