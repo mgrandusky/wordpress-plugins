@@ -145,6 +145,13 @@ class WP_Speed_Booster {
 	private $cloudflare;
 
 	/**
+	 * Heartbeat instance
+	 *
+	 * @var WPSB_Heartbeat
+	 */
+	private $heartbeat;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -178,6 +185,7 @@ class WP_Speed_Booster {
 		$this->fragment_cache = new WPSB_Fragment_Cache();
 		$this->resource_hints = new WPSB_Resource_Hints();
 		$this->cloudflare = new WPSB_Cloudflare();
+		$this->heartbeat = new WPSB_Heartbeat();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -208,6 +216,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-fragment-cache.php';
 		require_once WPSB_DIR . 'includes/class-resource-hints.php';
 		require_once WPSB_DIR . 'includes/class-cloudflare.php';
+		require_once WPSB_DIR . 'includes/class-heartbeat.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
@@ -336,6 +345,17 @@ class WP_Speed_Booster {
 			'cloudflare_purge_on_update' => 0,
 			'cloudflare_purge_on_comment' => 0,
 			'cloudflare_restore_ip'      => 0,
+			'heartbeat_control_enabled'  => 0,
+			'heartbeat_disable_completely' => 0,
+			'heartbeat_disable_frontend' => 0,
+			'heartbeat_disable_admin'    => 0,
+			'heartbeat_disable_editor'   => 0,
+			'heartbeat_frontend_frequency' => 60,
+			'heartbeat_admin_frequency'  => 60,
+			'heartbeat_editor_frequency' => 15,
+			'heartbeat_allow_post_locking' => 1,
+			'heartbeat_allow_autosave'   => 1,
+			'heartbeat_track_activity'   => 0,
 		);
 
 		// Don't override existing options
