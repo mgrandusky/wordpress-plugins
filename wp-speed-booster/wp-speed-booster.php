@@ -124,6 +124,13 @@ class WP_Speed_Booster {
 	private $fragment_cache;
 
 	/**
+	 * Resource Hints instance
+	 *
+	 * @var WPSB_Resource_Hints
+	 */
+	private $resource_hints;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -154,6 +161,7 @@ class WP_Speed_Booster {
 		$this->font_optimizer = new WPSB_Font_Optimizer();
 		$this->object_cache = new WPSB_Object_Cache();
 		$this->fragment_cache = new WPSB_Fragment_Cache();
+		$this->resource_hints = new WPSB_Resource_Hints();
 
 		// Initialize admin interface
 		if ( is_admin() ) {
@@ -181,6 +189,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-font-optimizer.php';
 		require_once WPSB_DIR . 'includes/class-object-cache.php';
 		require_once WPSB_DIR . 'includes/class-fragment-cache.php';
+		require_once WPSB_DIR . 'includes/class-resource-hints.php';
 
 		if ( is_admin() ) {
 			require_once WPSB_DIR . 'admin/class-admin.php';
@@ -289,6 +298,17 @@ class WP_Speed_Booster {
 			'cached_sidebar_list'        => array(),
 			'cached_menu_list'           => array(),
 			'cached_shortcode_list'      => '',
+			'resource_hints_enabled'     => 0,
+			'dns_prefetch_enabled'       => 0,
+			'dns_prefetch_auto'          => 0,
+			'dns_prefetch_domains'       => '',
+			'preconnect_enabled'         => 0,
+			'preconnect_origins'         => array(),
+			'preload_enabled'            => 0,
+			'preload_resources'          => array(),
+			'prefetch_enabled'           => 0,
+			'prefetch_next_page'         => 0,
+			'prefetch_urls'              => '',
 		);
 
 		// Don't override existing options
