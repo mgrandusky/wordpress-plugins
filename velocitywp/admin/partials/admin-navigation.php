@@ -76,13 +76,7 @@ $nav_items = array(
     ),
     'platform' => array(
         'title' => __('Platform Specific', 'velocitywp'),
-        'items' => array(
-            'woocommerce' => array(
-                'icon' => '🛒',
-                'label' => __('WooCommerce', 'velocitywp'),
-                'description' => __('Cart fragments, scripts', 'velocitywp')
-            ),
-        )
+        'items' => array()
     ),
     'monitoring' => array(
         'title' => __('Monitoring', 'velocitywp'),
@@ -100,6 +94,15 @@ $nav_items = array(
         )
     )
 );
+
+// Add WooCommerce tab only if WooCommerce is active
+if ( class_exists( 'WooCommerce' ) ) {
+    $nav_items['platform']['items']['woocommerce'] = array(
+        'icon' => '🛒',
+        'label' => __('WooCommerce', 'velocitywp'),
+        'description' => __('Cart fragments, scripts', 'velocitywp')
+    );
+}
 ?>
 
 <div class="velocitywp-nav-sidebar">
@@ -115,6 +118,12 @@ $nav_items = array(
     <!-- Navigation Menu -->
     <nav class="velocitywp-nav-menu">
         <?php foreach ($nav_items as $section_key => $section): ?>
+            <?php
+            // Skip sections with no items
+            if (empty($section['items'])) {
+                continue;
+            }
+            ?>
             <div class="velocitywp-nav-section">
                 <div class="velocitywp-nav-section-title">
                     <?php echo esc_html($section['title']); ?>
@@ -148,10 +157,10 @@ $nav_items = array(
     <!-- Footer -->
     <div class="velocitywp-nav-footer">
         <a href="https://velocitywp.com/docs" target="_blank" class="velocitywp-nav-footer-link">
-            📚 <?php _e('Documentation', 'velocitywp'); ?>
+            <?php echo esc_html('📚'); ?> <?php _e('Documentation', 'velocitywp'); ?>
         </a>
         <a href="https://velocitywp.com/support" target="_blank" class="velocitywp-nav-footer-link">
-            💬 <?php _e('Support', 'velocitywp'); ?>
+            <?php echo esc_html('💬'); ?> <?php _e('Support', 'velocitywp'); ?>
         </a>
     </div>
 </div>
