@@ -176,24 +176,22 @@ class WPSB_Heartbeat {
 	 * @return array
 	 */
 	public function filter_heartbeat_received( $response, $data, $screen_id ) {
-		// Only allow post locking checks if enabled
-		if ( ! empty( $this->settings['heartbeat_allow_post_locking'] ) ) {
-			if ( isset( $data['wp-refresh-post-lock'] ) ) {
-				return $response;
-			}
-		}
-
-		// Only allow autosave if enabled
-		if ( ! empty( $this->settings['heartbeat_allow_autosave'] ) ) {
-			if ( isset( $data['wp_autosave'] ) ) {
-				return $response;
-			}
-		}
-
-		// If neither feature is enabled, filter out responses
+		// If both features are disabled, filter out all responses
 		if ( empty( $this->settings['heartbeat_allow_post_locking'] ) && 
 		     empty( $this->settings['heartbeat_allow_autosave'] ) ) {
 			return array();
+		}
+
+		// If post locking is disabled, remove post locking data
+		if ( empty( $this->settings['heartbeat_allow_post_locking'] ) && 
+		     isset( $data['wp-refresh-post-lock'] ) ) {
+			unset( $response['wp-refresh-post-lock'] );
+		}
+
+		// If autosave is disabled, remove autosave data
+		if ( empty( $this->settings['heartbeat_allow_autosave'] ) && 
+		     isset( $data['wp_autosave'] ) ) {
+			unset( $response['wp_autosave'] );
 		}
 
 		return $response;

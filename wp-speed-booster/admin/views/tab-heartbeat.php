@@ -237,7 +237,9 @@ $breakdown      = ! empty( $stats['location_breakdown'] ) ? $stats['location_bre
 					<td>
 						<?php
 						if ( $last_request ) {
-							echo esc_html( human_time_diff( strtotime( $last_request ), current_time( 'timestamp' ) ) . ' ago' );
+							$time_ago = human_time_diff( strtotime( $last_request ), current_time( 'timestamp' ) );
+							/* translators: %s: time difference */
+							echo esc_html( sprintf( __( '%s ago', 'wp-speed-booster' ), $time_ago ) );
 						} else {
 							esc_html_e( 'Never', 'wp-speed-booster' );
 						}
@@ -251,7 +253,13 @@ $breakdown      = ! empty( $stats['location_breakdown'] ) ? $stats['location_bre
 						<?php
 						foreach ( $breakdown as $location => $count ) {
 							$percentage = ( $count / $total_requests ) * 100;
-							echo esc_html( ucfirst( $location ) . ': ' . number_format( $count ) . ' (' . round( $percentage, 1 ) . '%)' ) . '<br>';
+							/* translators: 1: location name, 2: count, 3: percentage */
+							printf(
+								'%s: %s (%s%%)<br>',
+								esc_html( ucfirst( $location ) ),
+								esc_html( number_format( $count ) ),
+								esc_html( round( $percentage, 1 ) )
+							);
 						}
 						?>
 					</td>
