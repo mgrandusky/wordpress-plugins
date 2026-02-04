@@ -166,6 +166,13 @@ class WP_Speed_Booster {
 	private $woocommerce_optimizer;
 
 	/**
+	 * Image Optimizer instance
+	 *
+	 * @var WP_Speed_Booster_Image_Optimizer
+	 */
+	private $image_optimizer;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return WP_Speed_Booster
@@ -201,6 +208,7 @@ class WP_Speed_Booster {
 		$this->cloudflare = new WPSB_Cloudflare();
 		$this->heartbeat = new WPSB_Heartbeat();
 		$this->performance_monitor = new WP_Speed_Booster_Performance_Monitor();
+		$this->image_optimizer = new WP_Speed_Booster_Image_Optimizer();
 
 		// Initialize WooCommerce optimizer
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -238,6 +246,7 @@ class WP_Speed_Booster {
 		require_once WPSB_DIR . 'includes/class-cloudflare.php';
 		require_once WPSB_DIR . 'includes/class-heartbeat.php';
 		require_once WPSB_DIR . 'includes/class-performance-monitor.php';
+		require_once WPSB_DIR . 'includes/class-image-optimizer.php';
 
 		// Load WooCommerce optimizer if WooCommerce is active
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -406,6 +415,19 @@ class WP_Speed_Booster {
 			'performance_data_retention' => 30,
 			'performance_debug_comments' => 0,
 			'performance_sample_rate'    => 100,
+			'image_optimization_enabled' => 0,
+			'image_optimization_method'  => 'gd',
+			'image_quality'              => 85,
+			'image_preserve_exif'        => 0,
+			'image_api_key'              => '',
+			'image_api_provider'         => 'tinypng',
+			'image_webp_enabled'         => 0,
+			'image_webp_quality'         => 85,
+			'image_webp_skip_existing'   => 1,
+			'image_use_picture'          => 0,
+			'image_max_width'            => 2000,
+			'image_max_height'           => 2000,
+			'image_resize_on_upload'     => 0,
 		);
 
 		// Don't override existing options

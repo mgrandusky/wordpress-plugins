@@ -95,6 +95,9 @@ class WPSB_Admin {
 			'heartbeat_control_enabled', 'heartbeat_disable_completely', 'heartbeat_disable_frontend', 'heartbeat_disable_admin', 'heartbeat_disable_editor',
 			'heartbeat_allow_post_locking', 'heartbeat_allow_autosave', 'heartbeat_track_activity',
 			'performance_monitoring_enabled', 'performance_track_rum', 'performance_track_server', 'performance_debug_comments',
+			// Image optimization options
+			'image_optimization_enabled', 'image_preserve_exif', 'image_webp_enabled', 'image_webp_skip_existing',
+			'image_use_picture', 'image_resize_on_upload',
 			// WooCommerce options
 			'woo_optimization_enabled', 'woo_disable_cart_fragments', 'woo_remove_scripts', 'woo_load_everywhere',
 			'woo_optimize_checkout', 'woo_disable_password_strength', 'woo_disable_blocks', 'woo_disable_reviews',
@@ -121,6 +124,12 @@ class WPSB_Admin {
 		$sanitized['heartbeat_editor_frequency'] = ! empty( $input['heartbeat_editor_frequency'] ) ? absint( $input['heartbeat_editor_frequency'] ) : 15;
 		$sanitized['performance_data_retention'] = ! empty( $input['performance_data_retention'] ) ? absint( $input['performance_data_retention'] ) : 30;
 		$sanitized['performance_sample_rate'] = ! empty( $input['performance_sample_rate'] ) ? absint( $input['performance_sample_rate'] ) : 100;
+
+		// Image optimization integer options
+		$sanitized['image_quality'] = ! empty( $input['image_quality'] ) ? absint( $input['image_quality'] ) : 85;
+		$sanitized['image_webp_quality'] = ! empty( $input['image_webp_quality'] ) ? absint( $input['image_webp_quality'] ) : 85;
+		$sanitized['image_max_width'] = ! empty( $input['image_max_width'] ) ? absint( $input['image_max_width'] ) : 2000;
+		$sanitized['image_max_height'] = ! empty( $input['image_max_height'] ) ? absint( $input['image_max_height'] ) : 2000;
 
 		// WooCommerce integer options
 		$sanitized['woo_cart_fragment_lifetime'] = ! empty( $input['woo_cart_fragment_lifetime'] ) ? absint( $input['woo_cart_fragment_lifetime'] ) : 86400;
@@ -152,6 +161,11 @@ class WPSB_Admin {
 		// JavaScript Delay options
 		$sanitized['js_delay_exclude'] = ! empty( $input['js_delay_exclude'] ) ? sanitize_textarea_field( $input['js_delay_exclude'] ) : '';
 		$sanitized['js_delay_events'] = ! empty( $input['js_delay_events'] ) ? sanitize_text_field( $input['js_delay_events'] ) : 'mousemove,scroll,touchstart,click,keydown';
+
+		// Image optimization text options
+		$sanitized['image_optimization_method'] = ! empty( $input['image_optimization_method'] ) ? sanitize_text_field( $input['image_optimization_method'] ) : 'gd';
+		$sanitized['image_api_key'] = ! empty( $input['image_api_key'] ) ? sanitize_text_field( $input['image_api_key'] ) : '';
+		$sanitized['image_api_provider'] = ! empty( $input['image_api_provider'] ) ? sanitize_text_field( $input['image_api_provider'] ) : 'tinypng';
 
 		// WooCommerce text options
 		$sanitized['woo_disable_cart_fragments_on'] = ! empty( $input['woo_disable_cart_fragments_on'] ) ? sanitize_text_field( $input['woo_disable_cart_fragments_on'] ) : '';
@@ -316,6 +330,9 @@ class WPSB_Admin {
 					<a href="#tab-webp" class="nav-tab wpspeed-nav-tab" data-tab="webp">
 						<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'WebP Images', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-images" class="nav-tab wpspeed-nav-tab" data-tab="images">
+						<span class="dashicons dashicons-format-gallery"></span> <?php esc_html_e( 'Image Optimization', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-critical-css" class="nav-tab wpspeed-nav-tab" data-tab="critical-css">
 						<span class="dashicons dashicons-media-code"></span> <?php esc_html_e( 'Critical CSS', 'wp-speed-booster' ); ?>
 					</a>
@@ -379,6 +396,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-webp" class="wpspeed-tab-content">
 					<?php $this->render_webp_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-images" class="wpspeed-tab-content">
+					<?php require WPSB_DIR . 'admin/views/tab-images.php'; ?>
 				</div>
 
 				<div id="wpspeed-tab-critical-css" class="wpspeed-tab-content">
