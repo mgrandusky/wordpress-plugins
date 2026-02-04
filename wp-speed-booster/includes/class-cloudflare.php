@@ -50,7 +50,7 @@ class WPSB_Cloudflare {
 	 *
 	 * @var string
 	 */
-	private $auth_type = 'key';
+	private $auth_type = 'token';
 
 	/**
 	 * Zone ID
@@ -404,7 +404,9 @@ class WPSB_Cloudflare {
 	 * @return bool|WP_Error Success or error.
 	 */
 	public function test_connection() {
-		$result = $this->api_request( 'user/tokens/verify' );
+		// Use appropriate endpoint based on auth type
+		$endpoint = ( $this->auth_type === 'token' ) ? 'user/tokens/verify' : 'user';
+		$result = $this->api_request( $endpoint );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
@@ -584,7 +586,8 @@ class WPSB_Cloudflare {
 		}
 
 		// Temporarily set credentials from POST
-		$auth_type = sanitize_text_field( $_POST['auth_type'] ?? 'key' );
+		$post_data = wp_unslash( $_POST );
+		$auth_type = sanitize_text_field( $post_data['auth_type'] ?? 'token' );
 		$saved_auth_type = $this->auth_type;
 		$saved_token = $this->api_token;
 		$saved_email = $this->api_email;
@@ -593,10 +596,10 @@ class WPSB_Cloudflare {
 		$this->auth_type = $auth_type;
 
 		if ( $auth_type === 'token' ) {
-			$this->api_token = sanitize_text_field( $_POST['api_token'] ?? '' );
+			$this->api_token = sanitize_text_field( $post_data['api_token'] ?? '' );
 		} else {
-			$this->api_email = sanitize_email( $_POST['email'] ?? '' );
-			$this->api_key = sanitize_text_field( $_POST['api_key'] ?? '' );
+			$this->api_email = sanitize_email( $post_data['email'] ?? '' );
+			$this->api_key = sanitize_text_field( $post_data['api_key'] ?? '' );
 		}
 
 		$result = $this->test_connection();
@@ -643,7 +646,8 @@ class WPSB_Cloudflare {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
 		}
 
-		$type = sanitize_text_field( $_POST['type'] ?? 'everything' );
+		$post_data = wp_unslash( $_POST );
+		$type = sanitize_text_field( $post_data['type'] ?? 'everything' );
 		$result = null;
 
 		switch ( $type ) {
@@ -652,13 +656,13 @@ class WPSB_Cloudflare {
 				break;
 
 			case 'urls':
-				$urls_text = sanitize_textarea_field( $_POST['urls'] ?? '' );
+				$urls_text = sanitize_textarea_field( $post_data['urls'] ?? '' );
 				$urls = array_filter( array_map( 'trim', explode( "\n", $urls_text ) ) );
 				$result = $this->purge_urls( $urls );
 				break;
 
 			case 'tags':
-				$tags_text = sanitize_textarea_field( $_POST['tags'] ?? '' );
+				$tags_text = sanitize_textarea_field( $post_data['tags'] ?? '' );
 				$tags = array_filter( array_map( 'trim', explode( "\n", $tags_text ) ) );
 				$result = $this->purge_by_tags( $tags );
 				break;
@@ -688,7 +692,8 @@ class WPSB_Cloudflare {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
 		}
 
-		$action = sanitize_text_field( $_POST['action_type'] ?? 'enable' );
+		$post_data = wp_unslash( $_POST );
+		$action = sanitize_text_field( $post_data['action_type'] ?? 'enable' );
 
 		if ( $action === 'enable' ) {
 			$result = $this->enable_dev_mode();
@@ -713,8 +718,9 @@ class WPSB_Cloudflare {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
 		}
 
-		$setting_id = sanitize_text_field( $_POST['setting_id'] ?? '' );
-		$value = $_POST['value'] ?? '';
+		$post_data = wp_unslash( $_POST );
+		$setting_id = sanitize_text_field( $post_data['setting_id'] ?? '' );
+		$value = isset( $post_data['value'] ) ? sanitize_text_field( $post_data['value'] ) : '';
 
 		if ( empty( $setting_id ) ) {
 			wp_send_json_error( array( 'message' => __( 'Setting ID required', 'wp-speed-booster' ) ) );
@@ -739,7 +745,8 @@ class WPSB_Cloudflare {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'wp-speed-booster' ) ) );
 		}
 
-		$period = absint( $_POST['period'] ?? 30 );
+		$post_data = wp_unslash( $_POST );
+		$period = absint( $post_data['period'] ?? 30 );
 		$result = $this->get_analytics( $period );
 
 		if ( is_wp_error( $result ) ) {

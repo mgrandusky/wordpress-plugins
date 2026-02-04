@@ -190,26 +190,30 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 		</tr>
 
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Purge Specific URLs', 'wp-speed-booster' ); ?></th>
+			<th scope="row">
+				<label for="wpsb-cf-purge-urls"><?php esc_html_e( 'Purge Specific URLs', 'wp-speed-booster' ); ?></label>
+			</th>
 			<td>
-				<textarea id="wpsb-cf-purge-urls" rows="5" class="large-text" placeholder="https://example.com/page1&#10;https://example.com/page2"></textarea>
+				<textarea id="wpsb-cf-purge-urls" rows="5" class="large-text" placeholder="https://example.com/page1&#10;https://example.com/page2" aria-describedby="wpsb-cf-purge-urls-desc"></textarea>
 				<br>
 				<button type="button" id="wpsb-cf-purge-urls-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
 					<?php esc_html_e( 'Purge URLs', 'wp-speed-booster' ); ?>
 				</button>
-				<p class="description"><?php esc_html_e( 'Enter one URL per line to purge specific pages.', 'wp-speed-booster' ); ?></p>
+				<p class="description" id="wpsb-cf-purge-urls-desc"><?php esc_html_e( 'Enter one URL per line to purge specific pages.', 'wp-speed-booster' ); ?></p>
 			</td>
 		</tr>
 
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Purge by Cache Tags', 'wp-speed-booster' ); ?></th>
+			<th scope="row">
+				<label for="wpsb-cf-purge-tags"><?php esc_html_e( 'Purge by Cache Tags', 'wp-speed-booster' ); ?></label>
+			</th>
 			<td>
-				<textarea id="wpsb-cf-purge-tags" rows="3" class="large-text" placeholder="tag1&#10;tag2"></textarea>
+				<textarea id="wpsb-cf-purge-tags" rows="3" class="large-text" placeholder="tag1&#10;tag2" aria-describedby="wpsb-cf-purge-tags-desc"></textarea>
 				<br>
 				<button type="button" id="wpsb-cf-purge-tags-btn" class="button button-secondary" <?php disabled( empty( $cf_zone_id ) ); ?>>
 					<?php esc_html_e( 'Purge Tags', 'wp-speed-booster' ); ?>
 				</button>
-				<p class="description"><?php esc_html_e( 'Enter cache tags (one per line). Requires Cloudflare Enterprise.', 'wp-speed-booster' ); ?></p>
+				<p class="description" id="wpsb-cf-purge-tags-desc"><?php esc_html_e( 'Enter cache tags (one per line). Requires Cloudflare Enterprise.', 'wp-speed-booster' ); ?></p>
 			</td>
 		</tr>
 	</table>
@@ -288,6 +292,9 @@ $cf_last_purge = get_option( 'wpsb_cf_last_purge', 0 );
 			<?php esc_html_e( 'Cloudflare APO provides full HTML caching at the edge for WordPress sites. It can significantly improve performance for visitors worldwide.', 'wp-speed-booster' ); ?>
 		</p>
 		<p>
+			<?php
+			// Note: Pricing verified as of 2024. Check Cloudflare website for current pricing.
+			?>
 			<strong><?php esc_html_e( 'Pricing:', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( '$5/month per domain', 'wp-speed-booster' ); ?><br>
 			<strong><?php esc_html_e( 'Benefits:', 'wp-speed-booster' ); ?></strong>
 		</p>
