@@ -115,7 +115,7 @@ $prefetch_urls          = ! empty( $options['prefetch_urls'] ) ? $options['prefe
 				</label>
 				<p class="description">
 					<?php esc_html_e( 'Establishes early connections to critical origins.', 'wp-speed-booster' ); ?>
-					<strong><?php esc_html_e( 'Limit to 4-6 most critical origins', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( '(browser recommendation)', 'wp-speed-booster' ); ?>
+					<strong><?php esc_html_e( 'Limit to 4 most critical origins for best performance', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( '(browser best practice)', 'wp-speed-booster' ); ?>
 				</p>
 			</td>
 		</tr>
@@ -138,12 +138,12 @@ $prefetch_urls          = ! empty( $options['prefetch_urls'] ) ? $options['prefe
 						?>
 						<tr>
 							<td>
-								<input type="url" name="wpsb_options[preconnect_origins][<?php echo $index; ?>][url]"
+								<input type="url" name="wpsb_options[preconnect_origins][<?php echo esc_attr( $index ); ?>][url]"
 									value="<?php echo esc_attr( $origin['url'] ); ?>" class="regular-text"
 									placeholder="https://fonts.googleapis.com">
 							</td>
 							<td>
-								<input type="checkbox" name="wpsb_options[preconnect_origins][<?php echo $index; ?>][crossorigin]"
+								<input type="checkbox" name="wpsb_options[preconnect_origins][<?php echo esc_attr( $index ); ?>][crossorigin]"
 									value="1" <?php checked( ! empty( $origin['crossorigin'] ), 1 ); ?>>
 							</td>
 							<td>
@@ -210,12 +210,12 @@ $prefetch_urls          = ! empty( $options['prefetch_urls'] ) ? $options['prefe
 						?>
 						<tr>
 							<td>
-								<input type="url" name="wpsb_options[preload_resources][<?php echo $index; ?>][url]"
+								<input type="url" name="wpsb_options[preload_resources][<?php echo esc_attr( $index ); ?>][url]"
 									value="<?php echo esc_attr( $resource['url'] ); ?>" class="regular-text"
 									placeholder="/fonts/myfont.woff2">
 							</td>
 							<td>
-								<select name="wpsb_options[preload_resources][<?php echo $index; ?>][as]">
+								<select name="wpsb_options[preload_resources][<?php echo esc_attr( $index ); ?>][as]">
 									<option value="font" <?php selected( $resource['as'], 'font' ); ?>><?php esc_html_e( 'Font', 'wp-speed-booster' ); ?></option>
 									<option value="style" <?php selected( $resource['as'], 'style' ); ?>><?php esc_html_e( 'Style', 'wp-speed-booster' ); ?></option>
 									<option value="script" <?php selected( $resource['as'], 'script' ); ?>><?php esc_html_e( 'Script', 'wp-speed-booster' ); ?></option>
@@ -224,16 +224,16 @@ $prefetch_urls          = ! empty( $options['prefetch_urls'] ) ? $options['prefe
 								</select>
 							</td>
 							<td>
-								<input type="text" name="wpsb_options[preload_resources][<?php echo $index; ?>][type]"
+								<input type="text" name="wpsb_options[preload_resources][<?php echo esc_attr( $index ); ?>][type]"
 									value="<?php echo esc_attr( ! empty( $resource['type'] ) ? $resource['type'] : '' ); ?>"
 									placeholder="font/woff2" class="regular-text">
 							</td>
 							<td>
-								<input type="checkbox" name="wpsb_options[preload_resources][<?php echo $index; ?>][crossorigin]"
+								<input type="checkbox" name="wpsb_options[preload_resources][<?php echo esc_attr( $index ); ?>][crossorigin]"
 									value="1" <?php checked( ! empty( $resource['crossorigin'] ), 1 ); ?>>
 							</td>
 							<td>
-								<select name="wpsb_options[preload_resources][<?php echo $index; ?>][fetchpriority]">
+								<select name="wpsb_options[preload_resources][<?php echo esc_attr( $index ); ?>][fetchpriority]">
 									<option value="" <?php selected( empty( $resource['fetchpriority'] ), true ); ?>><?php esc_html_e( 'Auto', 'wp-speed-booster' ); ?></option>
 									<option value="high" <?php selected( ! empty( $resource['fetchpriority'] ) ? $resource['fetchpriority'] : '', 'high' ); ?>><?php esc_html_e( 'High', 'wp-speed-booster' ); ?></option>
 									<option value="low" <?php selected( ! empty( $resource['fetchpriority'] ) ? $resource['fetchpriority'] : '', 'low' ); ?>><?php esc_html_e( 'Low', 'wp-speed-booster' ); ?></option>
@@ -361,7 +361,7 @@ $prefetch_urls          = ! empty( $options['prefetch_urls'] ) ? $options['prefe
 		<h3><?php esc_html_e( 'Tips for Optimal Use:', 'wp-speed-booster' ); ?></h3>
 		<ul style="list-style: disc; margin-left: 20px;">
 			<li><strong><?php esc_html_e( 'DNS Prefetch:', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( 'Use for domains you know will be needed. Great for analytics, fonts, and CDNs.', 'wp-speed-booster' ); ?></li>
-			<li><strong><?php esc_html_e( 'Preconnect:', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( 'Limit to 4-6 most critical origins. Too many can slow down the page.', 'wp-speed-booster' ); ?></li>
+			<li><strong><?php esc_html_e( 'Preconnect:', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( 'Limit to 4 most critical origins for optimal performance. Too many can slow down the page.', 'wp-speed-booster' ); ?></li>
 			<li><strong><?php esc_html_e( 'Preload:', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( 'Only for resources needed in first 3 seconds. Use crossorigin for fonts.', 'wp-speed-booster' ); ?></li>
 			<li><strong><?php esc_html_e( 'Prefetch:', 'wp-speed-booster' ); ?></strong> <?php esc_html_e( 'Use for high-probability next pages. Great for pagination and common navigation paths.', 'wp-speed-booster' ); ?></li>
 		</ul>
@@ -430,8 +430,8 @@ $prefetch_urls          = ! empty( $options['prefetch_urls'] ) ? $options['prefe
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-	var preconnectIndex = <?php echo count( $preconnect_origins ); ?>;
-	var preloadIndex = <?php echo count( $preload_resources ); ?>;
+	var preconnectIndex = <?php echo absint( count( $preconnect_origins ) ); ?>;
+	var preloadIndex = <?php echo absint( count( $preload_resources ) ); ?>;
 
 	// Add preconnect origin
 	$('#add-preconnect-origin').on('click', function() {

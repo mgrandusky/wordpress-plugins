@@ -253,7 +253,7 @@ class WPSB_Resource_Hints {
 			if ( strpos( $domain, '//' ) !== 0 && strpos( $domain, 'http' ) !== 0 ) {
 				$domain = '//' . $domain;
 			}
-			echo '<link rel="dns-prefetch" href="' . esc_attr( $domain ) . '">' . "\n";
+			echo '<link rel="dns-prefetch" href="' . esc_url( $domain ) . '">' . "\n";
 		}
 	}
 
@@ -277,8 +277,9 @@ class WPSB_Resource_Hints {
 			}
 		}
 
-		// Limit to 6 preconnects (browser recommendation)
-		$origins = array_slice( $origins, 0, 6 );
+		// Limit to 4 preconnects for optimal performance (browser best practice)
+		// Some browsers support up to 6, but 4 is recommended for best compatibility
+		$origins = array_slice( $origins, 0, 4 );
 
 		return $origins;
 	}
