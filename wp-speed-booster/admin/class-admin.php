@@ -90,6 +90,8 @@ class WPSB_Admin {
 			'fragment_cache_enabled', 'cache_widgets', 'cache_sidebars', 'cache_menus', 'cache_shortcodes', 'fragment_cache_logged_in',
 			'resource_hints_enabled', 'dns_prefetch_enabled', 'dns_prefetch_auto', 'preconnect_enabled', 'preload_enabled', 'prefetch_enabled', 'prefetch_next_page',
 			'cloudflare_enabled', 'cloudflare_purge_on_update', 'cloudflare_purge_on_comment', 'cloudflare_restore_ip',
+			'heartbeat_control_enabled', 'heartbeat_disable_completely', 'heartbeat_disable_frontend', 'heartbeat_disable_admin', 'heartbeat_disable_editor',
+			'heartbeat_allow_post_locking', 'heartbeat_allow_autosave', 'heartbeat_track_activity',
 		);
 
 		foreach ( $boolean_options as $option ) {
@@ -103,6 +105,9 @@ class WPSB_Admin {
 		$sanitized['lazy_load_skip_images'] = ! empty( $input['lazy_load_skip_images'] ) ? absint( $input['lazy_load_skip_images'] ) : 0;
 		$sanitized['webp_quality'] = ! empty( $input['webp_quality'] ) ? absint( $input['webp_quality'] ) : 85;
 		$sanitized['js_delay_timeout'] = ! empty( $input['js_delay_timeout'] ) ? absint( $input['js_delay_timeout'] ) : 5;
+		$sanitized['heartbeat_frontend_frequency'] = ! empty( $input['heartbeat_frontend_frequency'] ) ? absint( $input['heartbeat_frontend_frequency'] ) : 60;
+		$sanitized['heartbeat_admin_frequency'] = ! empty( $input['heartbeat_admin_frequency'] ) ? absint( $input['heartbeat_admin_frequency'] ) : 60;
+		$sanitized['heartbeat_editor_frequency'] = ! empty( $input['heartbeat_editor_frequency'] ) ? absint( $input['heartbeat_editor_frequency'] ) : 15;
 
 		// Text options
 		$sanitized['cache_exclude_urls'] = ! empty( $input['cache_exclude_urls'] ) ? sanitize_textarea_field( $input['cache_exclude_urls'] ) : '';
@@ -303,6 +308,9 @@ class WPSB_Admin {
 					<a href="#tab-cloudflare" class="nav-tab wpspeed-nav-tab" data-tab="cloudflare">
 						<span class="dashicons dashicons-cloud"></span> <?php esc_html_e( 'Cloudflare', 'wp-speed-booster' ); ?>
 					</a>
+					<a href="#tab-heartbeat" class="nav-tab wpspeed-nav-tab" data-tab="heartbeat">
+						<span class="dashicons dashicons-heart"></span> <?php esc_html_e( 'Heartbeat', 'wp-speed-booster' ); ?>
+					</a>
 					<a href="#tab-database" class="nav-tab wpspeed-nav-tab" data-tab="database">
 						<span class="dashicons dashicons-database"></span> <?php esc_html_e( 'Database', 'wp-speed-booster' ); ?>
 					</a>
@@ -362,6 +370,10 @@ class WPSB_Admin {
 
 				<div id="wpspeed-tab-cloudflare" class="wpspeed-tab-content">
 					<?php $this->render_cloudflare_tab( $options ); ?>
+				</div>
+
+				<div id="wpspeed-tab-heartbeat" class="wpspeed-tab-content">
+					<?php $this->render_heartbeat_tab( $options ); ?>
 				</div>
 
 				<div id="wpspeed-tab-database" class="wpspeed-tab-content">
@@ -755,6 +767,18 @@ class WPSB_Admin {
 		// Include the tab view file
 		if ( file_exists( WPSB_DIR . 'admin/views/tab-cloudflare.php' ) ) {
 			include WPSB_DIR . 'admin/views/tab-cloudflare.php';
+		}
+	}
+
+	/**
+	 * Render heartbeat tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_heartbeat_tab( $options ) {
+		// Include the tab view file
+		if ( file_exists( WPSB_DIR . 'admin/views/tab-heartbeat.php' ) ) {
+			include WPSB_DIR . 'admin/views/tab-heartbeat.php';
 		}
 	}
 
