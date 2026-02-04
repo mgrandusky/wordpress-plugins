@@ -278,6 +278,17 @@ class WP_Speed_Booster {
 			'redis_password'             => '',
 			'redis_database'             => 0,
 			'memcached_servers'          => '127.0.0.1:11211',
+			'fragment_cache_enabled'     => 0,
+			'cache_widgets'              => 0,
+			'cache_sidebars'             => 0,
+			'cache_menus'                => 0,
+			'cache_shortcodes'           => 0,
+			'fragment_cache_time'        => 3600, // 1 hour
+			'fragment_cache_logged_in'   => 0,
+			'cached_widget_list'         => array(),
+			'cached_sidebar_list'        => array(),
+			'cached_menu_list'           => array(),
+			'cached_shortcode_list'      => '',
 		);
 
 		// Don't override existing options
