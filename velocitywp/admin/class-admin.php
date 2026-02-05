@@ -368,6 +368,9 @@ class VelocityWP_Admin {
 			case 'webp':
 				$this->render_webp_tab($options);
 				break;
+			case 'help':
+				$this->render_help_tab($options);
+				break;
 			default:
 				$this->render_fonts_tab($options);
 				break;
@@ -814,6 +817,17 @@ class VelocityWP_Admin {
 	 */
 	private function render_database_tab( $options ) {
 		require VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-database.php';
+	}
+
+	/**
+	 * Render help tab
+	 *
+	 * @param array $options Plugin options.
+	 */
+	private function render_help_tab( $options ) {
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-help.php' ) ) {
+			require VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-help.php';
+		}
 	}
 
 	/**

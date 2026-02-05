@@ -92,6 +92,16 @@ $nav_items = array(
                 'description' => __('PageSpeed Insights', 'velocitywp')
             ),
         )
+    ),
+    'help' => array(
+        'title' => __('Help & Support', 'velocitywp'),
+        'items' => array(
+            'help' => array(
+                'icon' => '❓',
+                'label' => __('Help & Documentation', 'velocitywp'),
+                'description' => __('Guides, FAQ, Support', 'velocitywp')
+            ),
+        )
     )
 );
 
@@ -156,10 +166,10 @@ if ( class_exists( 'WooCommerce' ) ) {
 
     <!-- Footer -->
     <div class="velocitywp-nav-footer">
-        <a href="https://velocitywp.com/docs" target="_blank" class="velocitywp-nav-footer-link">
+        <a href="<?php echo esc_url(admin_url('admin.php?page=velocitywp&tab=help')); ?>" class="velocitywp-nav-footer-link">
             <?php echo esc_html('📚'); ?> <?php _e('Documentation', 'velocitywp'); ?>
         </a>
-        <a href="https://velocitywp.com/support" target="_blank" class="velocitywp-nav-footer-link">
+        <a href="https://github.com/mgrandusky/wordpress-plugins/issues" target="_blank" class="velocitywp-nav-footer-link">
             <?php echo esc_html('💬'); ?> <?php _e('Support', 'velocitywp'); ?>
         </a>
     </div>
