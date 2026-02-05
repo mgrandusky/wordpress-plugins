@@ -591,100 +591,71 @@
     float: none !important;
 }
 
-/* Remove any flex/grid from notice containers */
-.velocitywp-tab-section .notice {
+/* Force inline notices to stack vertically */
+.velocitywp-tab-section .notice.inline,
+.velocitywp-tab-section .notice-info.inline,
+.velocitywp-tab-section .notice-success.inline,
+.velocitywp-tab-section .notice-warning.inline,
+.velocitywp-tab-section .notice-error.inline {
     display: block !important;
     width: 100% !important;
     flex: none !important;
     grid-column: 1 / -1 !important; /* Span all columns if in grid */
 }
 
-/* Force inline notices to stack vertically */
-.notice.inline,
-.notice-info.inline,
-.notice-success.inline,
-.notice-warning.inline,
-.notice-error.inline {
-    display: block !important;
-    width: 100% !important;
-    flex: none !important;
-}
-
 /* Stack multiple notices vertically with spacing */
-.notice + .notice {
+.velocitywp-tab-section .notice + .notice {
     margin-top: 15px !important;
     clear: both;
 }
 
-/* Consistent spacing for all notice types */
-.notice-info,
-.notice-success,
-.notice-warning,
-.notice-error {
+/* Override WordPress core inline styles - scoped to VelocityWP */
+.velocitywp-tab-section .notice[style*="display: flex"],
+.velocitywp-tab-section .notice[style*="display: inline"],
+.velocitywp-tab-section .notice[style*="display: inline-block"] {
     display: block !important;
-    width: 100% !important;
-    margin: 20px 0 !important;
-    padding: 15px !important;
-}
-
-/* Override WordPress core inline styles */
-.notice[style*="display: flex"],
-.notice[style*="display: inline"],
-.notice[style*="display: inline-block"] {
-    display: block !important;
-}
-
-/* Ensure content inside notices wraps properly */
-.notice p {
-    margin: 0.5em 0;
-    display: block;
-}
-
-.notice ul {
-    display: block;
-    margin: 10px 0 10px 20px;
 }
 
 /* Colored left borders for visual distinction */
-.notice-info {
+.velocitywp-tab-section .notice-info {
     background: #f0f6fc;
     border-left: 4px solid #2271b1;
 }
 
-.notice-success {
+.velocitywp-tab-section .notice-success {
     background: #edfaef;
     border-left: 4px solid #00a32a;
 }
 
-.notice-warning {
+.velocitywp-tab-section .notice-warning {
     background: #fcf9e8;
     border-left: 4px solid #dba617;
 }
 
-.notice-error {
+.velocitywp-tab-section .notice-error {
     background: #fcf0f1;
     border-left: 4px solid #d63638;
 }
 
 /* Responsive adjustments */
 @media (max-width: 782px) {
-    .notice {
+    .velocitywp-tab-section .notice {
         padding: 12px !important;
         margin: 15px 0 !important;
     }
 }
 
-/* Special case: notices inside form-table */
-.form-table .notice {
+/* Special case: notices inside form-table within VelocityWP */
+.velocitywp-tab-content .form-table .notice {
     display: block !important;
     width: 100% !important;
     margin: 15px 0 !important;
 }
 
-/* Special case: notices in AJAX result containers */
-#fragment-cache-result .notice,
-#dropin-action-result .notice,
-div[id$="-result"] .notice {
+/* Special case: notices in AJAX result containers within VelocityWP */
+.velocitywp-tab-content #fragment-cache-result .notice,
+.velocitywp-tab-content #dropin-action-result .notice,
+.velocitywp-tab-content div[id$="-result"] .notice {
     display: block !important;
     width: 100% !important;
     margin: 10px 0 !important;
