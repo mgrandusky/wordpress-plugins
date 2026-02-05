@@ -688,3 +688,335 @@
     display: block;
     margin-bottom: 8px;
 }
+
+/* ==============================================
+   DASHBOARD STYLES
+   ============================================== */
+
+.velocitywp-dashboard {
+    max-width: 1400px;
+}
+
+.velocitywp-dashboard-header {
+    margin-bottom: 30px;
+}
+
+.velocitywp-dashboard-header h1 {
+    font-size: 28px;
+    margin: 0 0 10px 0;
+}
+
+/* Stats Grid */
+.velocitywp-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.velocitywp-stat-card {
+    background: #ffffff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 20px;
+    transition: box-shadow 0.2s ease;
+}
+
+.velocitywp-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.stat-icon {
+    font-size: 32px;
+}
+
+.stat-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.stat-card-body .stat-primary {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #f0f0f1;
+    margin-bottom: 15px;
+}
+
+.stat-primary .stat-value {
+    display: block;
+    font-size: 48px;
+    font-weight: 700;
+    color: #2271b1;
+    line-height: 1;
+}
+
+.stat-primary .stat-label {
+    display: block;
+    font-size: 14px;
+    color: #757575;
+    margin-top: 8px;
+}
+
+.stat-secondary {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-item .stat-label {
+    display: block;
+    font-size: 12px;
+    color: #757575;
+    margin-bottom: 5px;
+}
+
+.stat-item .stat-value {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #3c434a;
+}
+
+.stat-value.good {
+    color: #00a32a;
+}
+
+.stat-value.needs-improvement {
+    color: #dba617;
+}
+
+/* Quick Actions */
+.velocitywp-quick-actions {
+    background: #ffffff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.velocitywp-quick-actions h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.velocitywp-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.velocitywp-action-btn:hover {
+    background: #ffffff;
+    border-color: #2271b1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.velocitywp-action-btn.velocitywp-action-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+}
+
+.velocitywp-action-btn.velocitywp-action-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.velocitywp-action-btn.velocitywp-action-primary .action-text strong,
+.velocitywp-action-btn.velocitywp-action-primary .action-text small {
+    color: #ffffff;
+}
+
+.action-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.action-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.action-text strong {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3338;
+}
+
+.action-text small {
+    font-size: 12px;
+    color: #757575;
+}
+
+.velocitywp-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.velocitywp-action-btn.loading {
+    position: relative;
+}
+
+.velocitywp-action-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#action-result {
+    margin-top: 20px;
+}
+
+/* System Status */
+.velocitywp-system-status {
+    background: #ffffff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.velocitywp-system-status h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #f6f7f7;
+    border-radius: 6px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d63638;
+    flex-shrink: 0;
+}
+
+.status-item.status-active .status-indicator {
+    background: #00a32a;
+}
+
+.status-label {
+    font-size: 13px;
+    color: #757575;
+    flex: 1;
+}
+
+.status-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3c434a;
+}
+
+/* Recent Activity */
+.velocitywp-recent-activity {
+    background: #ffffff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 30px;
+}
+
+.velocitywp-recent-activity h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.activity-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.activity-text {
+    flex: 1;
+    font-size: 14px;
+    color: #3c434a;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: #757575;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .velocitywp-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+}

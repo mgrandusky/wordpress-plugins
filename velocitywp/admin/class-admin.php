@@ -27,6 +27,10 @@ class VelocityWP_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 		add_action( 'wp_ajax_velocitywp_clear_cache', array( $this, 'ajax_clear_cache' ) );
 		add_action( 'wp_ajax_velocitywp_optimize_database', array( $this, 'ajax_optimize_database' ) );
+		add_action( 'wp_ajax_velocitywp_flush_object_cache', array( $this, 'ajax_flush_object_cache' ) );
+		add_action( 'wp_ajax_velocitywp_clear_fragment_cache', array( $this, 'ajax_clear_fragment_cache' ) );
+		add_action( 'wp_ajax_velocitywp_regenerate_critical_css', array( $this, 'ajax_regenerate_critical_css' ) );
+		add_action( 'wp_ajax_velocitywp_purge_cloudflare', array( $this, 'ajax_purge_cloudflare' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 
@@ -290,7 +294,7 @@ class VelocityWP_Admin {
 		}
 
 		$options = get_option( 'velocitywp_options', array() );
-		$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'fonts';
+		$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
 		?>
 		<div class="wrap velocitywp-wrap">
 			<div class="velocitywp-container">
@@ -329,6 +333,9 @@ class VelocityWP_Admin {
 	 */
 	private function render_tab_content($tab, $options) {
 		switch ($tab) {
+			case 'dashboard':
+				$this->render_dashboard_tab($options);
+				break;
 			case 'fonts':
 				$this->render_fonts_tab($options);
 				break;
@@ -372,7 +379,7 @@ class VelocityWP_Admin {
 				$this->render_help_tab($options);
 				break;
 			default:
-				$this->render_fonts_tab($options);
+				$this->render_dashboard_tab($options);
 				break;
 		}
 	}
@@ -383,64 +390,10 @@ class VelocityWP_Admin {
 	 * @param array $options Plugin options.
 	 */
 	private function render_dashboard_tab( $options ) {
-		$cache = new VelocityWP_Cache();
-		$cache_stats = $cache->get_cache_stats();
-		$database = new VelocityWP_Database();
-		$db_size = $database->get_database_size();
-		?>
-		<div class="velocitywp-dashboard">
-			<div class="velocitywp-welcome">
-				<h2><?php esc_html_e( 'Welcome to VelocityWP', 'velocitywp' ); ?></h2>
-				<p><?php esc_html_e( 'Optimize your WordPress website for better performance and faster loading times.', 'velocitywp' ); ?></p>
-			</div>
-
-			<div class="velocitywp-stats-grid">
-				<div class="velocitywp-stat-box">
-					<h3><?php esc_html_e( 'Cache Status', 'velocitywp' ); ?></h3>
-					<div class="stat-value"><?php echo ! empty( $options['cache_enabled'] ) ? '<span class="status-enabled">✓ Enabled</span>' : '<span class="status-disabled">✗ Disabled</span>'; ?></div>
-					<p><?php echo esc_html( sprintf( __( '%d cached files (%s)', 'velocitywp' ), $cache_stats['files'], size_format( $cache_stats['size'] ) ) ); ?></p>
-				</div>
-
-				<div class="velocitywp-stat-box">
-					<h3><?php esc_html_e( 'Database', 'velocitywp' ); ?></h3>
-					<div class="stat-value"><?php echo esc_html( $db_size['formatted'] ); ?></div>
-					<p><?php esc_html_e( 'Total database size', 'velocitywp' ); ?></p>
-				</div>
-
-				<div class="velocitywp-stat-box">
-					<h3><?php esc_html_e( 'Optimization', 'velocitywp' ); ?></h3>
-					<div class="stat-value">
-						<?php
-						$active_features = 0;
-						$features = array( 'html_minify', 'css_minify', 'js_minify', 'lazy_load_images' );
-						foreach ( $features as $feature ) {
-							if ( ! empty( $options[ $feature ] ) ) {
-								$active_features++;
-							}
-						}
-						echo esc_html( sprintf( __( '%d/%d', 'velocitywp' ), $active_features, count( $features ) ) );
-						?>
-					</div>
-					<p><?php esc_html_e( 'Active optimizations', 'velocitywp' ); ?></p>
-				</div>
-			</div>
-
-			<div class="velocitywp-quick-actions">
-				<h3><?php esc_html_e( 'Quick Actions', 'velocitywp' ); ?></h3>
-				<button type="button" class="button button-primary" id="velocitywp-clear-cache-btn">
-					<?php esc_html_e( 'Clear Cache', 'velocitywp' ); ?>
-				</button>
-				<button type="button" class="button button-secondary" id="velocitywp-optimize-db-btn">
-					<?php esc_html_e( 'Optimize Database', 'velocitywp' ); ?>
-				</button>
-				<button type="button" class="button button-secondary" id="velocitywp-preload-cache-btn">
-					<?php esc_html_e( 'Preload Cache', 'velocitywp' ); ?>
-				</button>
-			</div>
-
-			<div id="velocitywp-ajax-result" class="notice" style="display:none;"></div>
-		</div>
-		<?php
+		// Include the dashboard view file
+		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-dashboard.php' ) ) {
+			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-dashboard.php';
+		}
 	}
 
 	/**
@@ -932,6 +885,9 @@ class VelocityWP_Admin {
 		$cache = new VelocityWP_Cache();
 		$cache->clear_all_cache();
 
+		// Log activity
+		VelocityWP_Activity_Logger::log( '🗑️', __( 'Page cache cleared', 'velocitywp' ) );
+
 		wp_send_json_success( array( 'message' => __( 'Cache cleared successfully!', 'velocitywp' ) ) );
 	}
 
@@ -965,7 +921,113 @@ class VelocityWP_Admin {
 			}
 		}
 
+		// Log activity
+		VelocityWP_Activity_Logger::log( '⚙️', __( 'Database optimized', 'velocitywp' ) );
+
 		wp_send_json_success( array( 'message' => $message, 'results' => $results ) );
+	}
+
+	/**
+	 * AJAX handler for flushing object cache
+	 */
+	public function ajax_flush_object_cache() {
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'velocitywp' ) ) );
+		}
+
+		// Try to flush object cache
+		$flushed = wp_cache_flush();
+
+		if ( $flushed ) {
+			VelocityWP_Activity_Logger::log( '💨', __( 'Object cache flushed', 'velocitywp' ) );
+			wp_send_json_success( array( 'message' => __( 'Object cache flushed successfully!', 'velocitywp' ) ) );
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Failed to flush object cache.', 'velocitywp' ) ) );
+		}
+	}
+
+	/**
+	 * AJAX handler for clearing fragment cache
+	 */
+	public function ajax_clear_fragment_cache() {
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'velocitywp' ) ) );
+		}
+
+		// Check if Fragment Cache class exists
+		if ( ! class_exists( 'VelocityWP_Fragment_Cache' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Fragment cache is not available.', 'velocitywp' ) ) );
+		}
+
+		$fragment_cache = new VelocityWP_Fragment_Cache();
+		$fragment_cache->clear_all();
+
+		VelocityWP_Activity_Logger::log( '🧩', __( 'Fragment cache cleared', 'velocitywp' ) );
+
+		wp_send_json_success( array( 'message' => __( 'Fragment cache cleared successfully!', 'velocitywp' ) ) );
+	}
+
+	/**
+	 * AJAX handler for regenerating critical CSS
+	 */
+	public function ajax_regenerate_critical_css() {
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'velocitywp' ) ) );
+		}
+
+		// Check if Critical CSS class exists
+		if ( ! class_exists( 'VelocityWP_Critical_CSS' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Critical CSS is not available.', 'velocitywp' ) ) );
+		}
+
+		$critical_css = new VelocityWP_Critical_CSS();
+		$result = $critical_css->regenerate();
+
+		if ( $result ) {
+			VelocityWP_Activity_Logger::log( '🎨', __( 'Critical CSS regenerated', 'velocitywp' ) );
+			wp_send_json_success( array( 'message' => __( 'Critical CSS regenerated successfully!', 'velocitywp' ) ) );
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Failed to regenerate critical CSS.', 'velocitywp' ) ) );
+		}
+	}
+
+	/**
+	 * AJAX handler for purging Cloudflare cache
+	 */
+	public function ajax_purge_cloudflare() {
+		check_ajax_referer( 'velocitywp_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'velocitywp' ) ) );
+		}
+
+		// Check if Cloudflare is enabled
+		if ( ! VelocityWP_Admin::get_setting( 'cloudflare_enabled' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Cloudflare is not enabled.', 'velocitywp' ) ) );
+		}
+
+		// Check if Cloudflare class exists
+		if ( ! class_exists( 'VelocityWP_Cloudflare' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Cloudflare integration is not available.', 'velocitywp' ) ) );
+		}
+
+		$cloudflare = new VelocityWP_Cloudflare();
+		$result = $cloudflare->purge_everything();
+
+		if ( $result && isset( $result['success'] ) && $result['success'] ) {
+			VelocityWP_Activity_Logger::log( '☁️', __( 'Cloudflare cache purged', 'velocitywp' ) );
+			wp_send_json_success( array( 'message' => __( 'Cloudflare cache purged successfully!', 'velocitywp' ) ) );
+		} else {
+			$error_message = isset( $result['errors'] ) && ! empty( $result['errors'] ) ? 
+				$result['errors'][0]['message'] : __( 'Failed to purge Cloudflare cache.', 'velocitywp' );
+			wp_send_json_error( array( 'message' => $error_message ) );
+		}
 	}
 
 	/**
