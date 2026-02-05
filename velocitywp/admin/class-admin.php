@@ -294,7 +294,7 @@ class VelocityWP_Admin {
 		}
 
 		$options = get_option( 'velocitywp_options', array() );
-		$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
+		$current_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'dashboard';
 		?>
 		<div class="wrap velocitywp-wrap">
 			<div class="velocitywp-container">
