@@ -10,10 +10,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'fonts';
+$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
 
 // Navigation items
 $nav_items = array(
+    'overview' => array(
+        'title' => __('Overview', 'velocitywp'),
+        'items' => array(
+            'dashboard' => array(
+                'icon' => '🏠',
+                'label' => __('Dashboard', 'velocitywp'),
+                'description' => __('Stats & quick actions', 'velocitywp')
+            ),
+        )
+    ),
     'optimization' => array(
         'title' => __('Optimization', 'velocitywp'),
         'items' => array(
