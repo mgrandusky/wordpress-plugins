@@ -246,6 +246,7 @@ class VelocityWP {
 		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-cloudflare.php';
 		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-heartbeat.php';
 		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-performance-monitor.php';
+		require_once VELOCITYWP_PLUGIN_DIR . 'includes/class-activity-logger.php';
 
 		// Load WooCommerce optimizer if WooCommerce is active
 		if ( class_exists( 'WooCommerce' ) ) {

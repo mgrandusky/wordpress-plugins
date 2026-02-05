@@ -964,7 +964,7 @@ class VelocityWP_Admin {
 		}
 
 		$fragment_cache = new VelocityWP_Fragment_Cache();
-		$fragment_cache->clear_all();
+		$fragment_cache->clear_all_fragments();
 
 		VelocityWP_Activity_Logger::log( '🧩', __( 'Fragment cache cleared', 'velocitywp' ) );
 
@@ -987,7 +987,7 @@ class VelocityWP_Admin {
 		}
 
 		$critical_css = new VelocityWP_Critical_CSS();
-		$result = $critical_css->regenerate();
+		$result = $critical_css->regenerate_all_critical_css();
 
 		if ( $result ) {
 			VelocityWP_Activity_Logger::log( '🎨', __( 'Critical CSS regenerated', 'velocitywp' ) );
