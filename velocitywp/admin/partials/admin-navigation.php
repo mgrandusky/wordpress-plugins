@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
+$current_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'dashboard';
 
 // Navigation items
 $nav_items = array(

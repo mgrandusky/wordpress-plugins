@@ -10,10 +10,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'fonts';
+$current_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'dashboard';
 
 // Tab titles
 $tab_titles = array(
+    'dashboard' => __('Dashboard', 'velocitywp'),
     'fonts' => __('Font Optimization', 'velocitywp'),
     'object-cache' => __('Object Cache', 'velocitywp'),
     'fragment-cache' => __('Fragment Cache', 'velocitywp'),
@@ -27,6 +28,7 @@ $tab_titles = array(
     'woocommerce' => __('WooCommerce Optimization', 'velocitywp'),
     'critical-css' => __('Critical CSS', 'velocitywp'),
     'webp' => __('WebP Image Optimization', 'velocitywp'),
+    'help' => __('Help & Documentation', 'velocitywp'),
 );
 
 $page_title = isset($tab_titles[$current_tab]) ? $tab_titles[$current_tab] : __('VelocityWP', 'velocitywp');
