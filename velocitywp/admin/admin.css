@@ -567,3 +567,95 @@
         padding-bottom: 5px;
     }
 }
+
+/* ==============================================
+   NOTICE BOXES - CONSISTENT ALIGNMENT
+   ============================================== */
+
+/* Force all notices to be full-width blocks */
+.velocitywp-tab-section .notice,
+.velocitywp-tab-section .notice-info,
+.velocitywp-tab-section .notice-success,
+.velocitywp-tab-section .notice-warning,
+.velocitywp-tab-section .notice-error {
+    display: block !important;
+    width: 100%;
+    margin: 20px 0 !important;
+    padding: 15px !important;
+    box-sizing: border-box;
+    clear: both;
+}
+
+/* Remove inline display that WordPress adds */
+.velocitywp-tab-section .notice.inline {
+    display: block !important;
+    width: 100%;
+}
+
+/* Consistent spacing for notice paragraphs */
+.velocitywp-tab-section .notice p {
+    margin: 0.5em 0;
+}
+
+.velocitywp-tab-section .notice p:first-child {
+    margin-top: 0;
+}
+
+.velocitywp-tab-section .notice p:last-child {
+    margin-bottom: 0;
+}
+
+/* Consistent list styling inside notices */
+.velocitywp-tab-section .notice ul {
+    margin: 10px 0 10px 20px;
+    list-style-type: disc;
+}
+
+.velocitywp-tab-section .notice ul li {
+    margin: 5px 0;
+}
+
+/* Strong text in notices - only first strong as block for titles */
+.velocitywp-tab-section .notice > p:first-child > strong:first-child {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Ensure notices in form tables also align */
+.form-table .notice {
+    display: block !important;
+    width: 100%;
+    margin: 15px 0 !important;
+}
+
+/* Info notice styling */
+.velocitywp-tab-section .notice-info {
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+}
+
+/* Success notice styling */
+.velocitywp-tab-section .notice-success {
+    background: #edfaef;
+    border-left: 4px solid #00a32a;
+}
+
+/* Warning notice styling */
+.velocitywp-tab-section .notice-warning {
+    background: #fcf9e8;
+    border-left: 4px solid #dba617;
+}
+
+/* Error notice styling */
+.velocitywp-tab-section .notice-error {
+    background: #fcf0f1;
+    border-left: 4px solid #d63638;
+}
+
+/* Responsive notices */
+@media (max-width: 782px) {
+    .velocitywp-tab-section .notice {
+        padding: 12px !important;
+        margin: 15px 0 !important;
+    }
+}
