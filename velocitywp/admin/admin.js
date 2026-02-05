@@ -249,6 +249,33 @@
         if (typeof $.fn.tooltip !== 'undefined') {
             $('.description').tooltip();
         }
+
+        // ==============================================
+        // COMPACT MODE TOGGLE
+        // ==============================================
+        
+        // Get compact mode preference from localStorage
+        var isCompactMode = localStorage.getItem('velocitywp_compact_mode') === 'true';
+
+        // Apply compact mode on load
+        if (isCompactMode) {
+            $('.velocitywp-nav-sidebar').addClass('compact-mode');
+        }
+
+        // Add toggle button to footer
+        $('.velocitywp-nav-footer').prepend(
+            '<button class="velocitywp-compact-toggle">' +
+            (isCompactMode ? '☰ Comfortable View' : '☰ Compact View') +
+            '</button>'
+        );
+
+        // Handle toggle button click
+        $('.velocitywp-compact-toggle').on('click', function() {
+            isCompactMode = !isCompactMode;
+            localStorage.setItem('velocitywp_compact_mode', isCompactMode);
+            $('.velocitywp-nav-sidebar').toggleClass('compact-mode');
+            $(this).text(isCompactMode ? '☰ Comfortable View' : '☰ Compact View');
+        });
     });
 
 })(jQuery);
