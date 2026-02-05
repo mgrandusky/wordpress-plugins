@@ -569,30 +569,99 @@
 }
 
 /* ==============================================
-   NOTICE BOXES - CONSISTENT ALIGNMENT
+   NOTICE BOXES - VERTICAL STACKING FIX
    ============================================== */
 
-/* Force all notices to be full-width blocks */
-.velocitywp-tab-section .notice,
-.velocitywp-tab-section .notice-info,
-.velocitywp-tab-section .notice-success,
-.velocitywp-tab-section .notice-warning,
-.velocitywp-tab-section .notice-error {
+/* Force parent containers to stack notices vertically */
+.velocitywp-tab-section {
+    display: block; /* Override any flex/grid */
+}
+
+/* Ensure notices are NOT in a horizontal flex container */
+.velocitywp-tab-section > .notice,
+.velocitywp-tab-section > div > .notice {
     display: block !important;
-    width: 100%;
+    flex: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 20px 0 !important;
     padding: 15px !important;
     box-sizing: border-box;
     clear: both;
+    float: none !important;
 }
 
-/* Remove inline display that WordPress adds */
-.velocitywp-tab-section .notice.inline {
+/* Force inline notices to stack vertically */
+.velocitywp-tab-section .notice.inline,
+.velocitywp-tab-section .notice-info.inline,
+.velocitywp-tab-section .notice-success.inline,
+.velocitywp-tab-section .notice-warning.inline,
+.velocitywp-tab-section .notice-error.inline {
     display: block !important;
-    width: 100%;
+    width: 100% !important;
+    flex: none !important;
+    grid-column: 1 / -1 !important; /* Span all columns if in grid */
 }
 
-/* Consistent spacing for notice paragraphs */
+/* Stack multiple notices vertically with spacing */
+.velocitywp-tab-section .notice + .notice {
+    margin-top: 15px !important;
+    clear: both;
+}
+
+/* Override WordPress core inline styles - scoped to VelocityWP */
+.velocitywp-tab-section .notice[style*="display: flex"],
+.velocitywp-tab-section .notice[style*="display: inline"],
+.velocitywp-tab-section .notice[style*="display: inline-block"] {
+    display: block !important;
+}
+
+/* Colored left borders for visual distinction */
+.velocitywp-tab-section .notice-info {
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+}
+
+.velocitywp-tab-section .notice-success {
+    background: #edfaef;
+    border-left: 4px solid #00a32a;
+}
+
+.velocitywp-tab-section .notice-warning {
+    background: #fcf9e8;
+    border-left: 4px solid #dba617;
+}
+
+.velocitywp-tab-section .notice-error {
+    background: #fcf0f1;
+    border-left: 4px solid #d63638;
+}
+
+/* Responsive adjustments */
+@media (max-width: 782px) {
+    .velocitywp-tab-section .notice {
+        padding: 12px !important;
+        margin: 15px 0 !important;
+    }
+}
+
+/* Special case: notices inside form-table within VelocityWP */
+.velocitywp-tab-content .form-table .notice {
+    display: block !important;
+    width: 100% !important;
+    margin: 15px 0 !important;
+}
+
+/* Special case: notices in AJAX result containers within VelocityWP */
+.velocitywp-tab-content #fragment-cache-result .notice,
+.velocitywp-tab-content #dropin-action-result .notice,
+.velocitywp-tab-content div[id$="-result"] .notice {
+    display: block !important;
+    width: 100% !important;
+    margin: 10px 0 !important;
+}
+
+/* Additional styling for notice content */
 .velocitywp-tab-section .notice p {
     margin: 0.5em 0;
 }
@@ -605,7 +674,6 @@
     margin-bottom: 0;
 }
 
-/* Consistent list styling inside notices */
 .velocitywp-tab-section .notice ul {
     margin: 10px 0 10px 20px;
     list-style-type: disc;
@@ -619,43 +687,4 @@
 .velocitywp-tab-section .notice > p:first-child > strong:first-child {
     display: block;
     margin-bottom: 8px;
-}
-
-/* Ensure notices in form tables also align */
-.form-table .notice {
-    display: block !important;
-    width: 100%;
-    margin: 15px 0 !important;
-}
-
-/* Info notice styling */
-.velocitywp-tab-section .notice-info {
-    background: #f0f6fc;
-    border-left: 4px solid #2271b1;
-}
-
-/* Success notice styling */
-.velocitywp-tab-section .notice-success {
-    background: #edfaef;
-    border-left: 4px solid #00a32a;
-}
-
-/* Warning notice styling */
-.velocitywp-tab-section .notice-warning {
-    background: #fcf9e8;
-    border-left: 4px solid #dba617;
-}
-
-/* Error notice styling */
-.velocitywp-tab-section .notice-error {
-    background: #fcf0f1;
-    border-left: 4px solid #d63638;
-}
-
-/* Responsive notices */
-@media (max-width: 782px) {
-    .velocitywp-tab-section .notice {
-        padding: 12px !important;
-        margin: 15px 0 !important;
-    }
 }
