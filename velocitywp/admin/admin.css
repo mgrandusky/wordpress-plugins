@@ -134,7 +134,7 @@
 
 /* Show description on hover */
 .velocitywp-nav-item:hover .velocitywp-nav-desc {
-    max-height: 50px;
+    max-height: 100px; /* Increased to accommodate longer descriptions */
     opacity: 1;
     margin-top: 2px;
 }
@@ -470,7 +470,24 @@
 
 /* Never show descriptions in compact mode */
 .velocitywp-nav-sidebar.compact-mode .velocitywp-nav-desc {
-    display: none !important;
+    display: none;
+}
+
+/* Compact mode toggle button */
+.velocitywp-compact-toggle {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    background: #f6f7f7;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: background 0.2s ease;
+}
+
+.velocitywp-compact-toggle:hover {
+    background: #e8e8e8;
 }
 
 /* ==============================================

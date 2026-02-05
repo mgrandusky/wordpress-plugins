@@ -264,7 +264,7 @@
 
         // Add toggle button to footer
         $('.velocitywp-nav-footer').prepend(
-            '<button class="velocitywp-compact-toggle" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ddd; background:#f6f7f7; cursor:pointer; border-radius:4px; font-size:12px;">' +
+            '<button class="velocitywp-compact-toggle">' +
             (isCompactMode ? '☰ Comfortable View' : '☰ Compact View') +
             '</button>'
         );
