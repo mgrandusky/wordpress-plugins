@@ -44,11 +44,11 @@ class VelocityWP_Activity_Logger {
 	 * Get recent activities
 	 *
 	 * @param int $limit Number of activities to retrieve.
-	 * @return array Recent activities.
+	 * @return array Recent activities (newest first).
 	 */
 	public static function get_recent( $limit = 10 ) {
 		$log = get_option( 'velocitywp_activity_log', array() );
-		return array_slice( $log, -$limit );
+		return array_reverse( array_slice( $log, -$limit ) );
 	}
 
 	/**

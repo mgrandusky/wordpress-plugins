@@ -391,8 +391,15 @@ class VelocityWP_Admin {
 	 */
 	private function render_dashboard_tab( $options ) {
 		// Include the dashboard view file
-		if ( file_exists( VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-dashboard.php' ) ) {
-			include VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-dashboard.php';
+		$dashboard_file = VELOCITYWP_PLUGIN_DIR . 'admin/views/tab-dashboard.php';
+		if ( file_exists( $dashboard_file ) ) {
+			include $dashboard_file;
+		} else {
+			?>
+			<div class="notice notice-error">
+				<p><?php esc_html_e( 'Dashboard view file is missing. Please reinstall VelocityWP.', 'velocitywp' ); ?></p>
+			</div>
+			<?php
 		}
 	}
 
@@ -1024,7 +1031,7 @@ class VelocityWP_Admin {
 			VelocityWP_Activity_Logger::log( '☁️', __( 'Cloudflare cache purged', 'velocitywp' ) );
 			wp_send_json_success( array( 'message' => __( 'Cloudflare cache purged successfully!', 'velocitywp' ) ) );
 		} else {
-			$error_message = isset( $result['errors'] ) && ! empty( $result['errors'] ) ? 
+			$error_message = isset( $result['errors'][0]['message'] ) ? 
 				$result['errors'][0]['message'] : __( 'Failed to purge Cloudflare cache.', 'velocitywp' );
 			wp_send_json_error( array( 'message' => $error_message ) );
 		}

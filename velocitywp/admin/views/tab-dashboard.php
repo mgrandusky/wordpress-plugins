@@ -11,6 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Get statistics
+if ( ! class_exists( 'VelocityWP_Cache' ) || ! class_exists( 'VelocityWP_Database_Optimizer' ) ) {
+	echo '<div class="notice notice-error"><p>' . esc_html__( 'Required classes are not loaded. Please check your VelocityWP installation.', 'velocitywp' ) . '</p></div>';
+	return;
+}
+
 $cache = new VelocityWP_Cache();
 $cache_stats = $cache->get_cache_stats();
 
@@ -58,17 +63,19 @@ $object_cache_status = array(
 	'backend' => __( 'None', 'velocitywp' )
 );
 
-try {
-	$object_cache = new VelocityWP_Object_Cache();
-	$cache_type = $object_cache->detect_cache_type();
-	if ( $cache_type && $cache_type !== 'none' ) {
-		$object_cache_status = array(
-			'connected' => true,
-			'backend' => ucfirst( $cache_type )
-		);
+if ( class_exists( 'VelocityWP_Object_Cache' ) ) {
+	try {
+		$object_cache = new VelocityWP_Object_Cache();
+		$cache_type = $object_cache->detect_cache_type();
+		if ( $cache_type && $cache_type !== 'none' ) {
+			$object_cache_status = array(
+				'connected' => true,
+				'backend' => ucfirst( $cache_type )
+			);
+		}
+	} catch ( Exception $e ) {
+		// Silently fail
 	}
-} catch ( Exception $e ) {
-	// Silently fail
 }
 
 // WebP support check - use simple PHP check
@@ -296,7 +303,7 @@ $recent_activity = VelocityWP_Activity_Logger::get_recent( 10 );
 		<h2><?php esc_html_e( 'Recent Activity', 'velocitywp' ); ?></h2>
 		
 		<ul class="activity-list">
-			<?php foreach ( array_reverse( $recent_activity ) as $activity ): ?>
+			<?php foreach ( $recent_activity as $activity ): ?>
 			<li class="activity-item">
 				<span class="activity-icon"><?php echo esc_html( $activity['icon'] ); ?></span>
 				<span class="activity-text"><?php echo esc_html( $activity['message'] ); ?></span>
