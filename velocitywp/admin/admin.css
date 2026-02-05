@@ -628,11 +628,6 @@
     margin: 15px 0 !important;
 }
 
-/* Stack multiple notices vertically with spacing */
-.velocitywp-tab-section .notice + .notice {
-    margin-top: 20px !important;
-}
-
 /* Info notice styling */
 .velocitywp-tab-section .notice-info {
     background: #f0f6fc;
