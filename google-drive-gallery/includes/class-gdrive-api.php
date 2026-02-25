@@ -263,6 +263,7 @@ class GDrive_API {
      * @param string $size Thumbnail size (small, medium, large)
      * @return string Thumbnail URL
      */
+<<<<<<< Updated upstream
     public static function get_thumbnail_url( $file, $size = 'medium' ) {
         if ( isset( $file['id'] ) ) {
             // Use proxy endpoint with size parameter
@@ -279,7 +280,14 @@ class GDrive_API {
         }
 
         return '';
+=======
+   public static function get_thumbnail_url( $file, $size = 'medium' ) {
+    if ( isset( $file['id'] ) ) {
+        return home_url( '/gdrive-image/' . $file['id'] . '?size=' . urlencode( $size ) );
+>>>>>>> Stashed changes
     }
+    return '';
+}
 
     /**
      * Get full-size image URL
